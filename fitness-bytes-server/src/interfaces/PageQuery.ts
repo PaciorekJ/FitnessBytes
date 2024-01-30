@@ -1,7 +1,7 @@
 
 interface PageQuery {
-    pageNumber?: string;
-    numberPerPage?: string;
+    pageNumber?: number;
+    numberPerPage?: number;
     sortBy?: string;
 }
 
