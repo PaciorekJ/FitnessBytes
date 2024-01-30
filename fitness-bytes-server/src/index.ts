@@ -14,6 +14,7 @@ import User from './models/user';
 
 import authMiddleware from './middleware/authMiddleware';
 import Payload from './interfaces/Payload';
+import PageQuery from './interfaces/PageQuery';
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -139,6 +140,48 @@ app.post("/login", async (req: Request, res: Response) => {
 
         console.error("Error during login:", error);
         res.status(500).json(payload);
+    }
+});
+
+app.get("/feed/:username", authMiddleware, async (req: Request & {query: PageQuery}, res: Response) => {
+    try {
+        const username = req.params.username || "No-Username";
+        const userID = await getUserIDFromUsername(username)
+
+        if (userID === -1) {
+            return res.status(400).send("No UserID sent");
+        }
+
+        const sortBy = req.query.sortBy || 'newest';
+        
+        let posts;
+
+        // Get posts according to selectedSortBy
+        if (sortBy === "liked") {
+            posts = await getLikedPosts(userID, req.query);
+        } else if (sortBy === "most-liked") {
+            posts = await getMostLikedPosts(userID, req.query);
+        } else if (sortBy === "newest"){
+            posts = await getNewestPosts(req.query);
+        }
+
+        const payload: Payload = {
+            message: "",
+            posts: posts || [],
+            username: username || "",
+            userID: userID || -1,
+            pagenumber: parseInt(req.query.pageNumber || "") || -1
+        }
+
+        res.json(payload);
+
+    } catch (error) {
+        const payload: Payload = {
+            message: "Internal Server Error"
+        }
+        
+        console.error("Error in /feed route:", error);
+        res.status(500).send(payload);
     }
 });
 
