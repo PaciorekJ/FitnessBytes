@@ -15,6 +15,7 @@ import User from './models/user';
 import authMiddleware from './middleware/authMiddleware';
 import Payload from './interfaces/Payload';
 import PageQuery from './interfaces/PageQuery';
+import { getLikedPosts, getMostLikedPosts, getNewestPosts } from './controllers/postsController';
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -170,7 +171,7 @@ app.get("/feed/:username", authMiddleware, async (req: Request & {query: PageQue
             posts: posts || [],
             username: username || "",
             userID: userID || -1,
-            pagenumber: parseInt(req.query.pageNumber || "") || -1
+            pagenumber: req.query.pageNumber || -1
         }
 
         res.json(payload);

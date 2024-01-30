@@ -1,4 +1,4 @@
-import Post from './Post';
+import Post from '../models/Post';
 
 interface Payload {
     message: string;
