@@ -1,13 +1,16 @@
 
-import express, { Express, Request, Response } from 'express';
+import bcrypt from 'bcrypt';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import bcrypt from 'bcrypt';
+import express, { Express, Request, Response } from 'express';
 import jwt from 'jwt-simple';
 
-import { addPost, addUser, deletePost, editPost, getLikedPosts, getMostLikedPosts, 
-    getNewestPosts, getPasswordFromUsername, getPostCountByUserId, getPostLikesByUserId, 
-    getUserIDFromUsername, isLiked, toggleLike, validateIsOwner } from './db';
+import {
+    addUser,
+    getPasswordFromUsername,
+    getUserIDFromUsername
+} from './controllers/userController';
+import User from './models/user';
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -47,7 +50,7 @@ app.post("/createAccount", async (req, res) => {
         // Check if the username already exists
         const existingUser: number = await getUserIDFromUsername(username);
 
-        if (!existingUser) {
+        if (existingUser !== -1) {
             const payload: Payload = {
                 message: "Error: Username already exists"
             }
@@ -58,8 +61,13 @@ app.post("/createAccount", async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        const newUser: User = {
+            username: username,
+            password: hashedPassword,
+        }
+
         // Add the user with the hashed password
-        await addUser(username, hashedPassword);
+        await addUser(newUser);
 
         const payload: Payload = { message: "" } 
 
