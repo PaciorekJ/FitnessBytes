@@ -12,17 +12,17 @@ import {
 } from './controllers/userController';
 import User from './models/user';
 
+import authMiddleware from './middleware/authMiddleware';
+import Payload from './interfaces/Payload';
+
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 const SECREYKEY = process.env.SECRETKEY || "";
-interface Payload {
-    message: string;
-    token?: string;
-}
 
 const app: Express = express();
 app.use(express.json());
 app.use(cors());
+app.use(authMiddleware);
 
 app.get('/', (req: Request, res: Response) => {
     const payload: Payload = {
@@ -80,7 +80,7 @@ app.post("/createAccount", async (req, res) => {
     }
 });
 
-app.post("/login", async (req, res) => {
+app.post("/login", async (req: Request, res: Response) => {
     const body = req.body || {};
 
     const username = body.username || "";
