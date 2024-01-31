@@ -10,7 +10,7 @@ const SECREYKEY = process.env.SECRETKEY || "";
 
 const routerUser = Router();
 
-routerUser.post("/addUser", async (req, res) => {
+routerUser.post("/signup", async (req, res) => {
     const body = req.body || {};  // Use an empty object as default
 
     const username: string = body.username || "";
@@ -36,7 +36,7 @@ routerUser.post("/addUser", async (req, res) => {
         // Check if the username already exists
         const userId = await getUserIDFromUsername(username);
 
-        if (!userId) {
+        if (userId) {
             const payload: Payload = {
                 message: "Error: Username already exists"
             }
@@ -66,7 +66,7 @@ routerUser.post("/addUser", async (req, res) => {
     }
 });
 
-routerUser.post("/loginUser", async (req: Request, res: Response) => {
+routerUser.post("/login", async (req: Request, res: Response) => {
     const body = req.body || {};
 
     const username = body.username || "";
