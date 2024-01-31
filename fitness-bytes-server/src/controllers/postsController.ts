@@ -1,20 +1,23 @@
-import { client, connectDB } from "../db";
+import { ObjectId } from "mongodb";
+import Database from "../db";
 import PageQuery from "../interfaces/PageQuery";
 import Post from "../models/Post";
 import PostLikes from "../models/PostLike";
 
-connectDB();
+const client = Database.getInstance();
 const db = client.db('Fitness-Bytes-DB');
 const postsCollection = db.collection<Post>('posts');
 const postLikesCollection = db.collection<PostLikes>('postLikes');
 
 // *** Returns a promise that contains the paginated newest post ***
-async function getNewestPosts(query: PageQuery, ownerID = -1): Promise<Post[]> {
+async function getNewestPosts(query: PageQuery, ownerID?: ObjectId): Promise<Post[]> {
     const { numberPerPage, pageNumber } = query;
-    const offset = (numberPerPage || 0) * (pageNumber || 0);
+    const limit = parseInt(numberPerPage || "5");
+    const curPageNumber = parseInt(pageNumber || "0");
+    const offset = limit * curPageNumber;
 
     let filter: any = {};
-    if (ownerID !== -1) {
+    if (!ownerID) {
         filter.userId = ownerID;
     }
 
@@ -22,19 +25,21 @@ async function getNewestPosts(query: PageQuery, ownerID = -1): Promise<Post[]> {
         { $match: filter },
         { $sort: { TimeCreated: -1 } },
         { $skip: offset },
-        { $limit: numberPerPage }
+        { $limit: limit }
     ];
 
     return postsCollection.aggregate(pipeline).toArray() as Promise<Post[]>;
 }
 
 // *** Returns a promise that contains the paginated liked post ***
-async function getLikedPosts(userID: number, query: PageQuery, ownerID = -1): Promise<Post[]> {
+async function getLikedPosts(userID: ObjectId, query: PageQuery, ownerID?: ObjectId): Promise<Post[]> {
     const { numberPerPage, pageNumber } = query;
-    const offset = (numberPerPage || 0) * (pageNumber || 0);
+    const limit = parseInt(numberPerPage || "5");
+    const curPageNumber = parseInt(pageNumber || "0");
+    const offset = limit * curPageNumber;
 
     let filter: any = { "PL.userID": userID };
-    if (ownerID !== -1) {
+    if (ownerID) {
         filter["P.userID"] = ownerID;
     }
 
@@ -42,25 +47,27 @@ async function getLikedPosts(userID: number, query: PageQuery, ownerID = -1): Pr
         { $match: filter },
         { $sort: { "P.timeCreated": -1 } },
         { $skip: offset },
-        { $limit: numberPerPage }
+        { $limit: limit }
     ];
 
     return postsCollection.aggregate(pipeline).toArray() as Promise<Post[]>;;
 }
 
 // *** Returns a promise that contains the paginated most liked post ***
-async function getMostLikedPosts(userID: number, query: PageQuery): Promise<Post[]> {
+async function getMostLikedPosts(query: PageQuery, ownerID?: ObjectId): Promise<Post[]> {
     const { numberPerPage, pageNumber } = query;
-    const offset = (numberPerPage || 0) * (pageNumber || 0);
+    const limit = parseInt(numberPerPage || "5");
+    const curPageNumber = parseInt(pageNumber || "0");
+    const offset = limit * curPageNumber;
 
     let pipeline: any[] = [];
 
-    if (userID !== -1) {
+    if (ownerID) {
         pipeline = [
-            { $match: { "PL.userID": userID, "P.userID": userID } },
+            { $match: { "PL.userID": ownerID, "P.userID": ownerID } },
             { $sort: { "P.timeCreated": -1 } },
             { $skip: offset },
-            { $limit: numberPerPage }
+            { $limit: limit }
         ];
     } else {
         pipeline = [
@@ -68,7 +75,7 @@ async function getMostLikedPosts(userID: number, query: PageQuery): Promise<Post
             { $group: { _id: "$postID", LikeCount: { $sum: 1 }, post: { $first: "$$ROOT" } } },
             { $sort: { LikeCount: -1, "post.timeCreated": -1 } },
             { $skip: offset },
-            { $limit: numberPerPage }
+            { $limit: limit }
         ];
     }
 
@@ -87,7 +94,7 @@ async function addPost(newPost: Post){
 }
 
 // *** Returns true if updated successfully ***
-async function editPost(postID: number, content: string) {
+async function editPost(postID: ObjectId, content: string) {
 
     return (await postsCollection.updateOne(
         {_id: postID}, 
@@ -97,7 +104,7 @@ async function editPost(postID: number, content: string) {
 }
 
 // *** Returns true if it successfully removes all likes for a post and the post itself ***
-async function deletePost(postID: number) {
+async function deletePost(postID: ObjectId) {
 
     const removedLikes = (await postLikesCollection.deleteMany({PostID: postID}));
 
@@ -107,7 +114,7 @@ async function deletePost(postID: number) {
 }
 
 // *** Returns true if the likePost was performed successfully ***
-async function likePost(postID: number, UserID: number) {
+async function likePost(postID: ObjectId, UserID: ObjectId) {
 
     const postLikes = await postLikesCollection.insertOne({
         postID: postID,
@@ -123,7 +130,7 @@ async function likePost(postID: number, UserID: number) {
 }
 
 // *** Returns true if the unliking of the Post was performed successfully ***
-async function unlikePost(postID: number, UserID: number) {
+async function unlikePost(postID: ObjectId, UserID: ObjectId) {
     const postLikes = await postLikesCollection.deleteOne({
         postID: postID,
         userID: UserID
@@ -137,8 +144,8 @@ async function unlikePost(postID: number, UserID: number) {
     return postLikes.acknowledged && posts.acknowledged
 }
 
-// *** Returns 1 if the post was liked and 0 if the post was unliked ***
-async function toggleLike(postID: number, UserID: number) {
+// *** Returns 1 if the post was liked and 0 if the post was unlike ***
+async function toggleLike(postID: ObjectId, UserID: ObjectId) {
 
     const postLikesCount = await postLikesCollection.countDocuments({
         PostID: postID,
@@ -155,7 +162,7 @@ async function toggleLike(postID: number, UserID: number) {
 }
 
 // *** Returns 0 if the post is liked and anything else if not liked ***
-async function isLiked(postID: number, UserID: number) {
+async function isLiked(postID: ObjectId, UserID: ObjectId) {
     const postLikesCount = await postLikesCollection.countDocuments({
         PostID: postID,
         UserID: UserID
@@ -166,7 +173,7 @@ async function isLiked(postID: number, UserID: number) {
 
 
 // *** Returns true if isOwner else false ***
-async function validateIsOwner(postID: number, userID: number) {
+async function validateIsOwner(postID: ObjectId, userID: ObjectId) {
     const post = await postsCollection.findOne({
         PostID: postID,
         UserID: userID
@@ -176,7 +183,7 @@ async function validateIsOwner(postID: number, userID: number) {
 }
 
 // *** Returns the number of post associated with the given ID ***
-async function getPostCountByUserId(userID: number) {
+async function getPostCountByUserId(userID: ObjectId) {
     const postCount = postsCollection.countDocuments({
         userID: userID
     });
@@ -184,7 +191,7 @@ async function getPostCountByUserId(userID: number) {
     return postCount;
 }
 
-async function getPostLikesByUserId(userID: number) {
+async function getPostLikesByUserId(userID: ObjectId) {
     const likesAggregate = await postsCollection.aggregate([
         {
             $match: { UserID: userID }

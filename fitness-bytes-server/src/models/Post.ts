@@ -1,7 +1,8 @@
+import { ObjectId } from "mongodb";
 
 interface Post {
-    _id?: number;
-    userId: number;
+    _id?: ObjectId;
+    userId: ObjectId;
     username: string;
     content: string;
     likes?: number

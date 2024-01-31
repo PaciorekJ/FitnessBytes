@@ -1,19 +1,27 @@
 
 import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv'
 
-dotenv.config();
+class Database {
+    static instance: MongoClient;
+    private static uri: string = process.env.DB_URL!;
 
-const uri = process.env.DB_URL || "mongodb://not-a-DB";
-const client = new MongoClient(uri);
+    static getInstance() {
+        if (!Database.instance) {
+            Database.instance = new MongoClient(this.uri);
+            Database.connect();
+        }
+        
+        return Database.instance;
+    }
 
-async function connectDB() {
-    try {
-        await client.connect();
-        console.log('Connected to MongoDB');
-    } catch (error) {
-        console.error('Error connecting to MongoDB:', error);
+    private static async connect() {
+        try {
+            await Database.instance.connect();
+            console.log('Connected to MongoDB');
+        } catch (error) {
+            console.error('Error connecting to MongoDB:', error);
+        }
     }
 }
 
-export { client, connectDB };
+export default Database;

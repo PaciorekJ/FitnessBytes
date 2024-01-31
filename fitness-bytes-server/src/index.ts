@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import express, { Express, Request, Response } from 'express';
 import jwt from 'jwt-simple';
 
+dotenv.config();
+
 import {
     addUser,
     getPasswordFromUsername,
@@ -12,19 +14,17 @@ import {
 } from './controllers/userController';
 import User from './models/user';
 
-import authMiddleware from './middleware/authMiddleware';
-import Payload from './interfaces/Payload';
+import { getLikedPosts, getMostLikedPosts, getNewestPosts, getPostCountByUserId, getPostLikesByUserId } from './controllers/postsController';
 import PageQuery from './interfaces/PageQuery';
-import { getLikedPosts, getMostLikedPosts, getNewestPosts } from './controllers/postsController';
+import Payload from './interfaces/Payload';
+import authMiddleware from './middleware/authMiddleware';
 
-dotenv.config();
 const PORT = process.env.PORT || 3000;
 const SECREYKEY = process.env.SECRETKEY || "";
 
 const app: Express = express();
 app.use(express.json());
 app.use(cors());
-app.use(authMiddleware);
 
 app.get('/', (req: Request, res: Response) => {
     const payload: Payload = {
@@ -48,11 +48,19 @@ app.post("/createAccount", async (req, res) => {
         return res.status(400).json(payload);
     }
 
+    if (username.indexOf(' ') !== -1 || password.indexOf(' ') !== -1) {
+        const payload: Payload = {
+            message: "Error: Username or password contains space"
+        }
+
+        return res.status(400).json(payload);
+    }
+
     try {
         // Check if the username already exists
-        const existingUser: number = await getUserIDFromUsername(username);
+        const userId = await getUserIDFromUsername(username);
 
-        if (existingUser !== -1) {
+        if (!userId) {
             const payload: Payload = {
                 message: "Error: Username already exists"
             }
@@ -144,13 +152,17 @@ app.post("/login", async (req: Request, res: Response) => {
     }
 });
 
-app.get("/feed/:username", authMiddleware, async (req: Request & {query: PageQuery}, res: Response) => {
+app.get("/feed/:username", async (req: Request & {query: PageQuery}, res: Response) => {
     try {
         const username = req.params.username || "No-Username";
         const userID = await getUserIDFromUsername(username)
 
-        if (userID === -1) {
-            return res.status(400).send("No UserID sent");
+        if (!userID) {
+            const payload: Payload = {
+                message: "Invalid Username",
+            }
+
+            return res.status(400).json(payload);
         }
 
         const sortBy = req.query.sortBy || 'newest';
@@ -161,7 +173,7 @@ app.get("/feed/:username", authMiddleware, async (req: Request & {query: PageQue
         if (sortBy === "liked") {
             posts = await getLikedPosts(userID, req.query);
         } else if (sortBy === "most-liked") {
-            posts = await getMostLikedPosts(userID, req.query);
+            posts = await getMostLikedPosts(req.query);
         } else if (sortBy === "newest"){
             posts = await getNewestPosts(req.query);
         }
@@ -170,8 +182,8 @@ app.get("/feed/:username", authMiddleware, async (req: Request & {query: PageQue
             message: "",
             posts: posts || [],
             username: username || "",
-            userID: userID || -1,
-            pagenumber: req.query.pageNumber || -1
+            userID: userID,
+            pagenumber: parseInt(req.query.pageNumber || "-1")
         }
 
         res.json(payload);
@@ -182,6 +194,58 @@ app.get("/feed/:username", authMiddleware, async (req: Request & {query: PageQue
         }
         
         console.error("Error in /feed route:", error);
+        res.status(500).send(payload);
+    }
+});
+
+app.get("/accountPage/:username", async (req: Request & {query: PageQuery}, res: Response) => {
+    try {
+        const username = req.params.username || "No-Username";
+        const userID = await getUserIDFromUsername(username)
+
+        if (!userID) {
+            const payload: Payload = {
+                message: "Invalid Username",
+            }
+
+            return res.status(400).json(payload);
+        }
+
+        const pageNumber = parseInt(req.query.pageNumber || "0");
+        const sortBy = req.query.sortBy || 'newest';
+
+        const postCount = await getPostCountByUserId(userID);
+        const likeCount = await getPostLikesByUserId(userID);
+
+        let posts;
+
+        // Get posts according to selectedSortBy
+        if (sortBy === "liked") {
+            posts = await getLikedPosts(userID, req.query, userID);
+        } else if (sortBy === "most-liked") {
+            posts = await getMostLikedPosts(req.query, userID);
+        } else if (sortBy === "newest"){
+            posts = await getNewestPosts(req.query, userID);
+        }
+
+        const payload: Payload = {
+            message: "",
+            posts: posts || [],
+            username: username,
+            userID: userID,
+            pagenumber: pageNumber,
+            postNumber: postCount,
+            likesNumber: likeCount
+        }
+
+        res.json(payload);
+    } catch (error) {
+
+        const payload: Payload = {
+            message: "Internal Server Error",
+        }
+
+        console.error("Error in /accountPage route:", error);
         res.status(500).send(payload);
     }
 });
