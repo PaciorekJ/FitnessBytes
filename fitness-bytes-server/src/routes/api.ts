@@ -165,8 +165,8 @@ routerAPI.post(`/postOwner`, async (req, res) => {
 
     const body = req.body || {};
 
-    const postID = body.postID;
-    const userID = body.userID;
+    const postID: ObjectId = body.postID;
+    const userID: ObjectId = body.userID;
 
     if (!postID || !userID) {
 
