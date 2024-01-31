@@ -11,7 +11,7 @@ const SECREYKEY = process.env.SECRETKEY || "";
 const routerUser = Router();
 
 routerUser.post("/signup", async (req, res) => {
-    const body = req.body || {};  // Use an empty object as default
+    const body = req.body || {};
 
     const username: string = body.username || "";
     const password: string = body.password || "";

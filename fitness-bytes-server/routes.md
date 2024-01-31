@@ -5,6 +5,8 @@
 
 ## api/likePost
 
+**Auth Token Required**
+
 Method: **POST**
 
 Expects:
@@ -26,6 +28,8 @@ Effect:
     Toggles likes on a post
 
 # api/addPost
+
+**Auth Token Required**
 
 Method: **POST**
 
@@ -50,6 +54,8 @@ Effect:
 
 # api/deletePost
 
+**Auth Token Required**
+
 Method: **DELETE**
 
 Expects:
@@ -70,6 +76,8 @@ Effect:
     Deletes a post.
 
 # api/editPost
+
+**Auth Token Required**
 
 Method: **PATCH**
 
