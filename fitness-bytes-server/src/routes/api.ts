@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
 import { addPost, deletePost, editPost, isLiked, toggleLike, validateIsOwner } from "../database/posts";
-// import authMiddleware from "../middleware/authMiddleware";
+import authMiddleware from "../middleware/authMiddleware";
 import ResponseResult from "../interfaces/ReponseResult";
 import jsonMiddleware from "../middleware/jsonMiddleware";
 import Post from "../models/Post";
@@ -11,9 +11,7 @@ const routerAPI = Router()
 
 routerAPI.use(jsonMiddleware<ResponseResult>); // Ensures all route have json/application headers properly set returns a ResponseResult if fails
 
-// *** API Routes ***
-//authMiddleware
-routerAPI.post("/likePost", async (req, res) => {
+routerAPI.post("/likePost", authMiddleware, async (req, res) => {
 
     const body = req.body || {};
     const userID: ObjectId = body.userID || "";
@@ -48,7 +46,7 @@ routerAPI.post("/likePost", async (req, res) => {
 });
 
 // authMiddleware
-routerAPI.post("/addPost", async (req, res) => {
+routerAPI.post("/addPost", authMiddleware, async (req, res) => {
 
     const body = req.body || {};
     const userID: ObjectId = body.userID;
@@ -85,8 +83,7 @@ routerAPI.post("/addPost", async (req, res) => {
     }
 });
 
-//authMiddleware
-routerAPI.delete("/deletePost", async (req, res) => {
+routerAPI.delete("/deletePost", authMiddleware, async (req, res) => {
 
     const body = req.body || {};
     
@@ -120,8 +117,7 @@ routerAPI.delete("/deletePost", async (req, res) => {
     }
 });
 
-//authMiddleware
-routerAPI.patch("/editPost", async (req, res) => {
+routerAPI.patch("/editPost", authMiddleware, async (req, res) => {
 
     const body = req.body || {};
 
@@ -156,7 +152,6 @@ routerAPI.patch("/editPost", async (req, res) => {
     }
 });
 
-// *** Verifys that someone is the owner of a post ***
 routerAPI.post(`/postOwner`, async (req, res) => {
 
     const body = req.body || {};
