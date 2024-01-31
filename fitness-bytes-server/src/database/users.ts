@@ -1,6 +1,6 @@
 
-import Database from '../db';
-import User from '../models/user'
+import User from '../models/user';
+import Database from './db';
 
 const client = Database.getInstance();
 const db = client.db('Fitness-Bytes-DB');
@@ -21,4 +21,4 @@ async function getPasswordFromUsername(username: string) {
     return (await usersCollection.findOne({username: username}))?.password || "";
 }
 
-export {addUser, getPasswordFromUsername, getUserIDFromUsername}
+export { addUser, getPasswordFromUsername, getUserIDFromUsername };

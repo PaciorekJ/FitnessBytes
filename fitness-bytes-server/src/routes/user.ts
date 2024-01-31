@@ -2,7 +2,7 @@
 import bcrypt from 'bcrypt';
 import { Request, Response, Router } from "express";
 import jwt from 'jwt-simple';
-import { addUser, getPasswordFromUsername, getUserIDFromUsername } from "../controllers/userController";
+import { addUser, getPasswordFromUsername, getUserIDFromUsername } from "../database/users";
 import Payload from "../interfaces/Payload";
 import User from "../models/user";
 

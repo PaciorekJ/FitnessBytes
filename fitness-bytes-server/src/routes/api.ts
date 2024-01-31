@@ -1,19 +1,15 @@
 
 import { Router } from "express";
-import { toggleLike, addPost, deletePost, editPost, validateIsOwner, isLiked } from "../controllers/postsController";
 import { ObjectId } from "mongodb";
+import { addPost, deletePost, editPost, isLiked, toggleLike, validateIsOwner } from "../database/posts";
 // import authMiddleware from "../middleware/authMiddleware";
+import ResponseResult from "../interfaces/ReponseResult";
 import jsonMiddleware from "../middleware/jsonMiddleware";
 import Post from "../models/Post";
 
-export interface APIResponse {
-    message: string;
-    result?: boolean | number; 
-}
-
 const routerAPI = Router()
 
-routerAPI.use(jsonMiddleware<APIResponse>); // Ensures all route have json/application headers properly set returns a APIResponse if fails
+routerAPI.use(jsonMiddleware<ResponseResult>); // Ensures all route have json/application headers properly set returns a ResponseResult if fails
 
 // *** API Routes ***
 //authMiddleware
@@ -25,7 +21,7 @@ routerAPI.post("/likePost", async (req, res) => {
 
     if (!postID || !userID) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "No postID or userID",
         }
 
@@ -34,7 +30,7 @@ routerAPI.post("/likePost", async (req, res) => {
 
     try {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "",
             result: await toggleLike(postID, userID)
         }
@@ -42,7 +38,7 @@ routerAPI.post("/likePost", async (req, res) => {
         res.status(200).json(payload);
     } catch (error) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "Internal Server Error",
         }
 
@@ -61,7 +57,7 @@ routerAPI.post("/addPost", async (req, res) => {
 
     if (!userID || content === "" || username === "") {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "No UserID or Content or Username",
         }
 
@@ -80,7 +76,7 @@ routerAPI.post("/addPost", async (req, res) => {
         res.status(201).json(result);
     } catch (error) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "Internal Server Error",
         }
 
@@ -98,7 +94,7 @@ routerAPI.delete("/deletePost", async (req, res) => {
 
     if (!postID) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "No postID",
         }
 
@@ -107,7 +103,7 @@ routerAPI.delete("/deletePost", async (req, res) => {
 
     try {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "",
             result: await deletePost(postID)
         }
@@ -115,7 +111,7 @@ routerAPI.delete("/deletePost", async (req, res) => {
         res.status(200).json(payload);
     } catch (error) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "Internal Server Error",
         }
 
@@ -134,7 +130,7 @@ routerAPI.patch("/editPost", async (req, res) => {
 
     if (!postID || content === "") {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "No postID or Content",
         }
 
@@ -143,7 +139,7 @@ routerAPI.patch("/editPost", async (req, res) => {
 
     try {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "",
             result: await editPost(postID, content)
         }
@@ -151,7 +147,7 @@ routerAPI.patch("/editPost", async (req, res) => {
         res.status(200).json(payload);
     } catch (error) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "Internal Server Error",
         }
 
@@ -170,7 +166,7 @@ routerAPI.post(`/postOwner`, async (req, res) => {
 
     if (!postID || !userID) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "No postID or UserID",
         }
 
@@ -179,7 +175,7 @@ routerAPI.post(`/postOwner`, async (req, res) => {
 
     try {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "",
             result: await validateIsOwner(postID, userID)
         }
@@ -187,7 +183,7 @@ routerAPI.post(`/postOwner`, async (req, res) => {
         res.status(200).json(payload);
     } catch (error) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "Internal Server Error",
         }
 
@@ -205,7 +201,7 @@ routerAPI.post('/isLiked', async (req, res) => {
 
     if (!postID || !userID) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "No postID or UserID",
         }
 
@@ -214,7 +210,7 @@ routerAPI.post('/isLiked', async (req, res) => {
 
     try {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "",
             result: await isLiked(postID, userID)
         }
@@ -222,7 +218,7 @@ routerAPI.post('/isLiked', async (req, res) => {
         res.status(200).json(payload);
     } catch (error) {
 
-        const payload: APIResponse = {
+        const payload: ResponseResult = {
             message: "Internal Server Error",
             result: await isLiked(postID, userID)
         }

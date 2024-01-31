@@ -1,8 +1,8 @@
 
-import { Router, Response, Request } from "express";
+import { Request, Response, Router } from "express";
+import { getLikedPosts, getMostLikedPosts, getNewestPosts, getPostCountByUserId, getPostLikesByUserId } from "../database/posts";
+import { getUserIDFromUsername } from "../database/users";
 import PageQuery from "../interfaces/PageQuery";
-import { getLikedPosts, getMostLikedPosts, getNewestPosts, getPostCountByUserId, getPostLikesByUserId } from "../controllers/postsController";
-import { getUserIDFromUsername } from "../controllers/userController";
 import Payload from "../interfaces/Payload";
 
 const routerPost = Router();
