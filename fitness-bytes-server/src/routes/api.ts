@@ -17,7 +17,7 @@ routerAPI.use(jsonMiddleware<APIResponse>); // Ensures all route have json/appli
 
 // *** API Routes ***
 //authMiddleware
-routerAPI.post("/api/likePost", async (req, res) => {
+routerAPI.post("/likePost", async (req, res) => {
 
     const body = req.body || {};
     const userID = body.userID || "";
@@ -52,7 +52,7 @@ routerAPI.post("/api/likePost", async (req, res) => {
 });
 
 // authMiddleware
-routerAPI.post("/api/addPost", async (req, res) => {
+routerAPI.post("/addPost", async (req, res) => {
 
     const body = req.body || {};
     const userID = body.userID;
@@ -90,7 +90,7 @@ routerAPI.post("/api/addPost", async (req, res) => {
 });
 
 //authMiddleware
-routerAPI.delete("/api/deletePost", async (req, res) => {
+routerAPI.delete("/deletePost", async (req, res) => {
 
     const body = req.body || {};
     
@@ -125,7 +125,7 @@ routerAPI.delete("/api/deletePost", async (req, res) => {
 });
 
 //authMiddleware
-routerAPI.patch("/api/editPost", async (req, res) => {
+routerAPI.patch("/editPost", async (req, res) => {
 
     const body = req.body || {};
 
@@ -161,7 +161,7 @@ routerAPI.patch("/api/editPost", async (req, res) => {
 });
 
 // *** Verifys that someone is the owner of a post ***
-routerAPI.post(`/api/postOwner`, async (req, res) => {
+routerAPI.post(`/postOwner`, async (req, res) => {
 
     const body = req.body || {};
 
@@ -196,7 +196,7 @@ routerAPI.post(`/api/postOwner`, async (req, res) => {
     }
 });
 
-routerAPI.post('/api/isLiked', async (req, res) => {
+routerAPI.post('/isLiked', async (req, res) => {
 
     const body = req.body || {};
 
