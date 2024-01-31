@@ -1,7 +1,7 @@
-import Payload from "../interfaces/Payload";
-import { Request, Response } from 'express';
 import dotenv from 'dotenv';
+import { Request, Response } from 'express';
 import jwt from 'jwt-simple';
+import Payload from "../interfaces/Payload";
 
 dotenv.config();
 const SECREYKEY = process.env.SECRETKEY || "";

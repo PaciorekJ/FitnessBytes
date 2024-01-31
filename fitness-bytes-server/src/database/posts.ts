@@ -1,8 +1,9 @@
+
 import { ObjectId } from "mongodb";
-import Database from "../db";
 import PageQuery from "../interfaces/PageQuery";
 import Post from "../models/Post";
 import PostLikes from "../models/PostLike";
+import Database from "./db";
 
 const client = Database.getInstance();
 const db = client.db('Fitness-Bytes-DB');
@@ -207,4 +208,4 @@ async function getPostLikesByUserId(userID: ObjectId) {
     return likesAggregate.length > 0? likesAggregate[0].likes: 0;
 }
 
-export {getLikedPosts, getMostLikedPosts, getNewestPosts, addPost, deletePost, editPost, isLiked, toggleLike, validateIsOwner, getPostCountByUserId, getPostLikesByUserId}
+export { addPost, deletePost, editPost, getLikedPosts, getMostLikedPosts, getNewestPosts, getPostCountByUserId, getPostLikesByUserId, isLiked, toggleLike, validateIsOwner };
