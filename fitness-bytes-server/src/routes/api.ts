@@ -20,10 +20,10 @@ routerAPI.use(jsonMiddleware<APIResponse>); // Ensures all route have json/appli
 routerAPI.post("/likePost", async (req, res) => {
 
     const body = req.body || {};
-    const userID = body.userID || "";
-    const postID = body.postID || "";
+    const userID: ObjectId = body.userID || "";
+    const postID: ObjectId = body.postID || "";
 
-    if (postID === "" || userID === "") {
+    if (!postID || !userID) {
 
         const payload: APIResponse = {
             message: "No postID or userID",
@@ -55,11 +55,11 @@ routerAPI.post("/likePost", async (req, res) => {
 routerAPI.post("/addPost", async (req, res) => {
 
     const body = req.body || {};
-    const userID = body.userID;
+    const userID: ObjectId = body.userID;
     const content = body.content || "";
     const username = body.username || "";
 
-    if (userID === "" || content === "" || username === "") {
+    if (!userID || content === "" || username === "") {
 
         const payload: APIResponse = {
             message: "No UserID or Content or Username",
