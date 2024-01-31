@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { toggleLike, addPost, deletePost, editPost, validateIsOwner, isLiked } from "../controllers/postsController";
 import { ObjectId } from "mongodb";
-import authMiddleware from "../middleware/authMiddleware";
+// import authMiddleware from "../middleware/authMiddleware";
 import jsonMiddleware from "../middleware/jsonMiddleware";
 import Post from "../models/Post";
 

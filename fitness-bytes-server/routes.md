@@ -3,7 +3,9 @@
 
 ***All API routes require application/json***
 
-## /likePost
+## api/likePost
+
+Method: **POST**
 
 Expects:
 
@@ -23,7 +25,9 @@ Effect:
 
     Toggles likes on a post
 
-# /addPost
+# api/addPost
+
+Method: **POST**
 
 Expects:
 
@@ -44,7 +48,9 @@ Effect:
 
     Adds a new post.
 
-# /deletePost
+# api/deletePost
+
+Method: **DELETE**
 
 Expects:
 
@@ -63,7 +69,9 @@ Effect:
 
     Deletes a post.
 
-# /editPost
+# api/editPost
+
+Method: **PATCH**
 
 Expects:
 
@@ -83,7 +91,9 @@ Effect:
 
     Edits the content of a post.
 
-# /postOwner
+# api/postOwner
+
+Method: **POST**
 
 Expects:
 
@@ -103,7 +113,9 @@ Effect:
 
     Verifies that a user is the owner of a post.
 
-# /isLiked
+# api/isLiked
+
+Method: **POST**
 
 Expects:
 
@@ -125,7 +137,9 @@ Effect:
 
 # User Routes
 
-# /addUser
+# user/signup
+
+Method: **POST**
 
 Expects:
 
@@ -147,7 +161,9 @@ Effect:
 
     Adds a new user with a hashed password.
 
-# /loginUser
+# user/login
+
+Method: **POST**
 
 Expects:
 
@@ -172,7 +188,9 @@ Effect:
 
 # Post Routes
 
-# /feed/:username
+# post/feed/:username
+
+Method: **GET**
 
 Expects:
 
@@ -198,7 +216,9 @@ Effect:
 
 Retrieves posts for a user's feed based on specified sorting criteria.
 
-# /accountPage/:username
+# post/accountPage/:username
+
+Method: **GET**
 
 Expects:
 
