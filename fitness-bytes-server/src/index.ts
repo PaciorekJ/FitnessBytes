@@ -27,7 +27,7 @@ const app: Express = express();
 app.use(express.json());
 app.use(cors());
 
-app.use(routerAPI);
+app.use('/api', routerAPI);
 
 app.get('/', (req: Request, res: Response) => {
     const payload: Payload = {
@@ -37,7 +37,7 @@ app.get('/', (req: Request, res: Response) => {
     res.json(payload);
 });
 
-app.post("/createAccount", async (req, res) => {
+app.post("/user/addUser", async (req, res) => {
     const body = req.body || {};  // Use an empty object as default
 
     const username: string = body.username || "";
@@ -93,7 +93,7 @@ app.post("/createAccount", async (req, res) => {
     }
 });
 
-app.post("/login", async (req: Request, res: Response) => {
+app.post("/user/loginUser", async (req: Request, res: Response) => {
     const body = req.body || {};
 
     const username = body.username || "";
