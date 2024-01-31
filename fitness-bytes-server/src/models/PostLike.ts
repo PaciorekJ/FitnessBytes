@@ -1,7 +1,8 @@
+import { ObjectId } from "mongodb";
 
 interface PostLikes {
-    postID: number,
-    userID: number,
+    postID: ObjectId,
+    userID: ObjectId,
 }
 
 export default PostLikes;

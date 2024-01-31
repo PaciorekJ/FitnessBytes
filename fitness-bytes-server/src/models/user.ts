@@ -1,6 +1,7 @@
+import { ObjectId } from "mongodb";
 
 interface User {
-    _id?: number;
+    _id?: ObjectId | undefined;
     username: string;
     password: string;
 }

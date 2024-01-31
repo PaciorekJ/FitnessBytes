@@ -1,8 +1,10 @@
 
-import { client, connectDB } from '../db';
+import Database from '../db';
 import User from '../models/user'
+import { objectIdToNumber } from '../lib/objectId';
+import { ObjectId } from 'mongodb';
 
-connectDB();
+const client = Database.getInstance();
 const db = client.db('Fitness-Bytes-DB');
 const usersCollection = db.collection<User>('users');
 
@@ -11,9 +13,9 @@ async function addUser(user: User){
     return (await usersCollection.insertOne(user)).acknowledged;
 }
 
-// return -1 if not valid
+// return undefined if not valid
 async function getUserIDFromUsername(username: string) {
-    return parseInt(((await usersCollection.findOne({username: username}))?._id || "-1").toString());
+    return (await usersCollection.findOne({username: username}))?._id;
 }
 
 // Get password from cell and return "" if not valid
