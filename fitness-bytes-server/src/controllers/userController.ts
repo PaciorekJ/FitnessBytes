@@ -1,8 +1,6 @@
 
 import Database from '../db';
 import User from '../models/user'
-import { objectIdToNumber } from '../lib/objectId';
-import { ObjectId } from 'mongodb';
 
 const client = Database.getInstance();
 const db = client.db('Fitness-Bytes-DB');

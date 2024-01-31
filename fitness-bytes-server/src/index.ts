@@ -183,7 +183,7 @@ app.get("/feed/:username", async (req: Request & {query: PageQuery}, res: Respon
             posts: posts || [],
             username: username || "",
             userID: userID,
-            pagenumber: parseInt(req.query.pageNumber || "-1")
+            pagenumber: parseInt(req.query.pageNumber || "0")
         }
 
         res.json(payload);
