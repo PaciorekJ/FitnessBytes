@@ -18,6 +18,7 @@ import { getLikedPosts, getMostLikedPosts, getNewestPosts, getPostCountByUserId,
 import PageQuery from './interfaces/PageQuery';
 import Payload from './interfaces/Payload';
 import authMiddleware from './middleware/authMiddleware';
+import routerAPI from './routes/api';
 
 const PORT = process.env.PORT || 3000;
 const SECREYKEY = process.env.SECRETKEY || "";
@@ -25,6 +26,8 @@ const SECREYKEY = process.env.SECRETKEY || "";
 const app: Express = express();
 app.use(express.json());
 app.use(cors());
+
+app.use(routerAPI);
 
 app.get('/', (req: Request, res: Response) => {
     const payload: Payload = {
