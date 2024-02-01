@@ -1,0 +1,11 @@
+body {
+	overflow: hidden;
+	background-color: var(--color-primary);
+	min-height: 100vh;
+}
+
+.stack {
+	display: flex;
+	flex-direction: column;
+	gap: 1.2rem;
+}
