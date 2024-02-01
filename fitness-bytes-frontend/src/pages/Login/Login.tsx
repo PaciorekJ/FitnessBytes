@@ -13,16 +13,13 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Logo from "../../components/Logo";
+import LoginData from "../../interfaces/LoginData";
+import LoginResponse from "../../interfaces/LoginResponse";
+import ClientService from "../../services/ClientService";
 import "./index.css";
-
-interface LoginData {
-	username: string;
-	password: string;
-}
 
 const Login = () => {
 	const [showPassword, setShowPassword] = useState(false);
@@ -34,15 +31,16 @@ const Login = () => {
 	} = useForm<LoginData>();
 
 	async function handleLogin(data: LoginData) {
-		const res = await axios.post(
-			"http://localhost:5301/user/login",
-			JSON.stringify(data),
-		);
-		console.log(res.data);
+		const client = new ClientService<LoginResponse>("user/login");
+
+		const { token } = await client.post(data);
+
+		localStorage.setItem("token", token);
 	}
 
 	return (
 		<Grid container>
+			<Typography>{localStorage.getItem("token")}</Typography>
 			<Stack
 				margin={"auto"}
 				gap={4}
