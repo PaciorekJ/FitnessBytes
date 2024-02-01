@@ -68,12 +68,14 @@ routerUser.post("/signup", async (req, res) => {
 
 routerUser.post("/login", async (req: Request, res: Response) => {
     const body = req.body || {};
-
+    
     const username = body.username || "";
     const password = body.password || "";
 
     if (!username || !password) {
         const payload: Payload = { message: "Error: Username or password not present" }
+
+        console.log(payload);
 
         return res.status(400).json(payload);
     }
