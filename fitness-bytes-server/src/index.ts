@@ -1,15 +1,14 @@
 
 import cors from 'cors';
 import dotenv from 'dotenv';
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 
 dotenv.config();
 
 import Payload from './interfaces/Payload';
-// import authMiddleware from './middleware/authMiddleware';
 import routerAPI from './routes/api';
-import routerUser from './routes/user';
 import routerPost from './routes/post';
+import routerUser from './routes/user';
 
 const PORT = process.env.PORT || 3000;
 
