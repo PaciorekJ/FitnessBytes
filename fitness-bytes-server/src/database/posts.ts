@@ -132,6 +132,7 @@ async function likePost(postID: ObjectId, UserID: ObjectId) {
 
 // *** Returns true if the unliking of the Post was performed successfully ***
 async function unlikePost(postID: ObjectId, UserID: ObjectId) {
+    
     const postLikes = await postLikesCollection.deleteOne({
         postID: postID,
         userID: UserID

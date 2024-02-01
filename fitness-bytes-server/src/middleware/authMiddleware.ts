@@ -1,12 +1,11 @@
-import dotenv from 'dotenv';
+
 import { Request, Response } from 'express';
 import jwt from 'jwt-simple';
 import Payload from "../interfaces/Payload";
 
-dotenv.config();
-const SECREYKEY = process.env.SECRETKEY || "";
-
 function authMiddleware(req: Request & {user?: string}, res: Response, next: any) {
+    const SECREYKEY = process.env.SECRETKEY || "";
+    
     const token = req.headers.authorization || (req.query.token as string);
 
     if (!token) {
@@ -17,15 +16,19 @@ function authMiddleware(req: Request & {user?: string}, res: Response, next: any
     }
 
     try {
-        const decoded = jwt.decode(token, SECREYKEY);
 
+        const decoded = jwt.decode(token, SECREYKEY);
         // Attach user information to the request object
+        
         req.user = decoded;
 
         next(); // Continue to the protected route
     } catch (error) {
+
+        console.error(error);
+
         const payload: Payload = {
-            message: "Unauthorized: Invalid token",
+            message: "Unauthorized: Invalid token"
         }
 
         return res.status(401).json(payload);
