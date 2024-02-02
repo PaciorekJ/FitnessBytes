@@ -8,7 +8,21 @@
 	--color-accent-warm-lighter: rgba(192, 185, 160, 1);
 }
 
-#root {
-	max-width: 100%;
+body {
+	width: 100vw;
+	min-height: 100vh;
+	margin: 0;
+	box-sizing: border-box;
 	color: var(--color-neutral);
+	padding: 0 2rem;
+}
+
+a {
+	color: var(--color-accent);
+}
+
+#root {
+	width: 100%;
+	height: 100%;
+	margin: 0;
 }

@@ -1,7 +1,7 @@
 
-interface LoginData {
+interface UserData {
 	username: string;
 	password: string;
 }
 
-export default LoginData;
+export default UserData;
