@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Account from "./pages/Account";
 import Feed from "./pages/Feed";
+import Welcome from "./pages/Welcome";
 
 const router = createBrowserRouter([
 	{
@@ -12,7 +13,7 @@ const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				element: <p>Home</p>,
+				element: <Welcome />,
 			},
 			{
 				path: "login",
