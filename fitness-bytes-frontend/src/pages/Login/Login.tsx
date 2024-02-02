@@ -20,9 +20,11 @@ import LoginData from "../../interfaces/LoginData";
 import LoginResponse from "../../interfaces/LoginResponse";
 import ClientService from "../../services/ClientService";
 import "./index.css";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
 	const [showPassword, setShowPassword] = useState(false);
+	const [failedLogin, setFailedLogin] = useState(false);
 
 	const {
 		register,
@@ -30,17 +32,35 @@ const Login = () => {
 		formState: { isDirty, errors, isValid },
 	} = useForm<LoginData>();
 
+	const navigator = useNavigate();
+
+	interface D {
+		response: {
+			status: number;
+		};
+	}
+
 	async function handleLogin(data: LoginData) {
 		const client = new ClientService<LoginResponse>("user/login");
 
-		const { token } = await client.post(data);
+		try {
+			const { token } = await client.post(data);
 
-		localStorage.setItem("token", token);
+			localStorage.setItem("token", token);
+
+			navigator("/feed/" + data.username);
+		} catch (e) {
+			if ((e as D).response.status === 401) {
+				setFailedLogin(true);
+				return;
+			}
+
+			console.error(e);
+		}
 	}
 
 	return (
 		<Grid container>
-			<Typography>{localStorage.getItem("token")}</Typography>
 			<Stack
 				margin={"auto"}
 				gap={4}
@@ -59,6 +79,9 @@ const Login = () => {
 				<form
 					className="stack"
 					onSubmit={handleSubmit((data) => handleLogin(data))}>
+					{failedLogin && (
+						<Alert severity="error">Invalid Username or Password</Alert>
+					)}
 					<FormControl>
 						<TextField
 							id="username"
@@ -67,9 +90,6 @@ const Login = () => {
 							label="Username"
 							{...register("username", { required: true, minLength: 10 })}
 						/>
-						{errors.username?.type && (
-							<Alert severity="error">{errors.username?.type as string}</Alert>
-						)}
 					</FormControl>
 					<FormControl>
 						<InputLabel htmlFor="password">Password</InputLabel>
@@ -90,9 +110,6 @@ const Login = () => {
 							}
 							label="Password"
 						/>
-						{errors.password?.type && (
-							<Alert severity="error">{errors.password?.type as string}</Alert>
-						)}
 					</FormControl>
 					<Stack>
 						<Button
@@ -103,7 +120,7 @@ const Login = () => {
 							type="submit">
 							Log in
 						</Button>
-						<Link href="/createAccount" variant="overline" underline="hover">
+						<Link href="/signup" variant="overline" underline="hover">
 							Don't have an account yet?
 						</Link>
 					</Stack>

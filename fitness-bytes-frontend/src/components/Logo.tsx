@@ -3,7 +3,7 @@ import { Box, Typography, useTheme } from "@mui/material";
 const Logo = () => {
 	const theme = useTheme();
 	return (
-		<Box textAlign={"center"}>
+		<Box maxWidth={"100vw"} textAlign={"center"}>
 			<Typography
 				variant="h2"
 				color={theme.palette.primary.main}
