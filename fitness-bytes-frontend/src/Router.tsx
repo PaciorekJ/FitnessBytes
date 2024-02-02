@@ -4,11 +4,12 @@ import Signup from "./pages/Signup";
 import Account from "./pages/Account";
 import Feed from "./pages/Feed";
 import Welcome from "./pages/Welcome";
+import Error from "./pages/Error";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
-		errorElement: <p>Oh no</p>,
+		errorElement: <Error />,
 		element: <Outlet />,
 		children: [
 			{

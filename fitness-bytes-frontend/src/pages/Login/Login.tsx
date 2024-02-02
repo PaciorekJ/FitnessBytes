@@ -1,46 +1,41 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
 	Alert,
 	Button,
 	FormControl,
 	Grid,
-	IconButton,
-	InputAdornment,
-	InputLabel,
 	Link,
-	OutlinedInput,
 	Stack,
 	TextField,
 	Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import Logo from "../../components/Logo";
-import LoginData from "../../interfaces/LoginData";
+import PasswordInput from "../../components/PasswordInput";
+import UserData from "../../interfaces/LoginData";
 import LoginResponse from "../../interfaces/LoginResponse";
 import ClientService from "../../services/ClientService";
 import "./index.css";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-	const [showPassword, setShowPassword] = useState(false);
 	const [failedLogin, setFailedLogin] = useState(false);
 
 	const {
 		register,
 		handleSubmit,
-		formState: { isDirty, errors, isValid },
-	} = useForm<LoginData>();
+		formState: { isDirty, isValid },
+	} = useForm<UserData>();
 
 	const navigator = useNavigate();
 
-	interface D {
-		response: {
-			status: number;
-		};
-	}
+	async function handleLogin(data: UserData) {
+		interface D {
+			response: {
+				status: number;
+			};
+		}
 
-	async function handleLogin(data: LoginData) {
 		const client = new ClientService<LoginResponse>("user/login");
 
 		try {
@@ -92,23 +87,9 @@ const Login = () => {
 						/>
 					</FormControl>
 					<FormControl>
-						<InputLabel htmlFor="password">Password</InputLabel>
-						<OutlinedInput
-							id="password"
-							fullWidth
-							{...register("password", { required: true, minLength: 10 })}
-							type={showPassword ? "text" : "password"}
-							endAdornment={
-								<InputAdornment position="end">
-									<IconButton
-										aria-label="toggle password visibility"
-										onClick={() => setShowPassword(!showPassword)}
-										edge="end">
-										{showPassword ? <VisibilityOff /> : <Visibility />}
-									</IconButton>
-								</InputAdornment>
-							}
-							label="Password"
+						<PasswordInput
+							register={register}
+							options={{ required: true, minLength: 10 }}
 						/>
 					</FormControl>
 					<Stack>
@@ -118,7 +99,7 @@ const Login = () => {
 							color="secondary"
 							size="large"
 							type="submit">
-							Log in
+							Log In
 						</Button>
 						<Link href="/signup" variant="overline" underline="hover">
 							Don't have an account yet?
