@@ -17,7 +17,7 @@ const Error = () => {
 	if (isRouteErrorResponse(error)) {
 		return (
 			<Stack paddingTop={4} maxWidth={"100%"} gap={4}>
-				<Logo />
+				<Logo center />
 				<Stack gap={4}>
 					<Typography textAlign={"center"} variant="h2">
 						{error.status}: {error.statusText}

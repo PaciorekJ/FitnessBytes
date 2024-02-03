@@ -2,7 +2,6 @@ import {
 	Alert,
 	Button,
 	FormControl,
-	Grid,
 	Link,
 	Stack,
 	TextField,
@@ -11,6 +10,7 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import ContainerWrapper from "../../components/ContainerWrapper";
 import Logo from "../../components/Logo";
 import PasswordInput from "../../components/PasswordInput";
 import UserData from "../../interfaces/LoginData";
@@ -55,59 +55,53 @@ const Login = () => {
 	}
 
 	return (
-		<Grid container>
-			<Stack
-				margin={"auto"}
-				gap={4}
-				minWidth={{ xs: "300px", sm: "500px", md: "800px" }}
-				paddingY={10}>
-				<Stack>
-					<Typography
-						marginBottom={0}
-						textAlign={"center"}
-						variant="h3"
-						gutterBottom>
-						Sign In to
-					</Typography>
-					<Logo />
-				</Stack>
-				<form
-					className="stack"
-					onSubmit={handleSubmit((data) => handleLogin(data))}>
-					{failedLogin && (
-						<Alert severity="error">Invalid Username or Password</Alert>
-					)}
-					<FormControl>
-						<TextField
-							id="username"
-							fullWidth
-							variant="outlined"
-							label="Username"
-							{...register("username", { required: true, minLength: 10 })}
-						/>
-					</FormControl>
-					<FormControl>
-						<PasswordInput
-							register={register}
-							options={{ required: true, minLength: 10 }}
-						/>
-					</FormControl>
-					<Stack>
-						<Button
-							disabled={!isValid || !isDirty}
-							variant="contained"
-							color="secondary"
-							size="large"
-							type="submit">
-							Log In
-						</Button>
-						<Link href="/signup" variant="overline" underline="hover">
-							Don't have an account yet?
-						</Link>
-					</Stack>
-				</form>
+		<ContainerWrapper>
+			<Stack>
+				<Typography
+					marginBottom={0}
+					textAlign={"center"}
+					variant="h3"
+					gutterBottom>
+					Welcome to
+				</Typography>
+				<Logo center />
 			</Stack>
-		</Grid>
+			<form
+				className="stack"
+				onSubmit={handleSubmit((data) => handleLogin(data))}>
+				{failedLogin && (
+					<Alert severity="error">Invalid Username or Password</Alert>
+				)}
+				<FormControl>
+					<TextField
+						id="username"
+						fullWidth
+						variant="outlined"
+						label="Username"
+						{...register("username", { required: true, minLength: 10 })}
+					/>
+				</FormControl>
+				<FormControl>
+					<PasswordInput
+						register={register}
+						options={{ required: true, minLength: 10 }}
+					/>
+				</FormControl>
+				<Stack>
+					<Button
+						disabled={!isValid || !isDirty}
+						variant="contained"
+						color="secondary"
+						size="large"
+						type="submit">
+						Log In
+					</Button>
+					<Link href="/signup" variant="overline" underline="hover">
+						Don't have an account yet?
+					</Link>
+				</Stack>
+			</form>
+		</ContainerWrapper>
 	);
 };
 
