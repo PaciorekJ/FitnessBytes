@@ -12,6 +12,7 @@ import Logo from "../../components/Logo";
 import PasswordInput from "../../components/PasswordInput";
 import UserData from "../../interfaces/LoginData";
 import "./index.css";
+import ContainerWrapper from "../../components/ContainerWrapper";
 
 function handleSignup(data: UserData) {
 	console.log(data);
@@ -25,7 +26,7 @@ const Signup = () => {
 	} = useForm<UserData>();
 
 	return (
-		<Stack>
+		<ContainerWrapper>
 			<Container>
 				<Logo />
 				<Typography fontSize={"1.5rem"} variant={"h2"}>
@@ -70,7 +71,7 @@ const Signup = () => {
 					</Stack>
 				</form>
 			</Container>
-		</Stack>
+		</ContainerWrapper>
 	);
 };
 
