@@ -2,20 +2,21 @@ import { Grid } from "@mui/material";
 import { ReactNode } from "react";
 
 interface Props {
+	
 	children: ReactNode[];
 }
 
-const ContainerWrapper = ({ children }: Props) => {
+const AuthenticationContainer = ({ children }: Props) => {
 	return (
 		<Grid
 			container
-			columns={{ xs: 1, lg: 2 }}
+			columns={{ xs: 1, xl: 2 }}
 			margin={"auto"}
 			gap={4}
 			paddingY={10}>
-			{children.map((c) => {
+			{children.map((c, i) => {
 				return (
-					<Grid item xs md>
+					<Grid key={i} item xs md>
 						{c}
 					</Grid>
 				);
@@ -24,4 +25,4 @@ const ContainerWrapper = ({ children }: Props) => {
 	);
 };
 
-export default ContainerWrapper;
+export default AuthenticationContainer;

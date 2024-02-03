@@ -4,8 +4,6 @@ body {
 	min-height: 100vh;
 }
 
-.stack {
-	display: flex;
-	flex-direction: column;
-	gap: 1.2rem;
+form {
+	max-width: 700px;
 }
