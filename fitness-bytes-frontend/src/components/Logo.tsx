@@ -7,7 +7,7 @@ interface Props {
 const Logo = ({ center = false }: Props) => {
 	const theme = useTheme();
 	return (
-		<Box maxWidth={"100vw"} textAlign={center ? "center" : "initial"}>
+		<Box textAlign={center ? "center" : "initial"}>
 			<Typography
 				variant="h2"
 				color={theme.palette.primary.main}
