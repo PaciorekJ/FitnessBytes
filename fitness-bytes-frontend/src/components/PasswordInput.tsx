@@ -1,17 +1,17 @@
-import { VisibilityOff, Visibility } from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
+	IconButton,
+	InputAdornment,
 	InputLabel,
 	OutlinedInput,
-	InputAdornment,
-	IconButton,
 } from "@mui/material";
 import { useState } from "react";
 import { RegisterOptions, UseFormRegister } from "react-hook-form";
-import UserData from "../interfaces/UserData";
+import { FormData } from "../services/ValidatorService";
 
 interface Props {
-	register: UseFormRegister<UserData>;
-	options?: RegisterOptions<UserData, "password"> | undefined;
+	register: UseFormRegister<FormData>;
+	options?: RegisterOptions<FormData, "password"> | undefined;
 }
 
 const PasswordInput = ({ register, options }: Props) => {
