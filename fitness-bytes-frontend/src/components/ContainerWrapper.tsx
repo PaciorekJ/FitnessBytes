@@ -1,4 +1,4 @@
-import { Grid, Stack } from "@mui/material";
+import { Grid } from "@mui/material";
 import { ReactNode } from "react";
 
 interface Props {
@@ -9,14 +9,13 @@ const ContainerWrapper = ({ children }: Props) => {
 	return (
 		<Grid
 			container
-			columns={4}
+			columns={{ xs: 1, lg: 2 }}
 			margin={"auto"}
 			gap={4}
-			minWidth={{ xs: "300px", sm: "500px", md: "800px" }}
 			paddingY={10}>
 			{children.map((c) => {
 				return (
-					<Grid item xs={4} md={2}>
+					<Grid item xs md>
 						{c}
 					</Grid>
 				);
