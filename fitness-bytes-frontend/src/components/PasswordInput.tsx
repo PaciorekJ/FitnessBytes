@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { RegisterOptions, UseFormRegister } from "react-hook-form";
-import UserData from "../interfaces/LoginData";
+import UserData from "../interfaces/UserData";
 
 interface Props {
 	register: UseFormRegister<UserData>;

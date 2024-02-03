@@ -10,10 +10,9 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import ContainerWrapper from "../../components/ContainerWrapper";
 import Logo from "../../components/Logo";
 import PasswordInput from "../../components/PasswordInput";
-import UserData from "../../interfaces/LoginData";
+import UserData from "../../interfaces/UserData";
 import LoginResponse from "../../interfaces/LoginResponse";
 import ClientService from "../../services/ClientService";
 import "./index.css";
@@ -55,7 +54,7 @@ const Login = () => {
 	}
 
 	return (
-		<ContainerWrapper>
+		<Stack gap={4} padding={10} alignItems={"center"}>
 			<Stack>
 				<Typography
 					marginBottom={0}
@@ -101,7 +100,7 @@ const Login = () => {
 					</Link>
 				</Stack>
 			</form>
-		</ContainerWrapper>
+		</Stack>
 	);
 };
 
