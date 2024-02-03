@@ -12,9 +12,9 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../components/Logo";
 import PasswordInput from "../../components/PasswordInput";
-import UserData from "../../interfaces/UserData";
 import LoginResponse from "../../interfaces/LoginResponse";
 import ClientService from "../../services/ClientService";
+import { FormData } from "../../services/ValidatorService";
 import "./index.css";
 
 const Login = () => {
@@ -24,11 +24,11 @@ const Login = () => {
 		register,
 		handleSubmit,
 		formState: { isDirty, isValid },
-	} = useForm<UserData>();
+	} = useForm<FormData>();
 
 	const navigator = useNavigate();
 
-	async function handleLogin(data: UserData) {
+	async function handleLogin(data: FormData) {
 		interface D {
 			response: {
 				status: number;
@@ -77,14 +77,11 @@ const Login = () => {
 						fullWidth
 						variant="outlined"
 						label="Username"
-						{...register("username", { required: true, minLength: 10 })}
+						{...register("username", { required: true })}
 					/>
 				</FormControl>
 				<FormControl>
-					<PasswordInput
-						register={register}
-						options={{ required: true, minLength: 10 }}
-					/>
+					<PasswordInput register={register} options={{ required: true }} />
 				</FormControl>
 				<Stack>
 					<Button
