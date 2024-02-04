@@ -6,7 +6,8 @@ import Payload from "../interfaces/Payload";
 function authMiddleware(req: Request & {user?: string}, res: Response, next: any) {
     const SECREYKEY = process.env.SECRETKEY || "";
     
-    const token = req.headers.authorization || (req.query.token as string);
+    // Extract token from cookies
+    const token = req.cookies.token;
 
     if (!token) {
         const payload: Payload = {

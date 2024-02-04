@@ -38,11 +38,12 @@ const Login = () => {
 		const client = new ClientService<LoginResponse>("user/login");
 
 		try {
-			const { token } = await client.post(data);
+			await client.post(data);
 
-			localStorage.setItem("token", token);
-
-			navigator("/feed/" + data.username);
+			// Check if cookie 'token' is set
+			if (document.cookie.includes("token")) {
+				navigator("/feed/" + data.username);
+			}
 		} catch (e) {
 			if ((e as D).response.status === 401) {
 				setFailedLogin(true);
