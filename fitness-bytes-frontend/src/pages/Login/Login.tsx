@@ -8,6 +8,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { useCookies } from "react-cookie";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../components/Logo";
@@ -19,6 +20,7 @@ import "./index.css";
 
 const Login = () => {
 	const [failedLogin, setFailedLogin] = useState(false);
+	const [cookies, setCookie] = useCookies(["token"]);
 
 	const {
 		register,
@@ -38,12 +40,13 @@ const Login = () => {
 		const client = new ClientService<LoginResponse>("user/login");
 
 		try {
-			await client.post(data);
+			const response = await client.post(data);
+			const { token } = response;
 
-			// Check if cookie 'token' is set
-			if (document.cookie.includes("token")) {
-				navigator("/feed/" + data.username);
-			}
+			// Store token in cookie upon successful login
+			setCookie("token", token, { path: "/" });
+
+			navigator("/login/" + data.username);
 		} catch (e) {
 			if ((e as D).response.status === 401) {
 				setFailedLogin(true);
