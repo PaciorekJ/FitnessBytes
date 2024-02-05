@@ -8,5 +8,8 @@
     "dev": "cd fitness-bytes-react/ && npm run dev"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "react-cookie": "^7.0.2"
+  }
 }
