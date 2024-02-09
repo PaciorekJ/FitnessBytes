@@ -37,6 +37,16 @@ const theme = createTheme({
 			secondary: colors.navyBlue,
 		},
 	},
+	components: {
+		MuiButton: {
+			styleOverrides: {
+				// Target the size "large"
+				sizeLarge: {
+					padding: "1em", // Increase padding
+				},
+			},
+		},
+	},
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
