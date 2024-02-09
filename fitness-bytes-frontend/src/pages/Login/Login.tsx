@@ -20,7 +20,7 @@ import "./index.css";
 
 const Login = () => {
 	const [failedLogin, setFailedLogin] = useState(false);
-	const [cookies, setCookie] = useCookies(["token"]);
+	const [, setCookie] = useCookies(["token"]);
 
 	const {
 		register,
