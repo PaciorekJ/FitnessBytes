@@ -4,7 +4,7 @@ interface Props {
 	center?: boolean;
 }
 
-const Logo = ({ center = false }: Props) => {
+const LogoName = ({ center = false }: Props) => {
 	const theme = useTheme();
 	return (
 		<Box textAlign={center ? "center" : "initial"}>
@@ -24,4 +24,4 @@ const Logo = ({ center = false }: Props) => {
 	);
 };
 
-export default Logo;
+export default LogoName;

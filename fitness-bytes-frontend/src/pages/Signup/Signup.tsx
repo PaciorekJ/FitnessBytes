@@ -3,14 +3,15 @@ import {
 	Stack,
 	Typography
 } from "@mui/material";
-import Logo from "../../components/Logo";
+import LogoIcon from "../../components/LogoIcon/LogoIcon";
+import LogoName from "../../components/LogoName";
 import SignupForm from "../../components/SignupForm";
 import "./index.css";
 
 const Signup = () => {
-
 	return (
 		<Grid container paddingX={{ xs: 0, xl: 10 }} minHeight={"100vh"}>
+			<LogoIcon centerScreen />
 			<Grid
 				minHeight={"min-content"}
 				container
@@ -20,7 +21,7 @@ const Signup = () => {
 				padding={10}>
 				<Grid item xs xl>
 					<Stack>
-						<Logo />
+						<LogoName />
 						<Typography fontSize={"1.5rem"} variant={"h2"}>
 							A social network for pump chasers, improvement seekers, and gym
 							lovers

@@ -1,5 +1,5 @@
 import { Stack, Typography, Button, Grid } from "@mui/material";
-import Logo from "../components/Logo";
+import LogoName from "../components/LogoName";
 
 const Welcome = () => {
 	return (
@@ -10,7 +10,7 @@ const Welcome = () => {
 			height={"100%"}
 			gap={2}>
 			<Stack gap={2} width={"75%"} maxWidth={"800px"} margin={"auto"}>
-				<Logo center />
+				<LogoName center />
 				<Typography textAlign={"center"} variant={"h3"} fontSize={24}>
 					A Community that's fit for you! Here to help bit by bit
 				</Typography>

@@ -9,7 +9,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { isRouteErrorResponse, useRouteError } from "react-router-dom";
-import Logo from "../components/Logo";
+import LogoName from "../components/LogoName";
 
 const Error = () => {
 	const error = useRouteError();
@@ -17,7 +17,7 @@ const Error = () => {
 	if (isRouteErrorResponse(error)) {
 		return (
 			<Stack paddingTop={4} maxWidth={"100%"} gap={4}>
-				<Logo center />
+				<LogoName center />
 				<Stack gap={4}>
 					<Typography textAlign={"center"} variant="h2">
 						{error.status}: {error.statusText}

@@ -1,0 +1,16 @@
+.icon {
+	width: 5em;
+	height: 5em;
+}
+
+.center {
+	align-self: center;
+}
+
+.centerScreen {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	padding: 1rem;
+	transform: translateX(-50%);
+}
