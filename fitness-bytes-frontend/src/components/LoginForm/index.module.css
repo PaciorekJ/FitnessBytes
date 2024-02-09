@@ -3,7 +3,3 @@
 	flex-direction: column;
 	gap: 1.2rem;
 }
-
-form {
-	min-width: 300px;
-}

@@ -10,9 +10,10 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { FormData, schema } from "../services/ValidatorService";
-import ClientService from "../services/ClientService";
-import PasswordInput from "./PasswordInput";
+import { FormData, schema } from "../../services/ValidatorService";
+import ClientService from "../../services/ClientService";
+import PasswordInput from "../PasswordInput";
+import styles from "./index.module.css";
 
 const SignupForm = () => {
 	const {
@@ -36,7 +37,7 @@ const SignupForm = () => {
 
 	return (
 		<form
-			className="stack"
+			className={styles.stack}
 			onSubmit={handleSubmit((data) => handleSignup(data))}>
 			<FormControl>
 				<TextField

@@ -1,22 +1,17 @@
-import { Outlet, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
+import GuestLayout from "./layouts/GuestLayout";
+import Account from "./pages/Account";
+import Error from "./pages/Error";
+import Feed from "./pages/Feed";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Account from "./pages/Account";
-import Feed from "./pages/Feed";
 import Welcome from "./pages/Welcome";
-import Error from "./pages/Error";
-import LogoIcon from "./components/LogoIcon";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
 		errorElement: <Error />,
-		element: (
-			<div>
-				<LogoIcon centerScreen />
-				<Outlet />
-			</div>
-		),
+		element: <GuestLayout/>,
 		children: [
 			{
 				index: true,

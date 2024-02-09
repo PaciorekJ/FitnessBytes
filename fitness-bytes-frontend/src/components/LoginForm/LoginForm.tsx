@@ -10,10 +10,11 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import PasswordInput from "./PasswordInput";
-import LoginResponse from "../interfaces/LoginResponse";
-import ClientService from "../services/ClientService";
-import { FormData } from "../services/ValidatorService";
+import LoginResponse from "../../interfaces/LoginResponse";
+import ClientService from "../../services/ClientService";
+import { FormData } from "../../services/ValidatorService";
+import PasswordInput from "../PasswordInput";
+import styles from "./index.module.css";
 
 const LoginForm = () => {
 	const [failedLogin, setFailedLogin] = useState(false);
@@ -56,7 +57,7 @@ const LoginForm = () => {
 
 	return (
 		<form
-			className="stack"
+			className={styles.stack}
 			onSubmit={handleSubmit((data) => handleLogin(data))}>
 			{failedLogin && (
 				<Alert severity="error">Invalid Username or Password</Alert>
@@ -75,7 +76,6 @@ const LoginForm = () => {
 			</FormControl>
 			<Stack>
 				<Button
-					disabled={!isValid || !isDirty}
 					variant="contained"
 					color="secondary"
 					size="large"
