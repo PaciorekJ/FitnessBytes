@@ -1,13 +1,9 @@
-import {
-	Stack,
-	Typography
-} from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import LoginForm from "../../components/LoginForm";
-import Logo from "../../components/Logo";
+import LogoName from "../../components/LogoName";
 import "./index.css";
 
 const Login = () => {
-
 	return (
 		<Stack gap={4} padding={10} alignItems={"center"}>
 			<Stack>
@@ -18,7 +14,7 @@ const Login = () => {
 					gutterBottom>
 					Welcome to
 				</Typography>
-				<Logo center />
+				<LogoName center />
 			</Stack>
 			<LoginForm />
 		</Stack>

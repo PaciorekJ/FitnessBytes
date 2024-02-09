@@ -5,12 +5,18 @@ import Account from "./pages/Account";
 import Feed from "./pages/Feed";
 import Welcome from "./pages/Welcome";
 import Error from "./pages/Error";
+import LogoIcon from "./components/LogoIcon";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
 		errorElement: <Error />,
-		element: <Outlet />,
+		element: (
+			<div>
+				<LogoIcon centerScreen />
+				<Outlet />
+			</div>
+		),
 		children: [
 			{
 				index: true,
