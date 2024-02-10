@@ -20,11 +20,7 @@ const LoginForm = () => {
 	const [failedLogin, setFailedLogin] = useState(false);
 	const [, setCookie] = useCookies(["token"]);
 
-	const {
-		register,
-		handleSubmit,
-		formState: { isDirty, isValid },
-	} = useForm<FormData>();
+	const { register, handleSubmit } = useForm<FormData>();
 
 	const navigator = useNavigate();
 
@@ -82,7 +78,11 @@ const LoginForm = () => {
 					type="submit">
 					Log In
 				</Button>
-				<Link href="/signup" variant="overline" underline="hover">
+				<Link
+					display="inline"
+					href="/signup"
+					variant="overline"
+					underline="hover">
 					Don't have an account yet?
 				</Link>
 			</Stack>
