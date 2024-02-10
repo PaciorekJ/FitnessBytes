@@ -3,7 +3,7 @@ import LogoName from "../components/LogoName";
 
 const Welcome = () => {
 	return (
-		<Stack gap={2} margin={"auto"}>
+		<Stack gap={2} margin={"auto"} padding={2}>
 			<LogoName center />
 			<Typography textAlign={"center"} variant={"h3"} fontSize={24}>
 				A Community that's fit for you! Here to help bit by bit
