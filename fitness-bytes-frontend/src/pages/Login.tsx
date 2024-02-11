@@ -14,7 +14,11 @@ const Login = () => {
 			padding={{ xs: 2, md: 10 }}>
 			<Grid item xs xl>
 				<LogoName />
-				<Typography variant={"h5"} marginBottom={2} component="h2">
+				<Typography
+					fontSize={{ xs: "1.2rem", sm: "2rem" }}
+					variant={"h5"}
+					marginBottom={2}
+					component="h2">
 					Go find the community that's fit for you. Development happens bit by
 					bit!
 				</Typography>

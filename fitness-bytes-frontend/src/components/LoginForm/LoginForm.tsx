@@ -40,7 +40,7 @@ const LoginForm = () => {
 			// Store token in cookie upon successful login
 			setCookie("token", token, { path: "/" });
 
-			navigator("/login/" + data.username);
+			navigator("/auth/feed/" + data.username);
 		} catch (e) {
 			if ((e as D).response.status === 401) {
 				setFailedLogin(true);
