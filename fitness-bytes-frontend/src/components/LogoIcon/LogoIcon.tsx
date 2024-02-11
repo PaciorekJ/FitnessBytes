@@ -1,24 +1,33 @@
 import styles from "./index.module.css";
 
+import logo from "../../assets/FitnessBytes-Square.webp";
+import Box from "@mui/material/Box";
+
 interface Props {
 	center?: boolean;
 	centerScreen?: boolean;
+	sizes?: string;
 }
 
-const LogoIcon = ({ center = false, centerScreen = false }: Props) => {
+const LogoIcon = ({
+	center = false,
+	centerScreen = false,
+	sizes = "5em",
+}: Props) => {
 	return (
 		<a href="/">
-			<img
+			<Box
+				component="img"
+				width={sizes}
+				height={sizes}
 				className={
 					styles.icon +
 					" " +
 					(center ? styles.center : "") +
 					" " +
-					(centerScreen ? styles.centerScreen : "") +
-					" " +
-					styles.xl
+					(centerScreen ? styles.centerScreen : "")
 				}
-				src="src\assets\FitnessBytes-Square.webp"
+				src={logo}
 				alt="Fitness Bytes Logo"
 			/>
 		</a>
