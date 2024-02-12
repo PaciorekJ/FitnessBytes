@@ -1,9 +1,17 @@
+* {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+	scroll-padding: 10vh; /* Refer to Nav height */
+}
+
 body {
-	width: 100vw;
+	max-width: 100vw;
 	min-height: 100vh;
 	margin: 0;
 	background-color: #f4fff0;
-	box-sizing: border-box;
 }
 
 #root {
