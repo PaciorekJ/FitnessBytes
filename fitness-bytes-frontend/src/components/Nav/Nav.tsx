@@ -1,20 +1,22 @@
 import { Logout, Settings } from "@mui/icons-material";
+import HistoryEduOutlinedIcon from "@mui/icons-material/HistoryEduOutlined";
 import HomeIcon from "@mui/icons-material/Home";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
+import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
+import Diversity3Icon from "@mui/icons-material/Diversity3";
 import {
 	Avatar,
 	Box,
 	Divider,
-	FormControl,
 	IconButton,
-	InputLabel,
 	ListItemIcon,
 	Menu,
 	MenuItem,
 	Paper,
-	Select,
-	SelectChangeEvent,
 	Stack,
 	Tooltip,
+	Badge,
 } from "@mui/material";
 import React, { useState } from "react";
 import LogoIcon from "../LogoIcon";
@@ -22,7 +24,6 @@ import styles from "./index.module.css";
 
 const Nav = () => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const [sort, setSort] = useState("Newest");
 	const open = Boolean(anchorEl);
 
 	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -33,37 +34,63 @@ const Nav = () => {
 		setAnchorEl(null);
 	};
 
-	const handleChange = (event: SelectChangeEvent) => {
-		setSort(event.target.value as string);
-		console.log(("Selected: " + event.target.value) as string);
-		handleClose();
-	};
-
 	return (
 		<Stack zIndex={"100"} height={"10vh"} position={"sticky"} top={0}>
-			<Paper>
+			<Paper square>
 				<Stack
 					flexDirection={"row"}
 					justifyContent={"space-between"}
-					alignItems={"center"}>
-					<LogoIcon sizes="3rem" />
+					alignItems={"center"}
+					paddingX={1}
+					paddingY={".2rem"}>
+					<LogoIcon sizes="2.5rem" />
 					<Box>
-						<a href="#top">
+						<Tooltip title="Compose">
 							<IconButton>
-								<HomeIcon color="primary"></HomeIcon>
-							</IconButton>
-						</a>
-						<Tooltip title="Account settings">
-							<IconButton
-								onClick={handleClick}
-								size="small"
-								sx={{ ml: 2 }}
-								aria-controls={open ? "account-menu" : undefined}
-								aria-haspopup="true"
-								aria-expanded={open ? "true" : undefined}>
-								<Avatar sx={{ width: 48, height: 48 }}></Avatar>
+								<HistoryEduOutlinedIcon color="primary" />
 							</IconButton>
 						</Tooltip>
+						<Tooltip title="Add a Friend">
+							<IconButton>
+								<PersonAddOutlinedIcon color="primary" />
+							</IconButton>
+						</Tooltip>
+						<Tooltip title="Notifications">
+							<IconButton>
+								<Badge badgeContent={10} variant="dot" color="secondary">
+									<NotificationsNoneIcon color="primary" />
+								</Badge>
+							</IconButton>
+						</Tooltip>
+						<Tooltip title="Messages">
+							<IconButton>
+								<Badge badgeContent={10} color="secondary">
+									<MailOutlinedIcon color="primary" />
+								</Badge>
+							</IconButton>
+						</Tooltip>
+						<Tooltip title="My Groups">
+							<IconButton>
+								<Diversity3Icon color="primary" />
+							</IconButton>
+						</Tooltip>
+						<Tooltip title="Home">
+							<IconButton href="#top">
+								<HomeIcon color="primary" />
+							</IconButton>
+						</Tooltip>
+						<IconButton
+							onClick={handleClick}
+							size="small"
+							aria-controls={open ? "account-menu" : undefined}
+							aria-haspopup="true"
+							aria-expanded={open ? "true" : undefined}>
+							<Avatar
+								sx={{
+									md: { width: "12px", height: "12px" },
+								}}
+							/>
+						</IconButton>
 						<Menu
 							anchorEl={anchorEl}
 							id="account-menu"
@@ -75,40 +102,21 @@ const Nav = () => {
 								vertical: "bottom",
 							}}
 							className={styles.menu}>
-							<MenuItem className={styles.menuItemSpace} onClick={handleClose}>
+							<MenuItem
+								href="/auth/account/Jason"
+								className={styles.menuItemSpace}
+								onClick={handleClose}>
 								<ListItemIcon>
 									<Avatar />
 								</ListItemIcon>
-								<p>My account</p>
-							</MenuItem>
-							<MenuItem className={styles.menuItemSpace} onClick={handleClose}>
-								<ListItemIcon>
-									<Avatar />
-								</ListItemIcon>
-								<p>My Feed</p>
-							</MenuItem>
-							<Divider />
-							<MenuItem>
-								<FormControl fullWidth>
-									<InputLabel id="demo-simple-select-label">Sort By</InputLabel>
-									<Select
-										labelId="demo-simple-select-label"
-										id="demo-simple-select"
-										value={sort}
-										label="Sort By"
-										onChange={handleChange}>
-										<MenuItem value={"newest"}>Newest</MenuItem>
-										<MenuItem value={"most-liked"}>Most Liked</MenuItem>
-										<MenuItem value={"liked"}>Liked</MenuItem>
-									</Select>
-								</FormControl>
+								Profile
 							</MenuItem>
 							<Divider />
 							<MenuItem onClick={handleClose}>
 								<ListItemIcon>
 									<Settings fontSize="small" />
 								</ListItemIcon>
-								Settings
+								Manage Account
 							</MenuItem>
 							<MenuItem onClick={handleClose}>
 								<ListItemIcon>

@@ -4,7 +4,7 @@ import Nav from "../components/Nav/Nav";
 const UserLayout = () => {
 	return (
 		<div>
-			<Nav />
+			<Nav  />
 			<Outlet />
 		</div>
 	);
