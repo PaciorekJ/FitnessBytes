@@ -7,30 +7,29 @@ interface Props {
 	center?: boolean;
 	centerScreen?: boolean;
 	sizes?: string;
+	href?: string;
 }
 
 const LogoIcon = ({
 	center = false,
 	centerScreen = false,
-	sizes = "5em",
+	sizes = "2em",
 }: Props) => {
 	return (
-		<a href="/">
-			<Box
-				component="img"
-				width={sizes}
-				height={sizes}
-				className={
-					styles.icon +
-					" " +
-					(center ? styles.center : "") +
-					" " +
-					(centerScreen ? styles.centerScreen : "")
-				}
-				src={logo}
-				alt="Fitness Bytes Logo"
-			/>
-		</a>
+		<Box
+			component="img"
+			width={sizes}
+			height={sizes}
+			className={
+				styles.icon +
+				" " +
+				(center ? styles.center : "") +
+				" " +
+				(centerScreen ? styles.centerScreen : "")
+			}
+			src={logo}
+			alt="Fitness Bytes Logo"
+		/>
 	);
 };
 
