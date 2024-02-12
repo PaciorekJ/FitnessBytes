@@ -18,10 +18,41 @@ const Feed = () => {
 			likes: 0,
 			timeCreated: d,
 		},
+		{
+			username: "Pauly D",
+			content: "Hello everyone, Today I went for a long run it was great",
+			likes: 0,
+			timeCreated: d,
+		},
+		{
+			username: "Pauly D",
+			content: "Hello everyone, Today I went for a long run it was great",
+			likes: 0,
+			timeCreated: d,
+		},
+		{
+			username: "Pauly D",
+			content: "Hello everyone, Today I went for a long run it was great",
+			likes: 0,
+			timeCreated: d,
+		},
+		{
+			username: "Pauly D",
+			content: "Hello everyone, Today I went for a long run it was great",
+			likes: 0,
+			timeCreated: d,
+		},
+		{
+			username: "Pauly D",
+			content: "Hello everyone, Today I went for a long run it was great",
+			likes: 0,
+			timeCreated: d,
+		},
 	];
 
 	return (
 		<Stack width={"100%"} alignItems={"center"}>
+			<div id="top"></div>
 			{posts.map((p) => (
 				<PostCard {...p} />
 			))}
