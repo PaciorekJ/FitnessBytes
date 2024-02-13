@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "cd fitness-bytes-server/ && npm start",
-    "dev": "cd fitness-bytes-react/ && npm run dev"
+    "dev": "cd fitness-bytes-frontend/ && npm run dev"
   },
   "author": "",
   "license": "ISC",
