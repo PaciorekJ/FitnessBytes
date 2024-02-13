@@ -64,9 +64,7 @@ const PostCard = ({ content, username, likes, timeCreated }: Post) => {
 								<ShareIcon />
 							</IconButton>
 						</Stack>
-						<IconButton aria-label="more option for this post">
-							<MoreOptions />
-						</IconButton>
+						<MoreOptions />
 					</Stack>
 				</CardActions>
 			</Paper>
