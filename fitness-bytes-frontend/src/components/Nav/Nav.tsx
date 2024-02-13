@@ -21,8 +21,11 @@ import {
 import React, { useState } from "react";
 import LogoIcon from "../LogoIcon";
 import styles from "./index.module.css";
+import { useParams } from "react-router-dom";
 
 const Nav = () => {
+	const { username } = useParams();
+
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 
@@ -75,7 +78,7 @@ const Nav = () => {
 							</IconButton>
 						</Tooltip>
 						<Tooltip title="Home">
-							<IconButton href="#top">
+							<IconButton href={`/auth/feed/${username}#top`}>
 								<HomeIcon color="primary" />
 							</IconButton>
 						</Tooltip>
@@ -103,7 +106,7 @@ const Nav = () => {
 							}}
 							className={styles.menu}>
 							<MenuItem
-								href="/auth/account/Jason"
+								href={`/auth/account/${username}#top`}
 								className={styles.menuItemSpace}
 								onClick={handleClose}>
 								<ListItemIcon>

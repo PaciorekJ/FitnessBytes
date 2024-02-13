@@ -2,14 +2,15 @@ import { useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ReportIcon from "@mui/icons-material/Report";
 import {
-    ListItemIcon,
-    ListItemText,
-    Menu,
-    MenuItem
+	IconButton,
+	ListItemIcon,
+	ListItemText,
+	Menu,
+	MenuItem,
 } from "@mui/material";
-import EllipsisIcon from "./EllipsisIcon";
 
 const MoreOptionsItems = [
 	{
@@ -42,11 +43,9 @@ const MoreOptions = () => {
 
 	return (
 		<>
-			<EllipsisIcon
-				aria-label="more option for this post"
-				onClick={handleMenuOpen}
-				color="#696969"
-			/>
+			<IconButton onClick={handleMenuOpen}>
+				<MoreHorizIcon aria-label="more option for this post" />
+			</IconButton>
 			<Menu
 				anchorEl={anchorEl}
 				open={Boolean(anchorEl)}
