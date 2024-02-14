@@ -13,12 +13,11 @@ import {
 } from "@mui/material";
 import Post from "../interfaces/Post";
 
-import ReplyIcon from "@mui/icons-material/Reply";
 import CommentIcon from "@mui/icons-material/Comment";
-import ShareIcon from "@mui/icons-material/Share";
+import ReplyIcon from "@mui/icons-material/Reply";
+
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
-import AddReactionIcon from "@mui/icons-material/AddReaction";
 
 const PostCard = ({ content, username, likes, timeCreated }: Post) => {
 	return (
@@ -51,17 +50,11 @@ const PostCard = ({ content, username, likes, timeCreated }: Post) => {
 						width="100%">
 						<Stack flexDirection={"row"}>
 							<LikeIcon likes={likes || 0} />
-							<IconButton aria-label="Add a reaction to this post">
-								<AddReactionIcon />
-							</IconButton>
 							<IconButton aria-label="Write a comment on this post">
 								<CommentIcon />
 							</IconButton>
 							<IconButton aria-label="write a reply to this post">
 								<ReplyIcon />
-							</IconButton>
-							<IconButton aria-label="share this post">
-								<ShareIcon />
 							</IconButton>
 						</Stack>
 						<MoreOptions />
