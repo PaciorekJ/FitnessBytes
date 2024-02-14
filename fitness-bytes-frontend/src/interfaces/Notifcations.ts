@@ -1,7 +1,11 @@
 
 // Base Notification interface with a type property
 interface Notification {
-    type: "Friend Request" | "Post Liked" | "Post Replied" | "Message Received" | "Group Activity";
+    type: "Friend Request" | 
+          "Post Liked" | 
+          "Post Replied" | 
+          "Message Received" | 
+          "Group Activity";
 }
 
 // Extending the Notification interface for a Friend Request Notification
