@@ -1,7 +1,6 @@
 import { Logout, Settings } from "@mui/icons-material";
 import HomeIcon from "@mui/icons-material/Home";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import {
@@ -22,6 +21,7 @@ import LogoIcon from "../LogoIcon";
 import styles from "./index.module.css";
 import { useParams } from "react-router-dom";
 import ComposePost from "../ComposePost";
+import AddFriend from "../AddFriend";
 
 const Nav = () => {
 	const { username } = useParams();
@@ -49,11 +49,7 @@ const Nav = () => {
 					<LogoIcon sizes="2.5rem" />
 					<Box>
 						<ComposePost />
-						<Tooltip title="Add a Friend">
-							<IconButton>
-								<PersonAddOutlinedIcon color="primary" />
-							</IconButton>
-						</Tooltip>
+						<AddFriend />
 						<Tooltip title="Notifications">
 							<IconButton>
 								<Badge badgeContent={10} variant="dot" color="secondary">

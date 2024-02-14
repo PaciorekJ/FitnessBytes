@@ -25,7 +25,7 @@ const MoreOptionsItems = [
 	},
 	{
 		component: <ShareIcon />,
-		text: "Share",				
+		text: "Share",
 	},
 	{
 		component: <ReportIcon />,
@@ -65,7 +65,7 @@ const MoreOptions = () => {
 					horizontal: "right",
 				}}>
 				{MoreOptionsItems.map(({ component, text }) => (
-					<MenuItem onClick={handleMenuClose}>
+					<MenuItem key={text} onClick={handleMenuClose}>
 						<ListItemIcon>{component}</ListItemIcon>
 						<ListItemText>{text}</ListItemText>
 					</MenuItem>

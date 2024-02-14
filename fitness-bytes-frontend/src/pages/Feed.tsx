@@ -7,8 +7,8 @@ const Feed = () => {
 	return (
 		<Stack width={"100%"} alignItems={"center"}>
 			<div id="top"></div>
-			{posts.map((p) => (
-				<PostCard {...p} />
+			{posts.map((p, i) => (
+				<PostCard key={p.id + i} {...p} />
 			))}
 		</Stack>
 	);
