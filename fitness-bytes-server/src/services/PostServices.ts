@@ -1,8 +1,7 @@
 
-import mongoose, { ObjectId, SchemaTypes } from 'mongoose';
-import PageQuery from "../interfaces/PageQuery";
-import { IPost, default as Post, default as PostModel } from '../models/Post';
-import { default as PostLike, default as PostLikeModel } from '../models/PostLike';
+import { ObjectId } from 'mongoose';
+import { IPost, default as PostModel } from '../models/Post';
+import { default as PostLikeModel } from '../models/PostLike';
 
 // *** Returns true if addition was successful ***
 async function addPost(newPost: Partial<IPost>): Promise<boolean> {

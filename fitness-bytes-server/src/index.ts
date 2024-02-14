@@ -10,13 +10,19 @@ import routerAPI from './routes/api';
 import routerPost from './routes/post';
 import routerUser from './routes/user';
 
+import db from './services/db';
+
 const PORT = process.env.PORT || 3000;
 
 const app: Express = express();
 
+db.connect();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(cors());
+
+
 
 app.use('/api', routerAPI);
 app.use('/user', routerUser);
