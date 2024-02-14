@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 class Database {
-    private uri: string = process.env.DB_URL!;
+    private static uri: string = process.env.DB_URL!;
 
-    async connect() {
+    static async connect() {
         try {
             await mongoose.connect(this.uri);
             console.log('Connected to MongoDB with Mongoose');
