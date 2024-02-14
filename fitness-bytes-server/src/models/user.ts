@@ -1,9 +1,17 @@
-import { ObjectId } from "mongodb";
 
-interface User {
-    _id?: ObjectId | undefined;
-    username: string;
-    password: string;
+import mongoose, { Schema, Document } from 'mongoose';
+
+interface IUser extends Document {
+  username: string;
+  password: string;
 }
 
-export default User;
+const UserSchema: Schema = new Schema({
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+});
+
+const UserModel = mongoose.model<IUser>('User', UserSchema);
+
+export type { IUser }
+export default UserModel;

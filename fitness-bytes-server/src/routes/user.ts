@@ -2,9 +2,9 @@
 import bcrypt from 'bcrypt';
 import { Request, Response, Router } from "express";
 import jwt from 'jwt-simple';
-import { addUser, getPasswordFromUsername, getUserIDFromUsername } from "../database/users";
 import Payload from "../interfaces/Payload";
-import User from "../models/user";
+import { IUser } from "../models/User";
+import { addUser, getPasswordFromUsername, getUserIDFromUsername } from "../services/UsersServices";
 
 const SECREYKEY = process.env.SECRETKEY || "";
 
@@ -47,7 +47,7 @@ routerUser.post("/signup", async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser: User = {
+        const newUser: Partial<IUser> = {
             username: username,
             password: hashedPassword,
         }
