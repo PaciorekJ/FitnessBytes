@@ -1,9 +1,9 @@
 
 import { Request, Response, Router } from "express";
-import { getLikedPosts, getMostLikedPosts, getNewestPosts, getPostCountByUserId, getPostLikesByUserId } from "../database/posts";
-import { getUserIDFromUsername } from "../database/users";
 import PageQuery from "../interfaces/PageQuery";
 import Payload from "../interfaces/Payload";
+import { getPostCountByUserId, getPostLikesByUserId } from "../services/LikeServices";
+import { getUserIDFromUsername } from "../services/UsersServices";
 
 const routerPost = Router();
 
@@ -19,19 +19,8 @@ routerPost.get("/feed/:username", async (req: Request & {query: PageQuery}, res:
 
             return res.status(400).json(payload);
         }
-
-        const sortBy = req.query.sortBy || 'newest';
         
         let posts;
-
-        // Get posts according to selectedSortBy
-        if (sortBy === "liked") {
-            posts = await getLikedPosts(userID, req.query);
-        } else if (sortBy === "most-liked") {
-            posts = await getMostLikedPosts(req.query);
-        } else if (sortBy === "newest"){
-            posts = await getNewestPosts(req.query);
-        }
 
         const payload: Payload = {
             message: "",
@@ -73,15 +62,6 @@ routerPost.get("/accountPage/:username", async (req: Request & {query: PageQuery
         const likeCount = await getPostLikesByUserId(userID);
 
         let posts;
-
-        // Get posts according to selectedSortBy
-        if (sortBy === "liked") {
-            posts = await getLikedPosts(userID, req.query, userID);
-        } else if (sortBy === "most-liked") {
-            posts = await getMostLikedPosts(req.query, userID);
-        } else if (sortBy === "newest"){
-            posts = await getNewestPosts(req.query, userID);
-        }
 
         const payload: Payload = {
             message: "",

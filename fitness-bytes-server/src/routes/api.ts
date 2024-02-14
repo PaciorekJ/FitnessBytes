@@ -1,11 +1,13 @@
 
 import { Router } from "express";
-import { ObjectId } from "mongodb";
-import { addPost, deletePost, editPost, isLiked, toggleLike, validateIsOwner } from "../database/posts";
-import authMiddleware from "../middleware/authMiddleware";
+import { ObjectId } from "mongoose";
+
 import ResponseResult from "../interfaces/ReponseResult";
+import authMiddleware from "../middleware/authMiddleware";
 import jsonMiddleware from "../middleware/jsonMiddleware";
-import Post from "../models/Post";
+import type { IPost } from "../models/Post";
+import { isLiked, toggleLike, validateIsOwner } from "../services/LikeServices";
+import { addPost, deletePost, editPost } from "../services/PostServices";
 
 const routerAPI = Router()
 
@@ -64,7 +66,7 @@ routerAPI.post("/addPost", authMiddleware, async (req, res) => {
 
     try {
 
-        const newPost: Post = {
+        const newPost: Partial<IPost> = {
             userId: userID,
             username: username,
             content: content,

@@ -1,9 +1,9 @@
-import { ObjectId } from 'mongodb';
-import Post from '../models/Post';
+import { ObjectId } from 'mongoose';
+import { IPost } from '../models/Post';
 
 interface Payload {
     message: string;
-    posts?: Post[],
+    posts?: IPost[],
     username?: string;
     userID?: ObjectId;
     pagenumber?: number;
