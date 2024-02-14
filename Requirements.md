@@ -7,15 +7,15 @@
 3. The user can post text.
     - Max length: 250 characters.
 
+## Reply to Post
+1. Long-term storage shall be updated to contain the reply, associating it with the original post.
+2. The owner of the original post should be notified.
+
 ## Like Post
 1. The post should be updated to reflect like or unlike status.
     - Liking a post is a toggle action.
 2. Long-term storage shall be updated to reflect the like or unlike status.
 3. The owner of the post should be notified upon the first like.
-
-## Reply to Post
-1. Long-term storage shall be updated to contain the reply, associating it with the original post.
-2. The owner of the original post should be notified.
 
 ## Delete Post
 1. The post should be immediately hidden from the UI before confirmation from the server.
