@@ -7,7 +7,7 @@ Collection Name: PostLikes
     PRIMARY KEY (PostID, UserID),
     FOREIGN KEY (PostID) REFERENCES Posts(PostID),
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
-
+    
 ## Keep track of Posts
 Collection Name: Posts
     PostID INT AUTO_INCREMENT PRIMARY KEY,
