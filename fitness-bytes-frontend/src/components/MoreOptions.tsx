@@ -4,6 +4,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ReportIcon from "@mui/icons-material/Report";
+import ShareIcon from "@mui/icons-material/Share";
+
 import {
 	IconButton,
 	ListItemIcon,
@@ -20,6 +22,10 @@ const MoreOptionsItems = [
 	{
 		component: <EditIcon />,
 		text: "Edit",
+	},
+	{
+		component: <ShareIcon />,
+		text: "Share",				
 	},
 	{
 		component: <ReportIcon />,

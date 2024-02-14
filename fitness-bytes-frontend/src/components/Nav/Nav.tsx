@@ -1,5 +1,4 @@
 import { Logout, Settings } from "@mui/icons-material";
-import HistoryEduOutlinedIcon from "@mui/icons-material/HistoryEduOutlined";
 import HomeIcon from "@mui/icons-material/Home";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
@@ -22,6 +21,7 @@ import React, { useState } from "react";
 import LogoIcon from "../LogoIcon";
 import styles from "./index.module.css";
 import { useParams } from "react-router-dom";
+import ComposePost from "../ComposePost";
 
 const Nav = () => {
 	const { username } = useParams();
@@ -48,11 +48,7 @@ const Nav = () => {
 					paddingY={".2rem"}>
 					<LogoIcon sizes="2.5rem" />
 					<Box>
-						<Tooltip title="Compose">
-							<IconButton>
-								<HistoryEduOutlinedIcon color="primary" />
-							</IconButton>
-						</Tooltip>
+						<ComposePost />
 						<Tooltip title="Add a Friend">
 							<IconButton>
 								<PersonAddOutlinedIcon color="primary" />
