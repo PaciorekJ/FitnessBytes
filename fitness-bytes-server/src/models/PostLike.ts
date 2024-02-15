@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface IPostLike extends Document {
-  postID: Schema.Types.ObjectId;
-  userID: Schema.Types.ObjectId;
+  postID: mongoose.ObjectId;
+  userID: mongoose.ObjectId;
 }
 
 const PostLikeSchema: Schema = new Schema({
