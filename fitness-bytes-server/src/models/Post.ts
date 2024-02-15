@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 interface IPost extends Document {
-  userId: Schema.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   username: string;
   content: string;
   likes?: number;
