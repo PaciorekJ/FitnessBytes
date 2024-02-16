@@ -1,10 +1,11 @@
 import { Logout, Settings } from "@mui/icons-material";
-import HomeIcon from "@mui/icons-material/Home";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
+import HomeIcon from "@mui/icons-material/Home";
+import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import {
 	Avatar,
+	Badge,
 	Box,
 	Divider,
 	IconButton,
@@ -14,21 +15,15 @@ import {
 	Paper,
 	Stack,
 	Tooltip,
-	Badge,
 } from "@mui/material";
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import AddFriend from "../AddFriend";
+import ComposePost from "../ComposePost";
 import LogoIcon from "../LogoIcon";
 import styles from "./index.module.css";
-import { useParams } from "react-router-dom";
-import ComposePost from "../ComposePost";
-import AddFriend from "../AddFriend";
-import Post from "../../interfaces/Post";
 
-interface Props {
-	addPost: (post: Post) => void;
-}
-
-const Nav = ({ addPost }: Props) => {
+const Nav = () => {
 	const { username } = useParams();
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -53,7 +48,7 @@ const Nav = ({ addPost }: Props) => {
 					paddingY={".2rem"}>
 					<LogoIcon sizes="2.5rem" />
 					<Box>
-						<ComposePost addPost={addPost} />
+						<ComposePost />
 						<AddFriend />
 						<Tooltip title="Notifications">
 							<IconButton>

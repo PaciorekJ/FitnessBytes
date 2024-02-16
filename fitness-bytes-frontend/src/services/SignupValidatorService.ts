@@ -6,11 +6,14 @@ const noSpacesRegex = /^\S*$/;
 const containsNumberRegex = /\d+/;
 const containsCapitalLetterRegex = /[A-Z]+/;
 
+const MIN_USERNAME_LENGTH = 10;
+const MIN_PASSWORD_LENGTH = 3;
+
 export const schema = z.object({
 	username: z
 		.string()
     .regex(noSpacesRegex, { message: "Username must not contain spaces" })
-		.min(3, { message: "Username must be at least 3 characters long." }),
+		.min(MIN_USERNAME_LENGTH, { message: `Username must be at least ${MIN_USERNAME_LENGTH}characters long.` }),
 
 	password: z
 		.string()
@@ -24,7 +27,7 @@ export const schema = z.object({
 		.regex(containsCapitalLetterRegex, {
 			message: "Password should contain at least 1 capital letter",
 		})
-		.min(10, { message: "Password must be at least 10 characters long." }),
+		.min(MIN_PASSWORD_LENGTH, { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.` }),
 });
 
 export type FormData = z.infer<typeof schema>;

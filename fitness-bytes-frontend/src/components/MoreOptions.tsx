@@ -18,22 +18,31 @@ const MoreOptionsItems = [
 	{
 		component: <DeleteIcon />,
 		text: "Delete",
+		requireOwnership: true,
 	},
 	{
 		component: <EditIcon />,
 		text: "Edit",
+		requireOwnership: true,
 	},
 	{
 		component: <ShareIcon />,
 		text: "Share",
+		requireOwnership: false,
 	},
 	{
 		component: <ReportIcon />,
 		text: "Report",
+		requireOwnership: false,
 	},
 ];
 
-const MoreOptions = () => {
+interface Props {
+	isOwner: boolean;
+}
+
+const MoreOptions = ({ isOwner }: Props) => {
+	console.log(isOwner);
 	// State to control the anchor element for the menu (null when closed)
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -64,12 +73,18 @@ const MoreOptions = () => {
 					vertical: "top",
 					horizontal: "right",
 				}}>
-				{MoreOptionsItems.map(({ component, text }) => (
-					<MenuItem key={text} onClick={handleMenuClose}>
-						<ListItemIcon>{component}</ListItemIcon>
-						<ListItemText>{text}</ListItemText>
-					</MenuItem>
-				))}
+				{MoreOptionsItems.map(({ component, text, requireOwnership }) => {
+					if ((requireOwnership && isOwner) || !requireOwnership) {
+						return (
+							<MenuItem key={text} onClick={handleMenuClose}>
+								<ListItemIcon>{component}</ListItemIcon>
+								<ListItemText>{text}</ListItemText>
+							</MenuItem>
+						);
+					}
+
+					return null;
+				})}
 			</Menu>
 		</>
 	);

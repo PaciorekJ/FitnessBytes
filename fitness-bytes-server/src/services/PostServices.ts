@@ -6,26 +6,33 @@ import { default as PostLikeModel } from '../models/PostLike';
 // *** Retrieves all posts ***
 async function findPosts() {
     try {
-        const result = await PostModel.find();
+        const result = await PostModel.find().sort({timeCreated: -1});
         return result;
     } catch (error) {
         throw error;
     }
 }
-// *** Retrieves all posts associated with the specified userId ***
-async function findUserPosts(userId: mongoose.Types.ObjectId) {
-    const result = await PostModel.find({userId: userId});
+
+// *** Retrieves all posts associated with the specified username ***
+async function findUserPosts(username: string) {
+    const result = await PostModel.find({username: username}).sort({timeCreated: -1});;
     return result;
 }
 
-// *** Returns true if addition was successful ***
-async function addPost(newPost: Partial<IPost>): Promise<boolean> {
+// *** Retrieves all post count associated with the specified username ***
+async function findUserPostCount(username: string): Promise<number> {
+    const result = await PostModel.find({username: username}).countDocuments();
+    return result;
+}
+
+// *** Returns the created post if addition was successful ***
+async function addPost(newPost: Partial<IPost>): Promise<IPost> {
     try {
-        await PostModel.create(newPost);
-        return true;
+        const post = await PostModel.create(newPost);
+        return post;
     } catch (error) {
         console.error("Error adding post:", error);
-        return false;
+        return {} as IPost;
     }
 }
 
@@ -42,5 +49,5 @@ async function deletePost(postID: mongoose.Types.ObjectId): Promise<boolean> {
     return result.deletedCount > 0;
 }
 
-export { addPost, deletePost, editPost, findUserPosts, findPosts};
+export { addPost, deletePost, editPost, findUserPosts, findPosts, findUserPostCount};
 

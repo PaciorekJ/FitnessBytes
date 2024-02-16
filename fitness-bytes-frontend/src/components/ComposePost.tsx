@@ -9,6 +9,7 @@ import {
 	Divider,
 	Paper,
 	TextField,
+	Typography,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
@@ -18,11 +19,15 @@ import Tooltip from "@mui/material/Tooltip";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import _ from "lodash";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FormData } from "../services/PostValidatorService";
-import ClientService from "../services/ClientService";
+import { useNavigate } from "react-router-dom";
 import Post from "../interfaces/Post";
+import ClientService from "../services/ClientService";
+import { FormData, MAX_CHAR, schema } from "../services/PostValidatorService";
 
 const style = {
 	position: "absolute",
@@ -37,23 +42,38 @@ const style = {
 	p: 4,
 };
 
-interface Props {
-	addPost: (post: Post) => void;
-}
+const ComposePost = () => {
+	const queryClient = useQueryClient();
+	const navigator = useNavigate();
 
-const ComposePost = ({ addPost }: Props) => {
 	const username = localStorage.getItem("username") || "";
+
+	const addPost = (newPost: Post) => {
+		navigator(`/auth/feed/${username}`);
+
+		queryClient.setQueryData(
+			["posts"],
+			(old: { result: Post[] } | undefined) => {
+				return { result: [newPost, ...(old?.result ?? [])] };
+			},
+		);
+	};
 
 	const [isOpen, setOpen] = useState(false);
 	const [error, setError] = useState("");
 
-	const { register, handleSubmit } = useForm<FormData>();
+	const {
+		register,
+		handleSubmit,
+		reset,
+		watch,
+		formState: { isValid, isDirty, errors },
+	} = useForm<FormData>({ resolver: zodResolver(schema), mode: "all" });
+
 	const openModal = () => setOpen(true);
 	const closeModal = () => setOpen(false);
 
-	const submitPost = (data: FormData) => {
-		console.log(data);
-
+	const submitPost = async (data: FormData) => {
 		const id = localStorage.getItem("_id") || "";
 		const username = localStorage.getItem("username") || "";
 
@@ -62,25 +82,33 @@ const ComposePost = ({ addPost }: Props) => {
 		try {
 			const client = new ClientService("/post");
 
-			addPost({
-				content: content,
-				_id: "",
-				username: "",
-			});
-
-			closeModal();
-
-			client.post({
+			const res = await client.post({
 				userId: id,
 				username: username,
 				content: content,
 			});
+
+			if (_.isEmpty(res.result)) {
+				setError("Your post can not be posted at this time!");
+				setTimeout(() => {
+					reset();
+					closeModal();
+				}, 1000);
+				return;
+			}
+
+			addPost(res.result as Post);
+
+			reset();
+			closeModal();
 
 			setError("");
 		} catch {
 			setError("Something went Wrong while submitting the Post");
 		}
 	};
+
+	const content = watch("content", "");
 
 	return (
 		<>
@@ -106,6 +134,9 @@ const ComposePost = ({ addPost }: Props) => {
 							<Divider />
 						</Box>
 						{error && <Alert color="error">{error}</Alert>}
+						{isDirty && errors.content && (
+							<Alert color="error">{errors.content.message}</Alert>
+						)}
 						<Box padding={2}>
 							<TextField
 								id="content"
@@ -117,6 +148,11 @@ const ComposePost = ({ addPost }: Props) => {
 								multiline
 							/>
 						</Box>
+						{isValid && (
+							<Typography>
+								{MAX_CHAR - content.length} characters left
+							</Typography>
+						)}
 						<Divider />
 						<CardActions>
 							<Stack
