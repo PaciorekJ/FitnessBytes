@@ -11,7 +11,7 @@ import mongoose from 'mongoose';
 import { IPost } from './models/Post';
 import routerUser from './routes/user';
 import { isLiked, toggleLike, validateIsOwner } from './services/LikeServices';
-import { addPost, deletePost, editPost, findPosts, findUserPosts } from './services/PostServices';
+import { addPost, deletePost, editPost, findPosts, findUserPostCount, findUserPosts } from './services/PostServices';
 import db from './services/db';
 
 const PORT = process.env.PORT || 3000;
@@ -26,29 +26,30 @@ app.use(cors());
 
 
 
-app.get('/user/posts', async (req: Request, res: Response) => {
+app.get('/posts/:username', async (req: Request, res: Response) => {
 
-    const id: string = req.body.userId
+    const username: string = req.params.username;
 
-    let userId: mongoose.Types.ObjectId;
-
-    try {
-        userId = new mongoose.Types.ObjectId(id);
-    }
-    catch (err) {
-        const response: ResponseResult = {
-            message: `${err}`,
-        }
-
-        return res.status(400).json(response);
-    }
-
-    const posts = await findUserPosts(userId);
+    const posts = await findUserPosts(username);
 
     const response: ResponseResult = {
         message: "",
         result: posts,
-    }
+    };
+
+    return res.status(200).json(response);
+})
+
+app.get('/posts/count/:username', async (req: Request, res: Response) => {
+
+    const username: string = req.params.username;
+
+    const count = await findUserPostCount(username);
+
+    const response: ResponseResult = {
+        message: "",
+        result: count,
+    };
 
     return res.status(200).json(response);
 })

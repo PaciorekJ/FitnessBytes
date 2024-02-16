@@ -1,17 +1,30 @@
 import {
 	Avatar,
-	Divider,
 	Box,
+	CircularProgress,
 	Container,
+	Divider,
 	Stack,
 	Typography,
 } from "@mui/material";
-import posts from "../Data/filler";
-import PostCard from "../components/PostCard";
 import { useParams } from "react-router-dom";
+import PostCard from "../components/PostCard";
+import usePosts from "../hooks/usePosts";
+import usePostCount from "../hooks/usePostCount";
 
-const Account = ({ postNumber = 1, likesNumber = 2 }) => {
+const Account = () => {
 	const { username } = useParams();
+
+	const { data: postData } = usePosts(username);
+
+	const posts = postData?.result || [];
+
+	const {
+		data: postCountData,
+		isLoading: postCountIsLoading,
+	} = usePostCount(username || "");
+
+	const postCount = postCountData?.result || -1;
 
 	return (
 		<Container maxWidth="sm">
@@ -37,18 +50,19 @@ const Account = ({ postNumber = 1, likesNumber = 2 }) => {
 				</Typography>
 				<Stack flexDirection={"row"} gap={2}>
 					<Stack flexDirection={"row"} gap={"5px"}>
-						<Typography fontWeight={"700"}>{postNumber}</Typography>
+						{postCountIsLoading ? (
+							<CircularProgress />
+						) : (
+							<Typography fontWeight={"700"}>{postCount}</Typography>
+						)}
 						<Typography>Posts</Typography>
 					</Stack>
-					<Stack flexDirection={"row"} gap={"5px"}>
-						<Typography fontWeight={"700"}>{likesNumber}</Typography>
-						<Typography>Likes</Typography>
-					</Stack>
+					<Stack flexDirection={"row"} gap={"5px"}></Stack>
 				</Stack>
 				<Divider orientation="horizontal" variant="fullWidth" />
 				<Stack>
-					{posts.map((p) => (
-						<PostCard {...p} />
+					{posts?.map((p) => (
+						<PostCard key={p._id} post={p} />
 					))}
 				</Stack>
 			</Box>

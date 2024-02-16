@@ -1,6 +1,6 @@
-import { Tooltip, IconButton, Modal, Box } from "@mui/material";
-import React, { useState } from "react";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
+import { Box, IconButton, Modal, Tooltip } from "@mui/material";
+import { useState } from "react";
 
 const style = {
 	position: "absolute",

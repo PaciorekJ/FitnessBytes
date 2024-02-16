@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import Post from "../interfaces/Post";
 
-import CommentIcon from "@mui/icons-material/Comment";
 import ReplyIcon from "@mui/icons-material/Reply";
 
 import LikeIcon from "./LikeIcon";
@@ -24,8 +23,9 @@ interface Props {
 }
 
 const PostCard = ({ post }: Props) => {
+	const userUsername = localStorage.getItem("username");
 
-	const {_id, content, username, likes, timeCreated} = post
+	const { _id, content, username, likes, timeCreated } = post;
 
 	const time = new Date(timeCreated || "").toString();
 
@@ -59,14 +59,11 @@ const PostCard = ({ post }: Props) => {
 						width="100%">
 						<Stack flexDirection={"row"}>
 							<LikeIcon postId={_id} likes={likes || 0} />
-							<IconButton aria-label="Write a comment on this post">
-								<CommentIcon />
-							</IconButton>
 							<IconButton aria-label="write a reply to this post">
 								<ReplyIcon />
 							</IconButton>
 						</Stack>
-						<MoreOptions />
+						<MoreOptions isOwner={username == userUsername} />
 					</Stack>
 				</CardActions>
 			</Paper>

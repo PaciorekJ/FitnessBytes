@@ -11,7 +11,7 @@ interface loginPayload {
 
 interface ResponseResult {
     message: string;
-    result?: boolean | loginPayload | userPayload | IPost[]; 
+    result?: boolean | loginPayload | userPayload | IPost[] | IPost | number; 
 }
 
 export default ResponseResult
