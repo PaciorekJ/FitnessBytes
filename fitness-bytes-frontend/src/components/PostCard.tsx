@@ -14,9 +14,15 @@ import {
 import Post from "../interfaces/Post";
 
 import ReplyIcon from "@mui/icons-material/Reply";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import ReportIcon from "@mui/icons-material/Report";
+import ShareIcon from "@mui/icons-material/Share";
 
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
+import { useQueryClient } from "@tanstack/react-query";
+import ClientService, { ResponseResult } from "../services/ClientService";
 
 interface Props {
 	post: Post;
@@ -25,9 +31,59 @@ interface Props {
 const PostCard = ({ post }: Props) => {
 	const userUsername = localStorage.getItem("username");
 
+	const queryClient = useQueryClient();
+
+	const handleDelete = async () => {
+		const client = new ClientService<boolean>(`/post/${post._id}`);
+
+		const { result } = await client.delete();
+
+		if (!result) {
+			console.log("Failed to delete");
+			return;
+		}
+
+		queryClient.setQueryData<ResponseResult<Post[]>>(["posts"], (oldData) => {
+			if (!oldData || !Array.isArray(oldData.result)) return oldData;
+
+			const updatedPosts = oldData.result.filter((c) => c._id !== post._id);
+
+			queryClient.invalidateQueries([`userPostCount-${post.username}`]);
+
+			return {
+				...oldData,
+				result: updatedPosts,
+			};
+		});
+	};
+
 	const { _id, content, username, likes, timeCreated } = post;
 
 	const time = new Date(timeCreated || "").toString();
+
+	const MoreOptionsMenuItems = [
+		{
+			component: <DeleteIcon />,
+			text: "Delete",
+			onClick: handleDelete,
+			requireOwnership: true,
+		},
+		{
+			component: <EditIcon />,
+			text: "Edit",
+			requireOwnership: true,
+		},
+		{
+			component: <ShareIcon />,
+			text: "Share",
+			requireOwnership: false,
+		},
+		{
+			component: <ReportIcon />,
+			text: "Report",
+			requireOwnership: false,
+		},
+	];
 
 	return (
 		<Box padding={1}>
@@ -63,7 +119,10 @@ const PostCard = ({ post }: Props) => {
 								<ReplyIcon />
 							</IconButton>
 						</Stack>
-						<MoreOptions isOwner={username == userUsername} />
+						<MoreOptions
+							isOwner={username === userUsername}
+							menuItems={MoreOptionsMenuItems}
+						/>
 					</Stack>
 				</CardActions>
 			</Paper>

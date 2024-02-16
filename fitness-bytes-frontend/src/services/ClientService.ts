@@ -7,7 +7,8 @@ const axiosInstance = axios.create({
     baseURL: "http://localhost:5301/",
 });
 
-interface ResponseResult<T> {
+export interface ResponseResult<T> {
+	result: any;
     message: string;
     result?: T; 
 }
