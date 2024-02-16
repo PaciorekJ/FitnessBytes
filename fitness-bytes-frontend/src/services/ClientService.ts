@@ -25,6 +25,11 @@ class ClientService<T> {
         .then((res) => res.data);
     }
 
+    delete = (config?: AxiosRequestConfig) =>{
+        return axiosInstance.delete<ResponseResult<T>>(this.endpoint, config)
+        .then((res) => res.data);
+    }
+
     post = (data: unknown, config?: AxiosRequestConfig) =>{
         return axiosInstance.post<ResponseResult<T>>(this.endpoint, data, config)
         .then((res) => res.data);

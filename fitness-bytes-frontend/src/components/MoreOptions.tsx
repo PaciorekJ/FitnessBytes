@@ -42,7 +42,6 @@ interface Props {
 }
 
 const MoreOptions = ({ isOwner }: Props) => {
-	console.log(isOwner);
 	// State to control the anchor element for the menu (null when closed)
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
