@@ -3,6 +3,15 @@ import mongoose from 'mongoose';
 import { IPost, default as PostModel } from '../models/Post';
 import { default as PostLikeModel } from '../models/PostLike';
 
+// *** Retrieves all posts ***
+async function findPosts() {
+    try {
+        const result = await PostModel.find();
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
 // *** Retrieves all posts associated with the specified userId ***
 async function findUserPosts(userId: mongoose.Types.ObjectId) {
     const result = await PostModel.find({userId: userId});
@@ -33,5 +42,5 @@ async function deletePost(postID: mongoose.Types.ObjectId): Promise<boolean> {
     return result.deletedCount > 0;
 }
 
-export { addPost, deletePost, editPost, findUserPosts };
+export { addPost, deletePost, editPost, findUserPosts, findPosts};
 

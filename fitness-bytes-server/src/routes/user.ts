@@ -2,11 +2,11 @@
 import bcrypt from 'bcrypt';
 import { Request, Response, Router } from "express";
 import jwt from 'jwt-simple';
-import Payload from "../interfaces/Payload";
+import ResponseResult from '../interfaces/ResponseResult';
 import { IUser } from "../models/User";
 import { addUser, getPasswordFromUsername, getUserIDFromUsername } from "../services/UsersServices";
 
-const SECREYKEY = process.env.SECRETKEY || "";
+const SECREYKEY = process.env.SECRETKEY!;
 
 const routerUser = Router();
 
@@ -17,19 +17,19 @@ routerUser.post("/signup", async (req, res) => {
     const password: string = body.password || "";
 
     if (!username || !password) {
-        const payload: Payload = {
+        const response: ResponseResult = {
             message: "Error: Username or password not present"
         }
 
-        return res.status(400).json(payload);
+        return res.status(400).json(response);
     }
 
     if (username.indexOf(' ') !== -1 || password.indexOf(' ') !== -1) {
-        const payload: Payload = {
+        const response: ResponseResult = {
             message: "Error: Username or password contains space"
         }
 
-        return res.status(400).json(payload);
+        return res.status(400).json(response);
     }
 
     try {
@@ -37,11 +37,11 @@ routerUser.post("/signup", async (req, res) => {
         const userId = await getUserIDFromUsername(username);
 
         if (userId) {
-            const payload: Payload = {
+            const response: ResponseResult = {
                 message: "Error: Username already exists"
             }
 
-            return res.status(409).json(payload);
+            return res.status(409).json(response);
         }
 
         // Hash the password
@@ -55,14 +55,17 @@ routerUser.post("/signup", async (req, res) => {
         // Add the user with the hashed password
         await addUser(newUser);
 
-        const payload: Payload = { message: "" } 
+        const response: ResponseResult = { message: "" } 
 
-        res.status(201).json(payload);
+        res.status(201).json(response);
     } catch (error) {
         console.error("Error while creating Account:", error);
         
-        const payload: Payload = { message: "Error: Internal Server Error" }
-        res.status(500).json(payload);
+        const response: ResponseResult = { 
+            message: "Error: Internal Server Error" 
+        }
+
+        res.status(500).json(response);
     }
 });
 
@@ -73,11 +76,11 @@ routerUser.post("/login", async (req: Request, res: Response) => {
     const password = body.password || "";
 
     if (!username || !password) {
-        const payload: Payload = { message: "Error: Username or password not present" }
+        const response: ResponseResult = { 
+            message: "Error: Username or password not present" 
+        }
 
-        console.log(payload);
-
-        return res.status(400).json(payload);
+        return res.status(400).json(response);
     }
 
     try {
@@ -85,12 +88,11 @@ routerUser.post("/login", async (req: Request, res: Response) => {
         const retrievedPassword = await getPasswordFromUsername(username);
     
         if (!retrievedPassword) {
-            const payload: Payload = {
-                message: "Error: Invalid username or password"
+            const response: ResponseResult = {
+                message: "Error: Invalid username or password",
             }
 
-            console.log("Invalid username or password");
-            return res.status(401).json(payload);
+            return res.status(401).json(response);
         }
 
         // Compare the entered password with the hashed password
@@ -101,27 +103,32 @@ routerUser.post("/login", async (req: Request, res: Response) => {
             const tokenPayload = { username: username };
             const token = jwt.encode(tokenPayload, SECREYKEY);
 
+            const id = await getUserIDFromUsername(username);
+
             // Send the token in the response
-            const payload: Payload = {
+            const response: ResponseResult = {
                 message: "",
-                token: token
+                result: {
+                    _id: id,
+                    token: token
+                }
             }
 
-            res.json(payload);
+            res.json(response);
 
         }
         else {
-            const payload: Payload = {
+            const response: ResponseResult = {
                 message: "Error: Passwords don't match",
             }
     
             // Passwords don't match
-            res.status(401).json(payload);
+            res.status(401).json(response);
         }
 
     } catch (error) {
 
-        const payload: Payload = {
+        const payload: ResponseResult = {
             message: "Internal Server Error",
         }
 

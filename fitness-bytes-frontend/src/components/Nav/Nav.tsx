@@ -22,8 +22,13 @@ import styles from "./index.module.css";
 import { useParams } from "react-router-dom";
 import ComposePost from "../ComposePost";
 import AddFriend from "../AddFriend";
+import Post from "../../interfaces/Post";
 
-const Nav = () => {
+interface Props {
+	addPost: (post: Post) => void;
+}
+
+const Nav = ({ addPost }: Props) => {
 	const { username } = useParams();
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -48,7 +53,7 @@ const Nav = () => {
 					paddingY={".2rem"}>
 					<LogoIcon sizes="2.5rem" />
 					<Box>
-						<ComposePost />
+						<ComposePost addPost={addPost} />
 						<AddFriend />
 						<Tooltip title="Notifications">
 							<IconButton>

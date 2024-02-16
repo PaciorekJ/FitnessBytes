@@ -1,19 +1,18 @@
 
 import cors from 'cors';
 import dotenv from 'dotenv';
-import express, { Express, Response, Request } from 'express';
+import express, { Express, Request, Response } from 'express';
 
 dotenv.config();
 
-import Payload from './interfaces/Payload';
+import ResponseResult from './interfaces/ResponseResult';
 
-import db from './services/db';
-import mongoose, { Schema, ObjectId } from 'mongoose';
-import ResponseResult from './interfaces/ReponseResult';
+import mongoose from 'mongoose';
 import { IPost } from './models/Post';
-import { toggleLike, validateIsOwner, isLiked } from './services/LikeServices';
-import { findUserPosts, addPost, deletePost, editPost } from './services/PostServices';
 import routerUser from './routes/user';
+import { isLiked, toggleLike, validateIsOwner } from './services/LikeServices';
+import { addPost, deletePost, editPost, findPosts, findUserPosts } from './services/PostServices';
+import db from './services/db';
 
 const PORT = process.env.PORT || 3000;
 
@@ -37,21 +36,33 @@ app.get('/user/posts', async (req: Request, res: Response) => {
         userId = new mongoose.Types.ObjectId(id);
     }
     catch (err) {
-        const payload: Payload = {
+        const response: ResponseResult = {
             message: `${err}`,
         }
 
-        return res.status(400).json(payload);
+        return res.status(400).json(response);
     }
 
     const posts = await findUserPosts(userId);
 
-    const payload: Payload = {
+    const response: ResponseResult = {
         message: "",
-        posts: posts,
+        result: posts,
     }
 
-    return res.status(200).json(payload);
+    return res.status(200).json(response);
+})
+
+app.get('/posts', async (req: Request, res: Response) => {
+
+    const posts = await findPosts();
+
+    const response: ResponseResult = {
+        message: "",
+        result: posts,
+    }
+
+    return res.status(200).json(response);
 })
 
 app.post("/post/like", async (req, res) => {
@@ -65,7 +76,7 @@ app.post("/post/like", async (req, res) => {
         postId = new mongoose.Types.ObjectId(body.postId);
     }
     catch (err) {
-        const payload: Payload = {
+        const payload: ResponseResult = {
             message: `${err}`,
         }
 
@@ -74,29 +85,29 @@ app.post("/post/like", async (req, res) => {
 
     if (!userId || !postId) {
 
-        const payload: ResponseResult = {
+        const response: ResponseResult = {
             message: "No postID or userID",
         }
 
-        return res.status(400).json(payload);
+        return res.status(400).json(response);
     }
 
     try {
 
-        const payload: ResponseResult = {
+        const response: ResponseResult = {
             message: "",
             result: await toggleLike(postId, userId)
         }
 
-        res.status(200).json(payload);
+        res.status(200).json(response);
     } catch (error) {
 
-        const payload: ResponseResult = {
+        const response: ResponseResult = {
             message: "Internal Server Error",
         }
 
         console.error("Error in /api/likePost:", error);
-        res.status(500).json(payload);
+        res.status(500).json(response);
     }
 });
 
@@ -104,28 +115,17 @@ app.post("/post/like", async (req, res) => {
 app.post("/post", async (req, res) => {
 
     const body = req.body || {};
-    let userId;
+    const userId = body.userId || "";
     const content = body.content || "";
     const username = body.username || "";
 
-    try {
-        userId = new mongoose.Types.ObjectId(body.userId);
-    }
-    catch (err) {
-        const payload: Payload = {
-            message: `${err}`,
-        }
-
-        return res.status(400).json(payload);
-    }
-
     if (!userId || content === "" || username === "") {
 
-        const payload: ResponseResult = {
+        const response: ResponseResult = {
             message: "No UserID or Content or Username",
         }
 
-        return res.status(400).json(payload);
+        return res.status(400).json(response);
     }
 
     try {
@@ -136,8 +136,13 @@ app.post("/post", async (req, res) => {
             content: content,
         }
 
-        const result = await addPost(newPost);
-        res.status(201).json(result);
+        const response: ResponseResult = {
+            message: "",
+            result: await addPost(newPost),
+        }
+
+        res.status(201).json(response);
+        
     } catch (error) {
 
         const payload: ResponseResult = {
@@ -159,7 +164,7 @@ app.delete("/post", async (req, res) => {
         postId = new mongoose.Types.ObjectId(body.postId)
     }
     catch (err) {
-        const payload: Payload = {
+        const payload: ResponseResult = {
             message: `${err}`,
         }
 
@@ -205,7 +210,7 @@ app.patch("/post", async (req, res) => {
         postId = new mongoose.Types.ObjectId(body.postId)
     }
     catch (err) {
-        const payload: Payload = {
+        const payload: ResponseResult = {
             message: `${err}`,
         }
 
@@ -252,7 +257,7 @@ app.post(`/user/post/owner`, async (req, res) => {
         postId = new mongoose.Types.ObjectId(body.postId);
     }
     catch (err) {
-        const payload: Payload = {
+        const payload: ResponseResult = {
             message: `${err}`,
         }
 
@@ -299,7 +304,7 @@ app.post('/user/post/liked', async (req, res) => {
         postId = new mongoose.Types.ObjectId(body.postId);
     }
     catch (err) {
-        const payload: Payload = {
+        const payload: ResponseResult = {
             message: `${err}`,
         }
 
@@ -338,7 +343,7 @@ app.post('/user/post/liked', async (req, res) => {
 app.use('/user', routerUser);
 
 app.use((req, res, next) => {
-    const payload: Payload = {
+    const payload: ResponseResult = {
         message: "ERROR: Resource could not be found",
     }
 

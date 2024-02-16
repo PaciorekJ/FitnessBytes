@@ -1,5 +1,5 @@
 
-import { ObjectId } from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import UserModel, { IUser } from '../models/User';
 
 // *** Return True if addition was successful, false otherwise ***
@@ -14,7 +14,7 @@ async function addUser(user: Partial<IUser>): Promise<boolean> {
 }
 
 // Return undefined if not valid
-async function getUserIDFromUsername(username: string): Promise<ObjectId | undefined> {
+async function getUserIDFromUsername(username: string): Promise<mongoose.Types.ObjectId | undefined> {
     const user = await UserModel.findOne({ username: username }).select('_id');
     return user?._id;
 }
