@@ -28,14 +28,17 @@ const LikeIcon = ({ likes, postId }: Props) => {
 	const userId = localStorage.getItem("_id") || "";
 
 	const handleToggleLike = async () => {
-		const client = new ClientService<{ userId: string; postId: string }>(
-			"/post/like",
-		);
+		const client = new ClientService<boolean>("/post/like");
 
 		const json = {
 			userId: userId,
 			postId: postId,
 		};
+		
+		console.log(`
+		userId: ${userId}
+		postId: ${postId}
+		`)
 
 		const { result } = await client.post(json);
 
