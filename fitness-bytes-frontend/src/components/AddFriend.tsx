@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 
 const style = {
-	position: "absolute" as "absolute",
+	position: "absolute",
 	top: "50%",
 	left: "50%",
 	transform: "translate(-50%, -50%)",
@@ -14,8 +14,6 @@ const style = {
 	boxShadow: 24,
 	p: 4,
 };
-
-
 
 const AddFriend = () => {
 	const [isOpen, setOpen] = useState(false);

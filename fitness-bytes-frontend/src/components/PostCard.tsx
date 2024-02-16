@@ -19,7 +19,16 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 
-const PostCard = ({ content, username, likes, timeCreated }: Post) => {
+interface Props {
+	post: Post;
+}
+
+const PostCard = ({ post }: Props) => {
+
+	const {_id, content, username, likes, timeCreated} = post
+
+	const time = new Date(timeCreated || "").toString();
+
 	return (
 		<Box padding={1}>
 			<Paper variant="outlined">
@@ -29,7 +38,7 @@ const PostCard = ({ content, username, likes, timeCreated }: Post) => {
 						avatar={
 							<Avatar aria-label="User Icon">{username.charAt(0)}</Avatar>
 						}
-						subheader={timeCreated?.toDateString() || ""}
+						subheader={time || ""}
 					/>
 				</Link>
 				<Box paddingX={2}>
@@ -49,7 +58,7 @@ const PostCard = ({ content, username, likes, timeCreated }: Post) => {
 						justifyContent="space-between"
 						width="100%">
 						<Stack flexDirection={"row"}>
-							<LikeIcon likes={likes || 0} />
+							<LikeIcon postId={_id} likes={likes || 0} />
 							<IconButton aria-label="Write a comment on this post">
 								<CommentIcon />
 							</IconButton>

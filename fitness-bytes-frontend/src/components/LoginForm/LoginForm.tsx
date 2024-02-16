@@ -10,11 +10,15 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import LoginResponse from "../../interfaces/LoginResponse";
 import ClientService from "../../services/ClientService";
-import { FormData } from "../../services/ValidatorService";
+import { FormData } from "../../services/SignupValidatorService";
 import PasswordInput from "../PasswordInput";
 import styles from "./index.module.css";
+
+interface LoginResponse {
+	token: string;
+	userId: string;
+}
 
 const LoginForm = () => {
 	const [failedLogin, setFailedLogin] = useState(false);
@@ -35,10 +39,13 @@ const LoginForm = () => {
 
 		try {
 			const response = await client.post(data);
-			const { token } = response;
+			const { userId, token } = response.result || ({} as LoginResponse);
 
 			// Store token in cookie upon successful login
 			setCookie("token", token, { path: "/" });
+
+			localStorage.setItem("_id", userId);
+			localStorage.setItem("username", data.username);
 
 			navigator("/auth/feed/" + data.username);
 		} catch (e) {

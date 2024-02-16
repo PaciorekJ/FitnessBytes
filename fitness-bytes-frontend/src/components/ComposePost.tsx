@@ -1,5 +1,6 @@
 import HistoryEduOutlinedIcon from "@mui/icons-material/HistoryEduOutlined";
 import {
+	Alert,
 	Avatar,
 	Box,
 	Button,
@@ -18,9 +19,13 @@ import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FormData } from "../services/PostValidatorService";
+import ClientService from "../services/ClientService";
+import Post from "../interfaces/Post";
 
 const style = {
-	position: "absolute" as "absolute",
+	position: "absolute",
 	top: "50%",
 	left: "50%",
 	transform: "translate(-50%, -50%)",
@@ -33,14 +38,49 @@ const style = {
 };
 
 interface Props {
-	username?: string;
+	addPost: (post: Post) => void;
 }
 
-const ComposePost = ({ username = "Your-Username" }: Props) => {
-	const [isOpen, setOpen] = useState(false);
+const ComposePost = ({ addPost }: Props) => {
+	const username = localStorage.getItem("username") || "";
 
+	const [isOpen, setOpen] = useState(false);
+	const [error, setError] = useState("");
+
+	const { register, handleSubmit } = useForm<FormData>();
 	const openModal = () => setOpen(true);
 	const closeModal = () => setOpen(false);
+
+	const submitPost = (data: FormData) => {
+		console.log(data);
+
+		const id = localStorage.getItem("_id") || "";
+		const username = localStorage.getItem("username") || "";
+
+		const { content } = data;
+
+		try {
+			const client = new ClientService("/post");
+
+			addPost({
+				content: content,
+				_id: "",
+				username: "",
+			});
+
+			closeModal();
+
+			client.post({
+				userId: id,
+				username: username,
+				content: content,
+			});
+
+			setError("");
+		} catch {
+			setError("Something went Wrong while submitting the Post");
+		}
+	};
 
 	return (
 		<>
@@ -55,44 +95,48 @@ const ComposePost = ({ username = "Your-Username" }: Props) => {
 				aria-labelledby="Modal For Posting"
 				aria-describedby="Modal that is used for posting on the platform">
 				<Paper sx={style} variant="outlined">
-					<CardHeader
-						title={username}
-						avatar={
-							<Avatar aria-label="User Icon">{username.charAt(0)}</Avatar>
-						}
-					/>
-					<Box paddingX={2}>
-						<Divider />
-					</Box>
-					<Box padding={2}>
-						<TextField
-							id="outlined-textarea"
-							autoFocus
-							fullWidth
-							rows={4}
-							placeholder="Share A Fitness Byte..."
-							multiline
+					<form onSubmit={handleSubmit((data) => submitPost(data))}>
+						<CardHeader
+							title={username}
+							avatar={
+								<Avatar aria-label="User Icon">{username.charAt(0)}</Avatar>
+							}
 						/>
-					</Box>
-					<Divider />
-					<CardActions>
-						<Stack
-							flexDirection={"row"}
-							justifyContent="space-between"
-							width="100%">
-							<Stack flexDirection={"row"}>
-								<IconButton>
-									<ImageOutlinedIcon />
-								</IconButton>
-								<IconButton>
-									<LinkOutlinedIcon />
-								</IconButton>
+						<Box paddingX={2}>
+							<Divider />
+						</Box>
+						{error && <Alert color="error">{error}</Alert>}
+						<Box padding={2}>
+							<TextField
+								id="content"
+								autoFocus
+								fullWidth
+								rows={4}
+								{...register("content", { required: true })}
+								placeholder="Share A Fitness Byte..."
+								multiline
+							/>
+						</Box>
+						<Divider />
+						<CardActions>
+							<Stack
+								flexDirection={"row"}
+								justifyContent="space-between"
+								width="100%">
+								<Stack flexDirection={"row"}>
+									<IconButton>
+										<ImageOutlinedIcon />
+									</IconButton>
+									<IconButton>
+										<LinkOutlinedIcon />
+									</IconButton>
+								</Stack>
+								<Button variant="contained" color="secondary" type="submit">
+									Post
+								</Button>
 							</Stack>
-							<Button variant="contained" color="secondary" type="submit">
-								Post
-							</Button>
-						</Stack>
-					</CardActions>
+						</CardActions>
+					</form>
 				</Paper>
 			</Modal>
 		</>

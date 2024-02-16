@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { RegisterOptions, UseFormRegister } from "react-hook-form";
-import { FormData } from "../services/ValidatorService";
+import { FormData } from "../services/SignupValidatorService";
 
 interface Props {
 	register: UseFormRegister<FormData>;

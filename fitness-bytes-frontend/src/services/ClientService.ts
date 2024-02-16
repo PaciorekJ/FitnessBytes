@@ -7,6 +7,11 @@ const axiosInstance = axios.create({
     baseURL: "http://localhost:5301/",
 });
 
+interface ResponseResult<T> {
+    message: string;
+    result?: T; 
+}
+
 class ClientService<T> {
 
     private endpoint = '';
@@ -16,12 +21,12 @@ class ClientService<T> {
     }
 
     get = (config?: AxiosRequestConfig) =>{
-        return axiosInstance.get<T>(this.endpoint, config)
+        return axiosInstance.get<ResponseResult<T>>(this.endpoint, config)
         .then((res) => res.data);
     }
 
     post = (data: unknown, config?: AxiosRequestConfig) =>{
-        return axiosInstance.post<T>(this.endpoint, data, config)
+        return axiosInstance.post<ResponseResult<T>>(this.endpoint, data, config)
         .then((res) => res.data);
     }
 }

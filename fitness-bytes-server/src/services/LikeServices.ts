@@ -4,17 +4,17 @@ import PostModel from '../models/Post';
 import PostLikeModel from '../models/PostLike';
 
 // Toggle the like status of a post for a given user
-async function toggleLike(postID: mongoose.Types.ObjectId, userID: mongoose.Types.ObjectId): Promise<number> {
+async function toggleLike(postID: mongoose.Types.ObjectId, userID: mongoose.Types.ObjectId): Promise<boolean> {
     const existingLike = await PostLikeModel.findOne({ postID, userID });
 
     if (!existingLike) {
         await PostLikeModel.create({ postID, userID });
         await PostModel.findByIdAndUpdate(postID, { $inc: { likes: 1 } });
-        return 1; // Indicates a like was added
+        return true; // Indicates a like was added
     } else {
         await PostLikeModel.deleteOne({ postID, userID });
         await PostModel.findByIdAndUpdate(postID, { $inc: { likes: -1 } });
-        return 0; // Indicates a like was removed
+        return false; // Indicates a like was removed
     }
 }
 
