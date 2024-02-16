@@ -155,14 +155,12 @@ app.post("/post", async (req, res) => {
     }
 });
 
-app.delete("/post", async (req, res) => {
-
-    const body = req.body || {};
+app.delete("/post/:postId", async (req, res) => {
     
     let postId;
 
     try {
-        postId = new mongoose.Types.ObjectId(body.postId)
+        postId = new mongoose.Types.ObjectId(req.params.postId)
     }
     catch (err) {
         const payload: ResponseResult = {

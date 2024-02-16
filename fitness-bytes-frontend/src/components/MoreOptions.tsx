@@ -1,10 +1,6 @@
 import { useState } from "react";
 
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import ReportIcon from "@mui/icons-material/Report";
-import ShareIcon from "@mui/icons-material/Share";
 
 import {
 	IconButton,
@@ -14,34 +10,18 @@ import {
 	MenuItem,
 } from "@mui/material";
 
-const MoreOptionsItems = [
-	{
-		component: <DeleteIcon />,
-		text: "Delete",
-		requireOwnership: true,
-	},
-	{
-		component: <EditIcon />,
-		text: "Edit",
-		requireOwnership: true,
-	},
-	{
-		component: <ShareIcon />,
-		text: "Share",
-		requireOwnership: false,
-	},
-	{
-		component: <ReportIcon />,
-		text: "Report",
-		requireOwnership: false,
-	},
-];
-
+interface MoreOptionsItemProps {
+	component: JSX.Element;
+	text: string;
+	requireOwnership: boolean;
+	onClick?: React.MouseEventHandler<HTMLLIElement>;
+}
 interface Props {
 	isOwner: boolean;
+	menuItems: MoreOptionsItemProps[];
 }
 
-const MoreOptions = ({ isOwner }: Props) => {
+const MoreOptions = ({ isOwner, menuItems }: Props) => {
 	// State to control the anchor element for the menu (null when closed)
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -72,18 +52,19 @@ const MoreOptions = ({ isOwner }: Props) => {
 					vertical: "top",
 					horizontal: "right",
 				}}>
-				{MoreOptionsItems.map(({ component, text, requireOwnership }) => {
-					if ((requireOwnership && isOwner) || !requireOwnership) {
-						return (
-							<MenuItem key={text} onClick={handleMenuClose}>
-								<ListItemIcon>{component}</ListItemIcon>
-								<ListItemText>{text}</ListItemText>
-							</MenuItem>
-						);
-					}
-
-					return null;
-				})}
+				{menuItems
+					.filter((item) => isOwner || !item.requireOwnership)
+					.map((item, i) => (
+						<MenuItem
+							key={i}
+							onClick={(e) => {
+								if (item.onClick) item.onClick(e);
+								handleMenuClose();
+							}}>
+							<ListItemIcon>{item.component}</ListItemIcon>
+							<ListItemText>{item.text}</ListItemText>
+						</MenuItem>
+					))}
 			</Menu>
 		</>
 	);

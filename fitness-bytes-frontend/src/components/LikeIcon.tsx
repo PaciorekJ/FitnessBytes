@@ -34,11 +34,6 @@ const LikeIcon = ({ likes, postId }: Props) => {
 			userId: userId,
 			postId: postId,
 		};
-		
-		console.log(`
-		userId: ${userId}
-		postId: ${postId}
-		`)
 
 		const { result } = await client.post(json);
 

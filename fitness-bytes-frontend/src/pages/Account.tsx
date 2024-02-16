@@ -19,12 +19,11 @@ const Account = () => {
 
 	const posts = postData?.result || [];
 
-	const {
-		data: postCountData,
-		isLoading: postCountIsLoading,
-	} = usePostCount(username || "");
+	const { data: postCountData, isLoading: postCountIsLoading } = usePostCount(
+		username || "",
+	);
 
-	const postCount = postCountData?.result || -1;
+	const postCount = postCountData?.result || 0;
 
 	return (
 		<Container maxWidth="sm">
