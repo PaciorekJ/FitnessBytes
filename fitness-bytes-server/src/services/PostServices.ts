@@ -26,6 +26,19 @@ async function findUserPostCount(username: string): Promise<number> {
 }
 
 // *** Returns the created post if addition was successful ***
+async function getPost(postId: mongoose.Types.ObjectId): Promise<IPost> {
+    try {
+        const post = await PostModel.findOne({_id: postId});
+        if (!post) throw new Error("No Post exists with the provided PostId");
+        
+        return post;
+    } catch (error) {
+        console.error("Error adding post:", error);
+        return {} as IPost;
+    }
+}
+
+// *** Returns the created post if addition was successful ***
 async function addPost(newPost: Partial<IPost>): Promise<IPost> {
     try {
         const post = await PostModel.create(newPost);
@@ -49,5 +62,5 @@ async function deletePost(postID: mongoose.Types.ObjectId): Promise<boolean> {
     return result.deletedCount > 0;
 }
 
-export { addPost, deletePost, editPost, findUserPosts, findPosts, findUserPostCount};
+export { addPost, getPost, deletePost, editPost, findUserPosts, findPosts, findUserPostCount};
 

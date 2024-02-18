@@ -8,7 +8,6 @@ const axiosInstance = axios.create({
 });
 
 export interface ResponseResult<T> {
-	result: any;
     message: string;
     result?: T; 
 }
