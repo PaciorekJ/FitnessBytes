@@ -23,6 +23,7 @@ import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 import { useQueryClient } from "@tanstack/react-query";
 import ClientService, { ResponseResult } from "../services/ClientService";
+import Report from "../interfaces/Report";
 
 interface Props {
 	post: Post;
@@ -48,13 +49,62 @@ const PostCard = ({ post }: Props) => {
 
 			const updatedPosts = oldData.result.filter((c) => c._id !== post._id);
 
-			queryClient.invalidateQueries([`userPostCount-${post.username}`]);
+			queryClient.invalidateQueries({
+				queryKey: [`userPostCount-${post.username}`],
+			});
 
 			return {
 				...oldData,
 				result: updatedPosts,
 			};
 		});
+	};
+
+	const handleReport = async () => {
+		const client = new ClientService("/report");
+
+		const userId = localStorage.getItem("_id");
+
+		if (!userId) {
+			console.error("UserID Invalid");
+			return;
+		}
+
+		const report: Report = {
+			ownerUsername: post.username,
+			postId: post._id,
+			userId: userId,
+		};
+
+		await client.post(report);
+	};
+
+	const handleShare = async () => {
+		const copyToClipboard = (text: string) => {
+			navigator.clipboard.writeText(text).then(
+				() => console.log("Content copied to clipboard"),
+				(err) => console.error("Could not copy text:", err),
+			);
+		};
+
+		if (!navigator.share) {
+			// Assuming `url` is what you want to copy and prompt the user to share
+			copyToClipboard(`http://localhost:5301/post/${post._id}`);
+			alert(
+				"URL copied to clipboard. Please paste it where you want to share it.",
+			);
+		} else {
+			try {
+				await navigator.share({
+					title: `Post by ${post.username}`, // Title of the thing you want to share.
+					text: post.content, // Text to accompany the thing you're sharing.
+					url: `http://localhost/post/${post._id}`, // URL or resource to share.
+				});
+				console.log("Content shared successfully");
+			} catch (error) {
+				console.error("Error sharing content:", error);
+			}
+		}
 	};
 
 	const { _id, content, username, likes, timeCreated } = post;
@@ -76,11 +126,13 @@ const PostCard = ({ post }: Props) => {
 		{
 			component: <ShareIcon />,
 			text: "Share",
+			onClick: handleShare,
 			requireOwnership: false,
 		},
 		{
 			component: <ReportIcon />,
 			text: "Report",
+			onClick: handleReport,
 			requireOwnership: false,
 		},
 	];

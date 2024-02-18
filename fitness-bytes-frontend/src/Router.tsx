@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import Welcome from "./pages/Welcome";
 import GuestLayout from "./layouts/GuestLayout";
 import UserLayout from "./layouts/UserLayout";
+import Post from "./pages/Post";
 
 const router = createBrowserRouter([
 	{
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
 						path: "feed/:username",
 						element: <Feed />,
 					},
+					{
+						path: "post/:postId",
+						element: <Post/>
+					}
 				],
 			},
 		],

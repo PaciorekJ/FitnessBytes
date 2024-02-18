@@ -7,12 +7,15 @@ dotenv.config();
 
 import ResponseResult from './interfaces/ResponseResult';
 
+
 import mongoose from 'mongoose';
 import { IPost } from './models/Post';
 import routerUser from './routes/user';
 import { isLiked, toggleLike, validateIsOwner } from './services/LikeServices';
-import { addPost, deletePost, editPost, findPosts, findUserPostCount, findUserPosts } from './services/PostServices';
+import { addPost, getPost, deletePost, editPost, findPosts, findUserPostCount, findUserPosts } from './services/PostServices';
 import db from './services/db';
+import report from './services/ReportServices';
+import { getUserIDFromUsername } from './services/UsersServices';
 
 const PORT = process.env.PORT || 3000;
 
@@ -25,6 +28,62 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors());
 
 
+app.post('/report', async (req: Request, res: Response) => {
+
+    const body = req.body || {};
+
+    const ownerUsername = body.ownerUsername;
+
+    let ownerId;
+    let userId;
+    let postId;
+    
+    try {
+        ownerId = await getUserIDFromUsername(ownerUsername)
+        userId = new mongoose.Types.ObjectId(body.userId);
+        postId = new mongoose.Types.ObjectId(body.postId);
+        if (!ownerId) throw new Error("Username was not valid");
+    }
+    catch (err) {
+        const payload: ResponseResult = {
+            message: `${err}`,
+        }
+
+        return res.status(400).json(payload);
+    }
+
+    if (!userId || !postId) {
+
+        const response: ResponseResult = {
+            message: "No postID or userID or postOwnerId",
+        }
+
+        return res.status(400).json(response);
+    }    
+
+    try {
+
+        const response: ResponseResult = {
+            message: "",
+            result: await report({
+                userId: userId,
+                ownerId: ownerId,
+                postId: postId
+            })
+        }
+
+        res.status(200).json(response);
+    } catch (error) {
+
+        const response: ResponseResult = {
+            message: "Internal Server Error",
+        }
+
+        console.error("Error in /report:", error);
+        res.status(500).json(response);
+    }
+
+})
 
 app.get('/posts/:username', async (req: Request, res: Response) => {
 
@@ -154,6 +213,50 @@ app.post("/post", async (req, res) => {
         res.status(500).json(payload);
     }
 });
+
+app.get("/post/:postId", async (req, res) => {
+    
+    let postId;
+
+    try {
+        postId = new mongoose.Types.ObjectId(req.params.postId)
+    }
+    catch (err) {
+        const payload: ResponseResult = {
+            message: `${err}`,
+        }
+
+        return res.status(400).json(payload);
+    }
+
+    if (!postId) {
+
+        const payload: ResponseResult = {
+            message: "No postID",
+        }
+
+        return res.status(400).json(payload);
+    }
+
+    try {
+
+        const payload: ResponseResult = {
+            message: "",
+            result: await getPost(postId),
+        }
+
+        res.status(200).json(payload);
+    } catch (error) {
+
+        const payload: ResponseResult = {
+            message: "Internal Server Error",
+        }
+
+        console.error("Error in get /post/:postId:", error);
+        res.status(500).json(payload);
+    }
+});
+
 
 app.delete("/post/:postId", async (req, res) => {
     
