@@ -77,6 +77,8 @@ const PostCard = ({ post }: Props) => {
 		};
 
 		await client.post(report);
+
+		alert(post.username + "'s post has been reported!");
 	};
 
 	const handleShare = async () => {
