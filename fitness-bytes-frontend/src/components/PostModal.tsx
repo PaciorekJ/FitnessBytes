@@ -1,4 +1,3 @@
-import HistoryEduOutlinedIcon from "@mui/icons-material/HistoryEduOutlined";
 import {
 	Alert,
 	Avatar,
@@ -9,25 +8,19 @@ import {
 	Divider,
 	Paper,
 	TextField,
-	TextFieldVariants,
 	Typography,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import Stack from "@mui/material/Stack";
-import Tooltip from "@mui/material/Tooltip";
 
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import _ from "lodash";
 import { SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import Post from "../interfaces/Post";
-import ClientService from "../services/ClientService";
 import { FormData, MAX_CHAR, schema } from "../services/PostValidatorService";
 
 const style = {
@@ -43,26 +36,25 @@ const style = {
 	p: 4,
 };
 
-interface CardProps {
-	username: string;
-	textValue: string;
-	buttonContent: string;
-}
-
 interface ModalProps {
+	onSubmit: (data: FormData) => void;
+	onClose?: () => void;
 	isOpen: boolean;
 	setOpen: (state: boolean) => void;
 	ariaLabelledby: string;
 	ariaDescribedby: string;
 }
 
-interface Props extends CardProps, ModalProps {
+interface Props extends ModalProps {
 	error: string;
-	onSubmit: (data: FormData) => void;
+	username: string;
+	textValue: string;
+	buttonContent: string;
 }
 
-const ArrangePostModal = ({
+const PostModal = ({
 	onSubmit,
+	onClose,
 	setOpen,
 	isOpen,
 	username,
@@ -82,7 +74,10 @@ const ArrangePostModal = ({
 
 	const [value, setValue] = useState(textValue);
 
-	const handleChange = (e) => {
+	const handleChange = (e: {
+		preventDefault: () => void;
+		target: { value: SetStateAction<string> };
+	}) => {
 		e.preventDefault();
 		setValue(e.target.value);
 	};
@@ -94,7 +89,10 @@ const ArrangePostModal = ({
 	return (
 		<Modal
 			open={isOpen}
-			onClose={closeModal}
+			onClose={() => {
+				closeModal();
+				if (onClose) onClose();
+			}}
 			aria-labelledby={ariaLabelledby}
 			aria-describedby={ariaDescribedby}>
 			<Paper sx={style} variant="outlined">
@@ -102,13 +100,26 @@ const ArrangePostModal = ({
 					onSubmit={handleSubmit((data) => {
 						onSubmit(data);
 						reset();
-					})}>
-					<CardHeader
-						title={username}
-						avatar={
-							<Avatar aria-label="User Icon">{username.charAt(0)}</Avatar>
-						}
-					/>
+					})}
+					onReset={() => {
+						if (onClose) onClose();
+						reset();
+						closeModal();
+					}}>
+					<Stack
+						flexDirection={"row"}
+						alignItems={"center"}
+						justifyContent={"space-between"}>
+						<CardHeader
+							title={username}
+							avatar={
+								<Avatar aria-label="User Icon">{username.charAt(0)}</Avatar>
+							}
+						/>
+						<IconButton type="reset">
+							<CloseIcon />
+						</IconButton>
+					</Stack>
 					<Box paddingX={2}>
 						<Divider />
 					</Box>
@@ -159,4 +170,4 @@ const ArrangePostModal = ({
 	);
 };
 
-export default ArrangePostModal;
+export default PostModal;

@@ -12,6 +12,7 @@ import {
 
 interface MoreOptionsItemProps {
 	component: JSX.Element;
+	modal?: JSX.Element;
 	text: string;
 	requireOwnership: boolean;
 	onClick?: React.MouseEventHandler<HTMLLIElement>;
@@ -59,10 +60,10 @@ const MoreOptions = ({ isOwner, menuItems }: Props) => {
 							key={i}
 							onClick={(e) => {
 								if (item.onClick) item.onClick(e);
-								handleMenuClose();
 							}}>
 							<ListItemIcon>{item.component}</ListItemIcon>
 							<ListItemText>{item.text}</ListItemText>
+							{item.modal ? item.modal : null}
 						</MenuItem>
 					))}
 			</Menu>

@@ -24,20 +24,27 @@ import MoreOptions from "./MoreOptions";
 import { useQueryClient } from "@tanstack/react-query";
 import ClientService, { ResponseResult } from "../services/ClientService";
 import Report from "../interfaces/Report";
-import ArrangePostModal from "./ArrangePostModal";
+import PostModal from "./PostModal";
 import { useState } from "react";
+import { Construction } from "@mui/icons-material";
 
 interface Props {
 	post: Post;
 }
 
-const PostCard = ({ post }: Props) => {
-	const userUsername = localStorage.getItem("username");
+const PostCard = ({
+	post: { _id, content, username: postUsername, likes, timeCreated },
+}: Props) => {
+	const userUsername = localStorage.getItem("username") || "Error";
 
 	const queryClient = useQueryClient();
+	const [isOpen, setOpen] = useState(false);
+	const [error, setError] = useState("");
+
+	const time = new Date(timeCreated || "").toString();
 
 	const handleDelete = async () => {
-		const client = new ClientService<boolean>(`/post/${post._id}`);
+		const client = new ClientService<boolean>(`/post/${_id}`);
 
 		const { result } = await client.delete();
 
@@ -49,10 +56,10 @@ const PostCard = ({ post }: Props) => {
 		queryClient.setQueryData<ResponseResult<Post[]>>(["posts"], (oldData) => {
 			if (!oldData || !Array.isArray(oldData.result)) return oldData;
 
-			const updatedPosts = oldData.result.filter((c) => c._id !== post._id);
+			const updatedPosts = oldData.result.filter((c) => c._id !== _id);
 
 			queryClient.invalidateQueries({
-				queryKey: [`userPostCount-${post.username}`],
+				queryKey: [`userPostCount-${postUsername}`],
 			});
 
 			return {
@@ -73,14 +80,19 @@ const PostCard = ({ post }: Props) => {
 		}
 
 		const report: Report = {
-			ownerUsername: post.username,
-			postId: post._id,
+			ownerUsername: postUsername,
+			postId: _id,
 			userId: userId,
 		};
 
-		await client.post(report);
+		try {
+			await client.post(report);
+		} catch {
+			alert("Something went wrong while trying to report " + postUsername);
+			return;
+		}
 
-		alert(post.username + "'s post has been reported!");
+		alert(postUsername + "'s post has been reported!");
 	};
 
 	const handleShare = async () => {
@@ -92,17 +104,16 @@ const PostCard = ({ post }: Props) => {
 		};
 
 		if (!navigator.share) {
-			// Assuming `url` is what you want to copy and prompt the user to share
-			copyToClipboard(`http://localhost:5301/post/${post._id}`);
+			copyToClipboard(`http://localhost:5301/post/${_id}`);
 			alert(
 				"URL copied to clipboard. Please paste it where you want to share it.",
 			);
 		} else {
 			try {
 				await navigator.share({
-					title: `Post by ${post.username}`, // Title of the thing you want to share.
-					text: post.content, // Text to accompany the thing you're sharing.
-					url: `http://localhost/post/${post._id}`, // URL or resource to share.
+					title: `Post by ${postUsername}`, // Title of the thing you want to share.
+					text: content, // Text to accompany the thing you're sharing.
+					url: `http://localhost/post/${_id}`, // URL or resource to share.
 				});
 				console.log("Content shared successfully");
 			} catch (error) {
@@ -111,16 +122,7 @@ const PostCard = ({ post }: Props) => {
 		}
 	};
 
-	const { _id, content, username, likes, timeCreated } = post;
-
-	const time = new Date(timeCreated || "").toString();
-
-	const [isOpen, setOpen] = useState(false);
-	const [error, setError] = useState("");
-
 	const submitPostUpdate = () => {
-		// setOpen(false);
-		console.log(isOpen);
 		setOpen(false);
 	};
 
@@ -132,21 +134,19 @@ const PostCard = ({ post }: Props) => {
 			requireOwnership: true,
 		},
 		{
-			component: (
-				<>
-					<EditIcon />
-					<ArrangePostModal
-						onSubmit={submitPostUpdate}
-						username={username}
-						isOpen={isOpen}
-						ariaDescribedby="Modal that is used for editing a post on the platform"
-						ariaLabelledby="Modal For editing a post"
-						buttonContent="Done"
-						setOpen={setOpen}
-						error={error}
-						textValue={post.content}
-					/>
-				</>
+			component: <EditIcon />,
+			modal: (
+				<PostModal
+					onSubmit={submitPostUpdate}
+					username={userUsername}
+					isOpen={isOpen}
+					ariaDescribedby="Modal that is used for editing a post on the platform"
+					ariaLabelledby="Modal For editing a post"
+					buttonContent="Done"
+					setOpen={setOpen}
+					error={error}
+					textValue={content}
+				/>
 			),
 			text: "Edit",
 			onClick: () => setOpen(true),
@@ -169,11 +169,11 @@ const PostCard = ({ post }: Props) => {
 	return (
 		<Box padding={1}>
 			<Paper variant="outlined">
-				<Link href={"/auth/account/" + username} underline="none">
+				<Link href={"/auth/account/" + postUsername} underline="none">
 					<CardHeader
-						title={username}
+						title={postUsername}
 						avatar={
-							<Avatar aria-label="User Icon">{username.charAt(0)}</Avatar>
+							<Avatar aria-label="User Icon">{postUsername.charAt(0)}</Avatar>
 						}
 						subheader={time || ""}
 					/>
@@ -201,7 +201,7 @@ const PostCard = ({ post }: Props) => {
 							</IconButton>
 						</Stack>
 						<MoreOptions
-							isOwner={username === userUsername}
+							isOwner={postUsername === userUsername}
 							menuItems={MoreOptionsMenuItems}
 						/>
 					</Stack>
