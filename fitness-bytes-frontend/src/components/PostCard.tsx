@@ -24,6 +24,8 @@ import MoreOptions from "./MoreOptions";
 import { useQueryClient } from "@tanstack/react-query";
 import ClientService, { ResponseResult } from "../services/ClientService";
 import Report from "../interfaces/Report";
+import ArrangePostModal from "./ArrangePostModal";
+import { useState } from "react";
 
 interface Props {
 	post: Post;
@@ -113,6 +115,15 @@ const PostCard = ({ post }: Props) => {
 
 	const time = new Date(timeCreated || "").toString();
 
+	const [isOpen, setOpen] = useState(false);
+	const [error, setError] = useState("");
+
+	const submitPostUpdate = () => {
+		// setOpen(false);
+		console.log(isOpen);
+		setOpen(false);
+	};
+
 	const MoreOptionsMenuItems = [
 		{
 			component: <DeleteIcon />,
@@ -121,8 +132,24 @@ const PostCard = ({ post }: Props) => {
 			requireOwnership: true,
 		},
 		{
-			component: <EditIcon />,
+			component: (
+				<>
+					<EditIcon />
+					<ArrangePostModal
+						onSubmit={submitPostUpdate}
+						username={username}
+						isOpen={isOpen}
+						ariaDescribedby="Modal that is used for editing a post on the platform"
+						ariaLabelledby="Modal For editing a post"
+						buttonContent="Done"
+						setOpen={setOpen}
+						error={error}
+						textValue={post.content}
+					/>
+				</>
+			),
 			text: "Edit",
+			onClick: () => setOpen(true),
 			requireOwnership: true,
 		},
 		{
