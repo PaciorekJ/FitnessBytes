@@ -28,7 +28,7 @@ import { useNavigate } from "react-router-dom";
 import Post from "../interfaces/Post";
 import ClientService from "../services/ClientService";
 import { FormData, MAX_CHAR, schema } from "../services/PostValidatorService";
-import ArrangePostModal from "./ArrangePostModal";
+import PostModal from "./PostModal";
 
 const ComposePost = () => {
 	const queryClient = useQueryClient();
@@ -92,7 +92,7 @@ const ComposePost = () => {
 					<HistoryEduOutlinedIcon color="primary" />
 				</IconButton>
 			</Tooltip>
-			<ArrangePostModal
+			<PostModal
 				onSubmit={submitPost}
 				username={username}
 				buttonContent="Post"
