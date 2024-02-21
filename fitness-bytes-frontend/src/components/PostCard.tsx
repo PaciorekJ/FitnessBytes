@@ -13,20 +13,19 @@ import {
 } from "@mui/material";
 import Post from "../interfaces/Post";
 
-import ReplyIcon from "@mui/icons-material/Reply";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import ReplyIcon from "@mui/icons-material/Reply";
 import ReportIcon from "@mui/icons-material/Report";
 import ShareIcon from "@mui/icons-material/Share";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import Report from "../interfaces/Report";
+import ClientService, { ResponseResult } from "../services/ClientService";
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
-import { useQueryClient } from "@tanstack/react-query";
-import ClientService, { ResponseResult } from "../services/ClientService";
-import Report from "../interfaces/Report";
 import PostModal from "./PostModal";
-import { useState } from "react";
-import { Construction } from "@mui/icons-material";
 
 interface Props {
 	post: Post;
@@ -122,7 +121,37 @@ const PostCard = ({
 		}
 	};
 
-	const submitPostUpdate = () => {
+	const submitPostUpdate = async (data: { content: string }) => {
+		const client = new ClientService("/post");
+
+		const payload = {
+			postId: _id,
+			content: data.content,
+		};
+
+		try {
+			await client.patch(payload);
+		} catch {
+			setError("Error: Failed to update post, please try again!");
+			return;
+		}
+
+		queryClient.setQueryData(
+			["posts"],
+			(old: { result: Post[] } | undefined) => {
+				const newPosts = old?.result.map((p) => {
+					if (p._id === _id) {
+						return {
+							...p,
+							content: data.content,
+						};
+					}
+					return p;
+				});
+				return { result: [...(newPosts ?? [])] };
+			},
+		);
+
 		setOpen(false);
 	};
 

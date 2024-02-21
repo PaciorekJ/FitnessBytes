@@ -34,6 +34,11 @@ class ClientService<T> {
         return axiosInstance.post<ResponseResult<T>>(this.endpoint, data, config)
         .then((res) => res.data);
     }
+
+    patch = (data: unknown, config?: AxiosRequestConfig) =>{
+        return axiosInstance.patch<ResponseResult<T>>(this.endpoint, data, config)
+        .then((res) => res.data);
+    }
 }
 
 export default ClientService;

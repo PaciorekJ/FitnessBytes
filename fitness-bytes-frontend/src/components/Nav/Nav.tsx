@@ -58,7 +58,7 @@ const Nav = () => {
 							</IconButton>
 						</Tooltip>
 						<Tooltip title="Messages">
-							<IconButton>
+							<IconButton href={`/auth/messages/${username}`}>
 								<Badge badgeContent={10} color="secondary">
 									<MailOutlinedIcon color="primary" />
 								</Badge>
