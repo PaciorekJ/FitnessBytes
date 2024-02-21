@@ -1,0 +1,14 @@
+.Message {
+	padding: 1rem 0;
+	width: 75%;
+    color: aliceblue;
+    padding: 1rem;
+}
+
+.Message-Right {
+	border-radius: 25px 25px 0 25px;
+}
+
+.Message-Left {
+    border-radius: 25px 25px 25px 0;
+}

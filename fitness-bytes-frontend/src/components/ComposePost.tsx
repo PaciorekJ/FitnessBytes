@@ -1,33 +1,15 @@
 import HistoryEduOutlinedIcon from "@mui/icons-material/HistoryEduOutlined";
-import {
-	Alert,
-	Avatar,
-	Box,
-	Button,
-	CardActions,
-	CardHeader,
-	Divider,
-	Paper,
-	TextField,
-	Typography,
-} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import Modal from "@mui/material/Modal";
-import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 
-import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
-import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import _ from "lodash";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Post from "../interfaces/Post";
 import ClientService from "../services/ClientService";
-import { FormData, MAX_CHAR, schema } from "../services/PostValidatorService";
+import { FormData } from "../services/PostValidatorService";
 import PostModal from "./PostModal";
 
 const ComposePost = () => {

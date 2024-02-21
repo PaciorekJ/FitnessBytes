@@ -8,6 +8,7 @@ import Welcome from "./pages/Welcome";
 import GuestLayout from "./layouts/GuestLayout";
 import UserLayout from "./layouts/UserLayout";
 import Post from "./pages/Post";
+import MessageBoard from "./pages/MessageBoard";
 
 const router = createBrowserRouter([
 	{
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
 					{
 						path: "post/:postId",
 						element: <Post/>
+					},
+					{
+						path: "messages/:username",
+						element: <MessageBoard/>
 					}
 				],
 			},
