@@ -1,7 +1,8 @@
 import styles from "./index.module.css";
 
-import logo from "../../assets/FitnessBytes-Square.webp";
+import logo from "./../../assets/Favi-FitnessBytes-v2-no-background.webp";
 import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material";
 
 interface Props {
 	center?: boolean;
@@ -15,6 +16,8 @@ const LogoIcon = ({
 	centerScreen = false,
 	sizes = "2em",
 }: Props) => {
+	const theme = useTheme();
+
 	return (
 		<Box
 			component="img"
@@ -27,6 +30,8 @@ const LogoIcon = ({
 				" " +
 				(centerScreen ? styles.centerScreen : "")
 			}
+			bgcolor={theme.palette.primary.contrastText}
+			borderRadius={"100%"}
 			src={logo}
 			alt="Fitness Bytes Logo"
 		/>

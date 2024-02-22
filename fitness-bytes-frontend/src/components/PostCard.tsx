@@ -9,7 +9,7 @@ import {
 	Link,
 	Paper,
 	Stack,
-	Typography,
+	Typography
 } from "@mui/material";
 import Post from "../interfaces/Post";
 
@@ -36,11 +36,10 @@ const PostCard = ({
 }: Props) => {
 	const userUsername = localStorage.getItem("username") || "Error";
 
+	const time = new Date(timeCreated || "").toString();
 	const queryClient = useQueryClient();
 	const [isOpen, setOpen] = useState(false);
 	const [error, setError] = useState("");
-
-	const time = new Date(timeCreated || "").toString();
 
 	const handleDelete = async () => {
 		const client = new ClientService<boolean>(`/post/${_id}`);
@@ -103,7 +102,7 @@ const PostCard = ({
 		};
 
 		if (!navigator.share) {
-			copyToClipboard(`http://localhost:5301/post/${_id}`);
+			copyToClipboard(`http://localhost:5301/auth/post/${_id}`);
 			alert(
 				"URL copied to clipboard. Please paste it where you want to share it.",
 			);
@@ -112,7 +111,7 @@ const PostCard = ({
 				await navigator.share({
 					title: `Post by ${postUsername}`, // Title of the thing you want to share.
 					text: content, // Text to accompany the thing you're sharing.
-					url: `http://localhost/post/${_id}`, // URL or resource to share.
+					url: `http://localhost:5301/auth/post/${_id}`, // URL or resource to share.
 				});
 				console.log("Content shared successfully");
 			} catch (error) {
@@ -200,6 +199,7 @@ const PostCard = ({
 			<Paper variant="outlined">
 				<Link href={"/auth/account/" + postUsername} underline="none">
 					<CardHeader
+						titleTypographyProps={{ fontSize: "1.2rem" }}
 						title={postUsername}
 						avatar={
 							<Avatar aria-label="User Icon">{postUsername.charAt(0)}</Avatar>

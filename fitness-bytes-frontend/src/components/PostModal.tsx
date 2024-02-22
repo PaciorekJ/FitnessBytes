@@ -14,9 +14,9 @@ import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import Stack from "@mui/material/Stack";
 
+import CloseIcon from "@mui/icons-material/Close";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
-import CloseIcon from "@mui/icons-material/Close";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SetStateAction, useState } from "react";
@@ -131,6 +131,7 @@ const PostModal = ({
 						<TextField
 							id="content"
 							autoFocus
+							sx={{ border: "1px solid" }}
 							fullWidth
 							rows={4}
 							{...register("content", {

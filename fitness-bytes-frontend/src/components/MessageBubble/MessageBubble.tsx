@@ -1,7 +1,6 @@
-import React, { ReactNode } from "react";
+import { Box, useTheme } from "@mui/material";
+import { ReactNode } from "react";
 import styles from "./index.module.css";
-import { Box, Typography } from "@mui/material";
-import { useTheme } from "@emotion/react";
 
 interface Props {
 	isCurrentUsers: boolean;
@@ -17,12 +16,13 @@ const MessageBubble = ({ isCurrentUsers, children }: Props) => {
 					? theme.palette.secondary.light
 					: theme.palette.primary.main
 			}
+			color={theme.palette.primary.contrastText}
 			className={
 				styles.Message +
 				" " +
 				(isCurrentUsers ? styles["Message-Right"] : styles["Message-Left"])
 			}>
-			<Typography variant={"body1"}>{children}</Typography>
+			{children}
 		</Box>
 	);
 };
