@@ -1,8 +1,8 @@
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { CircularProgress, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import ClientService from "../services/ClientService";
 import useIsLiked from "../hooks/useIsLiked";
+import ClientService from "../services/ClientService";
 
 interface Props {
 	likes: number;
@@ -44,8 +44,14 @@ const LikeIcon = ({ likes, postId }: Props) => {
 
 	return (
 		<IconButton onClick={handleToggleLike} aria-label="like this post">
-			<FavoriteIcon color={isLiked ? "error" : "inherit"} />
-			<Typography variant="body2">{likeCount}</Typography>
+			<FavoriteIcon
+				sx={{
+					color: isLiked ? "error.main" : "inherit",
+				}}
+			/>
+			<Typography paddingLeft={1} color={"text.secondary"} variant="body2">
+				{likeCount}
+			</Typography>
 		</IconButton>
 	);
 };

@@ -1,37 +1,19 @@
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import DeleteIcon from "@mui/icons-material/Delete";
-import RecentActorsIcon from "@mui/icons-material/RecentActors";
-import {
-	Avatar,
-	Box,
-	Button,
-	Divider,
-	Drawer,
-	Grid,
-	IconButton,
-	List,
-	ListItem,
-	ListItemButton,
-	ListItemIcon,
-	ListItemText,
-	Stack,
-	Typography,
-	useTheme,
-} from "@mui/material";
-import React, { useState } from "react";
-import Conversation from "../components/Conversation";
-import Messenger from "../components/Messenger";
-
-export interface IMessage {
-	username: string;
-	content: string;
-	timeCreated?: Date;
-}
-
-export interface User {
-	username: string;
-	messages?: IMessage[];
-}
+import { Avatar, Grid, useTheme } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import Typography from "@mui/material/Typography";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import * as React from "react";
+import { useState } from "react";
+import { User } from "../pages/MessageBoard";
+import Conversation from "./Conversation";
+import Messenger from "./Messenger";
 
 const conversations: User[] = [
 	{
@@ -101,9 +83,9 @@ const conversations: User[] = [
 	},
 ];
 
-const MessageBoard = () => {
+export default function Test() {
 	const [conversation, setConversation] = useState("");
-	const [open, setOpen] = useState(true);
+	const [open, setOpen] = useState(false);
 	const theme = useTheme();
 
 	const toggleDrawer = () => setOpen(!open);
@@ -113,17 +95,8 @@ const MessageBoard = () => {
 			sx={{ width: 250 }}
 			role="presentation"
 			onClick={toggleDrawer}
-			onKeyDown={toggleDrawer}
-			justifyItems={"center"}>
+			onKeyDown={toggleDrawer}>
 			<List>
-				<Button
-					variant="contained"
-					color={"secondary"}
-					startIcon={<AddCircleIcon />}
-					size="large"
-					sx={{ ml: 2.5, my: 1 }}>
-					New Conversation
-				</Button>
 				{conversations.map((c, i) => (
 					<React.Fragment key={"Contact__" + c.username + "-" + i}>
 						<Box
@@ -131,13 +104,7 @@ const MessageBoard = () => {
 								c.username === conversation ? theme.palette.primary.light : ""
 							}
 							color={c.username === conversation ? "white" : ""}>
-							<ListItem
-								disablePadding
-								secondaryAction={
-									<IconButton edge="end" aria-label="delete">
-										<DeleteIcon />
-									</IconButton>
-								}>
+							<ListItem disablePadding>
 								<ListItemButton onClick={() => setConversation(c.username)}>
 									<ListItemIcon>
 										<Avatar aria-label="User Icon">
@@ -157,33 +124,27 @@ const MessageBoard = () => {
 
 	return (
 		<>
-			<Box position={"sticky"} bgcolor={"background.default"} top={0} left={0}>
-				<IconButton onClick={toggleDrawer}>
-					<RecentActorsIcon fontSize={"large"} color="primary" />
-				</IconButton>
+			<Box position={"sticky"} top={0} left={0}>
+				<Button onClick={toggleDrawer}>Open Me</Button>
 			</Box>
-			<Grid padding={2} width={"100%"} height={"100%"} container columns={5}>
-				<Grid item xs={0}>
+			<Grid width={"100%"} height={"100%"} container columns={5}>
+				<Grid item xs={1}>
 					<Drawer anchor={"left"} open={open} onClose={toggleDrawer}>
 						{list()}
 					</Drawer>
 				</Grid>
-				<Grid item xs={5}>
+				<Grid item xs={4}>
 					{(conversation && (
-						<Stack minHeight={"78vh"} justifyContent={"end"}>
+						<>
 							<Conversation
 								conversations={conversations}
 								conversation={conversation}
 							/>
 							<Messenger />
-						</Stack>
-					)) || (
-						<Typography align={"center"}>No Conversation Selected</Typography>
-					)}
+						</>
+					)) || <Typography>No Conversation Selected</Typography>}
 				</Grid>
 			</Grid>
 		</>
 	);
-};
-
-export default MessageBoard;
+}

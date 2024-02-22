@@ -9,11 +9,14 @@ import GuestLayout from "./layouts/GuestLayout";
 import UserLayout from "./layouts/UserLayout";
 import Post from "./pages/Post";
 import MessageBoard from "./pages/MessageBoard";
+import Test from "./components/Test";
+import Theme from "./layouts/Theme";
 
 const router = createBrowserRouter([
 	{
 		path: "",
 		errorElement: <Error />,
+		element: <Theme />,
 		children: [
 			{
 				path: "/",
@@ -30,7 +33,11 @@ const router = createBrowserRouter([
 					{
 						path: "signup",
 						element: <Signup />,
-					}
+					},
+					{
+						path: "test",
+						element: <Test />,
+					},
 				],
 			},
 			{
@@ -47,12 +54,12 @@ const router = createBrowserRouter([
 					},
 					{
 						path: "post/:postId",
-						element: <Post/>
+						element: <Post />,
 					},
 					{
 						path: "messages/:username",
-						element: <MessageBoard/>
-					}
+						element: <MessageBoard />,
+					},
 				],
 			},
 		],

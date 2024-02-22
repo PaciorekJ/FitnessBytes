@@ -16,14 +16,18 @@ import {
 	Stack,
 	Tooltip,
 } from "@mui/material";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import AddFriend from "../AddFriend";
 import ComposePost from "../ComposePost";
 import LogoIcon from "../LogoIcon";
 import styles from "./index.module.css";
+import useThemeStore from "../../hooks/useThemeStore";
 
 const Nav = () => {
+	const { mode, toggleTheme } = useThemeStore();
 	const { username } = useParams();
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -38,7 +42,7 @@ const Nav = () => {
 	};
 
 	return (
-		<Stack zIndex={"100"} height={"10vh"} position={"sticky"} top={0}>
+		<Stack zIndex={"100"} height={"10vh"}>
 			<Paper square>
 				<Stack
 					flexDirection={"row"}
@@ -50,6 +54,19 @@ const Nav = () => {
 					<Box>
 						<ComposePost />
 						<AddFriend />
+						<Tooltip title="Color Mode">
+							<IconButton
+								onClick={() => {
+									// localStorage.setItem('ThemeMode', mode === 'light'? 'dark': 'light')
+									toggleTheme();
+								}}>
+								{mode === "light" ? (
+									<DarkModeIcon color="primary" />
+								) : (
+									<DarkModeOutlinedIcon color="primary" />
+								)}
+							</IconButton>
+						</Tooltip>
 						<Tooltip title="Notifications">
 							<IconButton>
 								<Badge badgeContent={10} variant="dot" color="secondary">
