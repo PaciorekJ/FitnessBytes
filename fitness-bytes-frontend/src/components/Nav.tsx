@@ -1,4 +1,6 @@
 import { Logout, Settings } from "@mui/icons-material";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import HomeIcon from "@mui/icons-material/Home";
 import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
@@ -16,21 +18,18 @@ import {
 	Stack,
 	Tooltip,
 } from "@mui/material";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import AddFriend from "../AddFriend";
-import ComposePost from "../ComposePost";
-import LogoIcon from "../LogoIcon";
-import styles from "./index.module.css";
-import useThemeStore from "../../hooks/useThemeStore";
+import useThemeStore from "../hooks/useThemeStore";
+import AddFriend from "./AddFriend";
+import ComposePost from "./ComposePost";
+import LogoIcon from "./LogoIcon";
 
 const Nav = () => {
 	const { mode, toggleTheme } = useThemeStore();
 	const { username } = useParams();
-
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
 	const open = Boolean(anchorEl);
 
 	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -45,21 +44,19 @@ const Nav = () => {
 		<Stack zIndex={"100"} height={"10vh"}>
 			<Paper square>
 				<Stack
-					flexDirection={"row"}
-					justifyContent={"space-between"}
-					alignItems={"center"}
-					paddingX={1}
-					paddingY={".2rem"}>
-					<LogoIcon sizes="2.5rem" />
+					sx={{
+						flexDirection: "row",
+						justifyContent: "space-between",
+						alignItems: "center",
+						paddingX: "1",
+						paddingY: ".2rem",
+					}}>
+					<LogoIcon size="2.5rem" />
 					<Box>
 						<ComposePost />
 						<AddFriend />
 						<Tooltip title="Color Mode">
-							<IconButton
-								onClick={() => {
-									// localStorage.setItem('ThemeMode', mode === 'light'? 'dark': 'light')
-									toggleTheme();
-								}}>
+							<IconButton onClick={toggleTheme}>
 								{mode === "light" ? (
 									<DarkModeIcon color="primary" />
 								) : (
@@ -104,6 +101,11 @@ const Nav = () => {
 							/>
 						</IconButton>
 						<Menu
+							sx={{
+								overflow: "visible",
+								filter: "drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.32))",
+								marginTop: "1.5rem",
+							}}
 							anchorEl={anchorEl}
 							id="account-menu"
 							open={open}
@@ -112,11 +114,10 @@ const Nav = () => {
 							anchorOrigin={{
 								horizontal: "right",
 								vertical: "bottom",
-							}}
-							className={styles.menu}>
+							}}>
 							<MenuItem
+								sx={{ gap: "10px" }}
 								href={`/auth/account/${username}#top`}
-								className={styles.menuItemSpace}
 								onClick={handleClose}>
 								<ListItemIcon>
 									<Avatar />

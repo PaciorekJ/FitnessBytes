@@ -1,5 +1,5 @@
 import { Grid, Typography } from "@mui/material";
-import LoginForm from "../components/LoginForm/LoginForm";
+import LoginForm from "../components/LoginForm";
 import LogoName from "../components/LogoName";
 const Login = () => {
 	return (

@@ -10,10 +10,9 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import ClientService from "../../services/ClientService";
-import { FormData } from "../../services/SignupValidatorService";
-import PasswordInput from "../PasswordInput";
-import styles from "./index.module.css";
+import ClientService from "../services/ClientService";
+import { FormData } from "../services/SignupValidatorService";
+import PasswordInput from "./PasswordInput";
 
 interface LoginResponse {
 	token: string;
@@ -59,39 +58,39 @@ const LoginForm = () => {
 	}
 
 	return (
-		<form
-			className={styles.stack}
-			onSubmit={handleSubmit((data) => handleLogin(data))}>
-			{failedLogin && (
-				<Alert severity="error">Invalid Username or Password</Alert>
-			)}
-			<FormControl>
-				<TextField
-					id="username"
-					fullWidth
-					variant="outlined"
-					label="Username"
-					{...register("username", { required: true })}
-				/>
-			</FormControl>
-			<FormControl>
-				<PasswordInput register={register} options={{ required: true }} />
-			</FormControl>
-			<Stack>
-				<Button
-					variant="contained"
-					color="secondary"
-					size="large"
-					type="submit">
-					Log In
-				</Button>
-				<Link
-					display="inline"
-					href="/signup"
-					variant="overline"
-					underline="hover">
-					Don't have an account yet?
-				</Link>
+		<form onSubmit={handleSubmit((data) => handleLogin(data))}>
+			<Stack sx={{ flexDirection: "column", gap: "1.2rem" }}>
+				{failedLogin && (
+					<Alert severity="error">Invalid Username or Password</Alert>
+				)}
+				<FormControl>
+					<TextField
+						id="username"
+						fullWidth
+						variant="outlined"
+						label="Username"
+						{...register("username", { required: true })}
+					/>
+				</FormControl>
+				<FormControl>
+					<PasswordInput register={register} options={{ required: true }} />
+				</FormControl>
+				<Stack>
+					<Button
+						variant="contained"
+						color="secondary"
+						size="large"
+						type="submit">
+						Log In
+					</Button>
+					<Link
+						display="inline"
+						href="/signup"
+						variant="overline"
+						underline="hover">
+						Don't have an account yet?
+					</Link>
+				</Stack>
 			</Stack>
 		</form>
 	);

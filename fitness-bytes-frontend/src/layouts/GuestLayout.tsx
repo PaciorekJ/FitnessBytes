@@ -4,8 +4,8 @@ import LogoIcon from "../components/LogoIcon";
 
 const GuestLayout = () => {
 	return (
-		<div>
-			<LogoIcon centerScreen />
+		<>
+			<LogoIcon center size="8em" />
 			<Grid
 				container
 				sx={{
@@ -20,7 +20,7 @@ const GuestLayout = () => {
 				}}>
 				<Outlet />
 			</Grid>
-		</div>
+		</>
 	);
 };
 

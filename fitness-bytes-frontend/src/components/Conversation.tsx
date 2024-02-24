@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
+import { useEffect, useRef } from "react";
 import { User } from "../pages/MessageBoard";
 import Message from "./Message";
-import { useEffect, useRef } from "react";
 
 interface Props {
 	conversation: string; // User of the selected conversation

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import Post from "../interfaces/Post";
-import ClientService from "../services/ClientService"
+import ClientService from "../services/ClientService";
 
 const usePosts = (username: string = "") => {
     const client = 

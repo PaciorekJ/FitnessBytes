@@ -10,11 +10,12 @@ interface Props {
 }
 
 const LikeIcon = ({ likes, postId }: Props) => {
+	const userId = localStorage.getItem("_id") || "";
+
 	const { data, isLoading } = useIsLiked(postId);
+	const [likeCount, setLikeCount] = useState(likes);
 
 	const { result } = data || {};
-
-	const [likeCount, setLikeCount] = useState(likes);
 	const [isLiked, setLiked] = useState<boolean>(result || false);
 
 	useEffect(() => {
@@ -24,8 +25,6 @@ const LikeIcon = ({ likes, postId }: Props) => {
 	}, [result]);
 
 	if (isLoading) return <CircularProgress />;
-
-	const userId = localStorage.getItem("_id") || "";
 
 	const handleToggleLike = async () => {
 		const client = new ClientService<boolean>("/post/like");
@@ -49,7 +48,12 @@ const LikeIcon = ({ likes, postId }: Props) => {
 					color: isLiked ? "error.main" : "inherit",
 				}}
 			/>
-			<Typography paddingLeft={1} color={"text.secondary"} variant="body2">
+			<Typography
+				sx={{
+					paddingLeft: 1,
+					color: "text.secondary",
+				}}
+				variant="body2">
 				{likeCount}
 			</Typography>
 		</IconButton>

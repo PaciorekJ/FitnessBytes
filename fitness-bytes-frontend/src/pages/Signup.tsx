@@ -1,6 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import LogoName from "../components/LogoName";
-import SignupForm from "../components/SignupForm/SignupForm";
+import SignupForm from "../components/SignupForm";
 
 const Signup = () => {
 	return (
@@ -16,8 +16,8 @@ const Signup = () => {
 				item
 				maxWidth="400px"
 				sx={{
-					width: "100%", 
-					margin: "auto", 
+					width: "100%",
+					margin: "auto",
 				}}>
 				<LogoName />
 				<Typography variant="h5" component="h2">

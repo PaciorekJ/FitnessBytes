@@ -19,7 +19,7 @@ const PasswordInput = ({ register, options }: Props) => {
 
 	return (
 		<>
-			<InputLabel htmlFor="password">Password</InputLabel>
+			<InputLabel>Password</InputLabel>
 			<OutlinedInput
 				id="password"
 				fullWidth
