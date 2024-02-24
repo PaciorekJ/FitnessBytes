@@ -14,6 +14,7 @@ interface Props {
 	options?: RegisterOptions<FormData, "password"> | undefined;
 }
 
+// TODO: Add Passport to handle the login
 const PasswordInput = ({ register, options }: Props) => {
 	const [showPassword, setShowPassword] = useState(false);
 

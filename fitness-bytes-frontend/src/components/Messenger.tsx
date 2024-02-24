@@ -8,6 +8,9 @@ import {
 import Stack from "@mui/material/Stack";
 
 const Messenger = () => {
+	//TODO: Send Post request to post the users message to a conversation
+	const handleUserMessage = () => {};
+
 	return (
 		<Stack marginY={2} minWidth={"100%"}>
 			<OutlinedInput
@@ -30,6 +33,7 @@ const Messenger = () => {
 									color: "primary.main",
 								},
 							}}
+							onClick={handleUserMessage}
 							size={"large"}
 							edge="end">
 							<Divider orientation="vertical" />

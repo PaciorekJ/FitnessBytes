@@ -40,6 +40,7 @@ const Nav = () => {
 		setAnchorEl(null);
 	};
 
+	//TODO: For smaller layout condense nav to a Triple Bar button
 	return (
 		<Stack zIndex={"100"} height={"10vh"}>
 			<Paper square>
