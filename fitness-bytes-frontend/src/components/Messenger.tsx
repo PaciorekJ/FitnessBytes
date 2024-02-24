@@ -8,8 +8,6 @@ import {
 import Stack from "@mui/material/Stack";
 
 const Messenger = () => {
-	// const {} = useForm();
-
 	return (
 		<Stack marginY={2} minWidth={"100%"}>
 			<OutlinedInput

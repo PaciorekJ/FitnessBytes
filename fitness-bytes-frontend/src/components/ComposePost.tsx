@@ -2,7 +2,6 @@ import HistoryEduOutlinedIcon from "@mui/icons-material/HistoryEduOutlined";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-
 import { useQueryClient } from "@tanstack/react-query";
 import _ from "lodash";
 import { useState } from "react";
@@ -13,13 +12,13 @@ import { FormData } from "../services/PostValidatorService";
 import PostModal from "./PostModal";
 
 const ComposePost = () => {
+	const username = localStorage.getItem("username") || "";
+	const id = localStorage.getItem("_id") || "";
+
 	const queryClient = useQueryClient();
 	const navigator = useNavigate();
-
 	const [isOpen, setOpen] = useState(false);
 	const [error, setError] = useState("");
-
-	const username = localStorage.getItem("username") || "";
 
 	const addPost = (newPost: Post) => {
 		navigator(`/auth/feed/${username}`);
@@ -36,9 +35,6 @@ const ComposePost = () => {
 	const closeModal = () => setOpen(false);
 
 	const submitPost = async (data: FormData) => {
-		const id = localStorage.getItem("_id") || "";
-		const username = localStorage.getItem("username") || "";
-
 		const { content } = data;
 
 		try {

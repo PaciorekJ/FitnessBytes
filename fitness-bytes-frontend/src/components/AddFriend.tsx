@@ -13,7 +13,7 @@ import {
 	Stack,
 	Tooltip,
 	Typography,
-	useTheme
+	useTheme,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -89,7 +89,6 @@ const handleAddFriend = () => {};
 const AddFriend = () => {
 	const [isOpen, setOpen] = useState(false);
 	const [searchResults, setSearchResults] = useState<User[]>([]);
-
 	const theme = useTheme();
 
 	const { register, handleSubmit, setValue, reset } = useForm({
@@ -103,11 +102,10 @@ const AddFriend = () => {
 		const results =
 			data.searchContent !== ""
 				? users.filter((u) =>
-					u.username.toLowerCase().match(data.searchContent.toLowerCase()),
-				)
+						u.username.toLowerCase().match(data.searchContent.toLowerCase()),
+				  )
 				: [];
 		setSearchResults(results);
-		console.log(data.searchContent);
 	}
 
 	return (
@@ -124,12 +122,14 @@ const AddFriend = () => {
 				aria-describedby="Modal that is used for posting on the platform">
 				<Box sx={style}>
 					<Stack
-						flexDirection={"row"}
-						border={"2px double " + theme.palette.text.primary}
-						borderRadius={"25px"}
-						padding={1}>
+						sx={{
+							flexDirection: "row",
+							border: `2px double  ${theme.palette.text.primary}`,
+							borderRadius: "25px",
+							padding: 1,
+						}}>
 						<InputBase
-							sx={{ ml: 1, flex: 1, border: 0 }}
+							sx={{ marginLeft: 1, flex: 1, border: 0 }}
 							id="searchContent"
 							type="search"
 							{...register("searchContent")}

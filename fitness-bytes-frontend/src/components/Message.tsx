@@ -1,7 +1,6 @@
 import { Stack, Typography } from "@mui/material";
-import { IMessage } from "../../pages/MessageBoard";
-import MessageBubble from "../MessageBubble/MessageBubble";
-import styles from "./index.module.css";
+import { IMessage } from "../pages/MessageBoard";
+import MessageBubble from "./MessageBubble";
 
 interface Props {
 	message: IMessage;
@@ -18,12 +17,10 @@ const Message = ({ message }: Props) => {
 
 	return (
 		<Stack
-			flexDirection={"column"}
-			className={
-				styles.Message +
-				" " +
-				(isUsers ? styles["Message-Right"] : styles["Message-Left"])
-			}>
+			sx={{
+				flexDirection: "column",
+				...(isUsers ? { alignItems: "end" } : {}),
+			}}>
 			{!Error && (
 				<>
 					<Typography>{message.username}</Typography>

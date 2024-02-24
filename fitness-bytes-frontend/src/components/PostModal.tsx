@@ -3,10 +3,10 @@ import {
 	Avatar,
 	Box,
 	Button,
+	Card,
 	CardActions,
 	CardHeader,
 	Divider,
-	Paper,
 	TextField,
 	Typography,
 } from "@mui/material";
@@ -22,19 +22,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormData, MAX_CHAR, schema } from "../services/PostValidatorService";
-
-const style = {
-	position: "absolute",
-	top: "50%",
-	left: "50%",
-	transform: "translate(-50%, -50%)",
-	width: "66%",
-	bgcolor: "background.default",
-	border: "2px solid #000",
-	borderRadius: "10px",
-	boxShadow: 24,
-	p: 4,
-};
 
 interface ModalProps {
 	onSubmit: (data: FormData) => void;
@@ -95,7 +82,21 @@ const PostModal = ({
 			}}
 			aria-labelledby={ariaLabelledby}
 			aria-describedby={ariaDescribedby}>
-			<Paper sx={style} variant="outlined">
+			<Card
+				sx={{
+					position: "absolute",
+					top: "50%",
+					left: "50%",
+					transform: "translate(-50%, -50%)",
+					width: "98%",
+					maxWidth: "600px",
+					bgcolor: "background.default",
+					border: "2px solid #000",
+					borderRadius: "25px",
+					boxShadow: 24,
+					p: 2,
+				}}
+				variant="outlined">
 				<form
 					onSubmit={handleSubmit((data) => {
 						onSubmit(data);
@@ -107,9 +108,11 @@ const PostModal = ({
 						closeModal();
 					}}>
 					<Stack
-						flexDirection={"row"}
-						alignItems={"center"}
-						justifyContent={"space-between"}>
+						sx={{
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "space-between",
+						}}>
 						<CardHeader
 							title={username}
 							avatar={
@@ -129,9 +132,9 @@ const PostModal = ({
 					)}
 					<Box padding={2}>
 						<TextField
+							sx={{ border: "1px solid" }}
 							id="content"
 							autoFocus
-							sx={{ border: "1px solid" }}
 							fullWidth
 							rows={4}
 							{...register("content", {
@@ -149,9 +152,11 @@ const PostModal = ({
 					<Divider />
 					<CardActions>
 						<Stack
-							flexDirection={"row"}
-							justifyContent="space-between"
-							width="100%">
+							sx={{
+								flexDirection: "row",
+								justifyContent: "space-between",
+								width: "100%",
+							}}>
 							<Stack flexDirection={"row"}>
 								<IconButton>
 									<ImageOutlinedIcon />
@@ -166,7 +171,7 @@ const PostModal = ({
 						</Stack>
 					</CardActions>
 				</form>
-			</Paper>
+			</Card>
 		</Modal>
 	);
 };
