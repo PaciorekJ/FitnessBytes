@@ -6,18 +6,20 @@ import {
 	List,
 	ListItem,
 	Stack,
-	Typography
+	Typography,
+	useTheme,
 } from "@mui/material";
 import { isRouteErrorResponse, useRouteError } from "react-router-dom";
 import LogoIcon from "../components/LogoIcon";
 
 const Error = () => {
 	const error = useRouteError();
+	const theme = useTheme();
 
 	if (isRouteErrorResponse(error)) {
 		return (
 			<Grid>
-				<LogoIcon centerScreen />
+				<LogoIcon size="6rem" center />
 				<Grid
 					item
 					paddingTop={-1}
@@ -74,7 +76,7 @@ const Error = () => {
 									<ListItem>
 										<Typography>
 											Start fresh with us at the{" "}
-											<Link color="secondary" href="/">
+											<Link color={"secondary"} href="/">
 												Home
 											</Link>{" "}
 											page
@@ -82,19 +84,21 @@ const Error = () => {
 									</ListItem>
 									<ListItem>
 										<Typography>
-											A returning user? Go to the{" "}
-											<Link color="secondary" href="/login">
+											A returning user,{" "}
+											<Link href="/login" color={"secondary"}>
 												Login
-											</Link>{" "}
-											page
+											</Link>
+											!
 										</Typography>
 									</ListItem>
 									<ListItem>
-										Ready to get signed up? Check out the{" "}
-										<Link color="secondary" href="/signup">
-											Signup
-										</Link>{" "}
-										page
+										<Typography>
+											Ready to{" "}
+											<Link href="/login" color={"secondary"}>
+												sign up
+											</Link>
+											?
+										</Typography>
 									</ListItem>
 								</List>
 							</Grid>

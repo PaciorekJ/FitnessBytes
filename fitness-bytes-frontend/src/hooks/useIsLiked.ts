@@ -9,7 +9,7 @@ const useIsLiked = (postId: string) => {
     const client = new ClientService<boolean>('/user/post/liked');
 
     return useQuery({
-        queryKey: ['IsLiked', userId, postId],
+        queryKey: [`IsLiked-${postId}`, userId, postId],
         queryFn: () => client.post({
             userId: userId,
             postId: postId,

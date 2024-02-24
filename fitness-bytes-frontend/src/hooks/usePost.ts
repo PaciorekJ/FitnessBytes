@@ -3,13 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import Post from "../interfaces/Post";
 import ClientService from "../services/ClientService";
 
-const usePosts = (postId: string | undefined) => {
+const usePost = (postId: string = "") => {
     const client = new ClientService<Post>(`/post/${postId}`);
-    
+
     return useQuery({
-        queryKey: ['post'],
+        queryKey: [`post-${postId}`],
         queryFn: client.get,
     });
 }
 
-export default usePosts;
+export default usePost;
