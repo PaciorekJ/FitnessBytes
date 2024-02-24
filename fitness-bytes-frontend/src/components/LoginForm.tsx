@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../hooks/useUserStore";
 import ClientService from "../services/ClientService";
 import { FormData } from "../services/SignupValidatorService";
 import PasswordInput from "./PasswordInput";
@@ -20,20 +21,13 @@ interface LoginResponse {
 }
 
 const LoginForm = () => {
+	const setUser = useUserStore((s) => s.setUser);
 	const [failedLogin, setFailedLogin] = useState(false);
 	const [, setCookie] = useCookies(["token"]);
-
 	const { register, handleSubmit } = useForm<FormData>();
-
 	const navigator = useNavigate();
 
 	async function handleLogin(data: FormData) {
-		interface D {
-			response: {
-				status: number;
-			};
-		}
-
 		const client = new ClientService<LoginResponse>("user/login");
 
 		try {
@@ -42,18 +36,11 @@ const LoginForm = () => {
 
 			// Store token in cookie upon successful login
 			setCookie("token", token, { path: "/" });
-
-			localStorage.setItem("_id", userId);
-			localStorage.setItem("username", data.username);
+			setUser(userId, data.username);
 
 			navigator("/auth/feed/" + data.username);
-		} catch (e) {
-			if ((e as D).response.status === 401) {
-				setFailedLogin(true);
-				return;
-			}
-
-			console.error(e);
+		} catch {
+			setFailedLogin(true);
 		}
 	}
 

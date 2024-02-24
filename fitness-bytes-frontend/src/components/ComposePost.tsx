@@ -6,15 +6,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import _ from "lodash";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../hooks/useUserStore";
 import Post from "../interfaces/Post";
 import ClientService from "../services/ClientService";
 import { FormData } from "../services/PostValidatorService";
 import PostModal from "./PostModal";
 
 const ComposePost = () => {
-	const username = localStorage.getItem("username") || "";
-	const id = localStorage.getItem("_id") || "";
-
+	const { _id: id, username } = useUserStore((s) => ({
+		_id: s._id, username: s.username
+	}));
 	const queryClient = useQueryClient();
 	const navigator = useNavigate();
 	const [isOpen, setOpen] = useState(false);
