@@ -1,6 +1,4 @@
 
-// TODO: Add user store through zustland that contains _id and username
-
 import { create } from 'zustand';
 
 interface UserState {
