@@ -15,6 +15,7 @@ import ClientService from "../services/ClientService";
 import { FormData, schema } from "../services/SignupValidatorService";
 import PasswordInput from "./PasswordInput";
 
+// TODO: Add Passport to handle the login
 const SignupForm = () => {
 	const {
 		register,

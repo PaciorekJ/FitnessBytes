@@ -21,6 +21,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { User } from "../pages/MessageBoard";
+import users from "../data/user";
 
 const style = {
 	position: "absolute",
@@ -36,78 +37,32 @@ const style = {
 	p: 4,
 };
 
-const users: User[] = [
-	{
-		username: "Dave",
-	},
-	{
-		username: "Paul",
-	},
-	{
-		username: "Bruce",
-	},
-	{
-		username: "Alice",
-	},
-	{
-		username: "John",
-	},
-	{
-		username: "Karen",
-	},
-	{
-		username: "Steve",
-	},
-	{
-		username: "Rachel",
-	},
-	{
-		username: "Michael",
-	},
-	{
-		username: "Linda",
-	},
-	{
-		username: "Robert",
-	},
-	{
-		username: "Jennifer",
-	},
-	{
-		username: "William",
-	},
-	{
-		username: "Patricia",
-	},
-	{
-		username: "Charles",
-	},
-];
-
-const handleAddFriend = () => {};
-
 const AddFriend = () => {
 	const [isOpen, setOpen] = useState(false);
 	const [searchResults, setSearchResults] = useState<User[]>([]);
 	const theme = useTheme();
-
+	
 	const { register, handleSubmit, setValue, reset } = useForm({
 		mode: "onChange",
 	});
-
+	
 	const openModal = () => setOpen(true);
 	const closeModal = () => setOpen(false);
-
+	
+	// TODO: Fetch users based the searchQuery
 	function handleSearch(data: FieldValues) {
+		const filterByQuery = (u: User) =>
+		u.username.toLowerCase().match(data.searchContent.toLowerCase());
+		
 		const results =
-			data.searchContent !== ""
-				? users.filter((u) =>
-						u.username.toLowerCase().match(data.searchContent.toLowerCase()),
-				  )
-				: [];
+		data.searchContent !== "" ? users.filter(filterByQuery) : [];
+		
 		setSearchResults(results);
 	}
 
+	// TODO: Send post request to add a user provided there UserId, and the friend's Id
+	const handleAddFriend = () => {};
+	
 	return (
 		<>
 			<Tooltip title="Add a Friend">
