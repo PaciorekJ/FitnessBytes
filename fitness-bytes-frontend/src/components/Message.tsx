@@ -1,13 +1,14 @@
 import { Stack, Typography } from "@mui/material";
 import { IMessage } from "../pages/MessageBoard";
 import MessageBubble from "./MessageBubble";
+import useUserStore from "../hooks/useUserStore";
 
 interface Props {
 	message: IMessage;
 }
 
 const Message = ({ message }: Props) => {
-	const username = localStorage.getItem("username");
+	const username = useUserStore((s) => s.username);
 
 	const isLoading = false;
 	const Error = "";

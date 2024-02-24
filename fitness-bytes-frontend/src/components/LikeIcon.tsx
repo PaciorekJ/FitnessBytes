@@ -2,6 +2,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { CircularProgress, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import useIsLiked from "../hooks/useIsLiked";
+import useUserStore from "../hooks/useUserStore";
 import ClientService from "../services/ClientService";
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
 }
 
 const LikeIcon = ({ likes, postId }: Props) => {
-	const userId = localStorage.getItem("_id") || "";
+	const userId = useUserStore((s) => s._id);
 
 	const { data, isLoading } = useIsLiked(postId);
 	const [likeCount, setLikeCount] = useState(likes);

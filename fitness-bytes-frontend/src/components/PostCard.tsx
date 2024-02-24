@@ -22,6 +22,7 @@ import ReportIcon from "@mui/icons-material/Report";
 import ShareIcon from "@mui/icons-material/Share";
 
 import { useQueryClient } from "@tanstack/react-query";
+import useUserStore from "../hooks/useUserStore";
 import Report from "../interfaces/Report";
 import ClientService, { ResponseResult } from "../services/ClientService";
 import LikeIcon from "./LikeIcon";
@@ -37,11 +38,12 @@ const PostCard = memo(
 		post: { _id, content, username: postUsername, likes, timeCreated },
 	}: Props) => {
 		const queryClient = useQueryClient();
+		const { _id: userId, username: userUsername } = useUserStore((s) => ({
+			_id: s._id,
+			username: s.username,
+		}));
 		const [isOpen, setOpen] = useState(false);
 		const [error, setError] = useState("");
-
-		const userUsername = localStorage.getItem("username") || "Error";
-		const userId = localStorage.getItem("_id");
 
 		const time = new Date(timeCreated || "").toString();
 
