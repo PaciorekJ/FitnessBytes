@@ -1,16 +1,21 @@
-import { useParams } from "react-router-dom";
-import usePost from "../hooks/usePost";
+import { CircularProgress, Stack } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
-import { Stack, CircularProgress } from "@mui/material";
+import usePost from "../hooks/usePost";
 
 const Post = () => {
 	const { postId } = useParams();
 
 	const { data, isLoading } = usePost(postId);
 
+	const navigator = useNavigate();
+
 	const post = data?.result;
 
-	if (!post) return null;
+	if (!post) {
+		navigator("/Error");
+		return;
+	}
 
 	return (
 		<Stack width={"100%"} alignItems={"center"}>

@@ -7,8 +7,13 @@ import {
 import { Outlet } from "react-router-dom";
 import getTheme from "../Theme";
 import useThemeStore from "../hooks/useThemeStore";
+import { ReactNode } from "react";
 
-const Theme = () => {
+interface Props {
+	children: ReactNode;
+}
+
+const Theme = ({ children }: Props) => {
 	const { mode } = useThemeStore();
 
 	const theme = createTheme(getTheme(mode));
@@ -16,7 +21,7 @@ const Theme = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<GlobalStyles
-				styles={(theme) => ({
+			styles={(theme) => ({
 					body: {
 						backgroundColor: theme.palette.background.default,
 						color: theme.palette.text.primary,
@@ -25,6 +30,7 @@ const Theme = () => {
 			/>
 			<CssBaseline />
 			<Outlet />
+			{children}
 		</ThemeProvider>
 	);
 };
