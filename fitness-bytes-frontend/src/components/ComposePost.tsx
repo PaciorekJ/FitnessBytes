@@ -13,9 +13,9 @@ import { FormData } from "../services/PostValidatorService";
 import PostModal from "./PostModal";
 
 const ComposePost = () => {
-	const { _id: id, username } = useUserStore((s) => ({
-		_id: s._id, username: s.username
-	}));
+	const id = useUserStore((s) => s._id);
+	const username = useUserStore((s) => s.username);
+
 	const queryClient = useQueryClient();
 	const navigator = useNavigate();
 	const [isOpen, setOpen] = useState(false);
