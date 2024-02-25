@@ -1,19 +1,26 @@
 import { Stack, Typography } from "@mui/material";
+import useUserStore from "../hooks/useUserStore";
 import { IMessage } from "../pages/MessageBoard";
 import MessageBubble from "./MessageBubble";
-import useUserStore from "../hooks/useUserStore";
 
 interface Props {
 	message: IMessage;
 }
 
 const Message = ({ message }: Props) => {
+
+	const user = useUserStore();
+	console.log(user);
+
 	const username = useUserStore((s) => s.username);
 
 	const isLoading = false;
 	const Error = "";
 
 	const time = new Date(message.timeCreated || "").toString();
+
+	console.log(`${message.username} === ${username}`);
+
 	const isUsers = message.username === username;
 
 	return (

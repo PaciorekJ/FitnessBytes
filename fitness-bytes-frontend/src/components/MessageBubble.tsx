@@ -11,10 +11,12 @@ const MessageBubble = ({ isCurrentUsers, children }: Props) => {
 
 	const MessageRightStyles = {
 		borderRadius: "25px 25px 0 25px",
+		bgcolor: theme.palette.secondary.light,
 	};
 
 	const MessageLeftStyles = {
 		borderRadius: "25px 25px 25px 0",
+		bgcolor: theme.palette.primary.main,
 	};
 
 	return (
@@ -23,9 +25,6 @@ const MessageBubble = ({ isCurrentUsers, children }: Props) => {
 				padding: "1rem",
 				width: "75%",
 				color: theme.palette.primary.contrastText,
-				bgcolor: isCurrentUsers
-					? theme.palette.secondary.light
-					: theme.palette.primary.main,
 				...(isCurrentUsers ? MessageRightStyles : MessageLeftStyles),
 			}}>
 			{children}
