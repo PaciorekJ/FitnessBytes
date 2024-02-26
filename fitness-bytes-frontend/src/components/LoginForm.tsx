@@ -38,14 +38,6 @@ const LoginForm = () => {
 			setCookie("token", token, { path: "/" });
 			setUser(userId, data.username);
 
-			console.log("Actual:")
-			console.log(`_id: ${userId} 
-			Username: ${data.username}`);
-
-			console.log("")
-			console.log(`_id: ${_id} 
-			Username: ${username}`);
-
 			navigator("/auth/feed/" + data.username);
 		} catch {
 			setFailedLogin(true);
