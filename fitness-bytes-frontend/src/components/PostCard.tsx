@@ -25,6 +25,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import useUserStore from "../hooks/useUserStore";
 import Report from "../interfaces/Report";
 import ClientService, { ResponseResult } from "../services/ClientService";
+import PostServices from "../services/PostServices";
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 import PostModal from "./PostModal";
@@ -48,14 +49,11 @@ const PostCard = memo(
 		const time = new Date(timeCreated || "").toString();
 
 		const handleDelete = useCallback(async () => {
-			const client = new ClientService<boolean>(`/post/${_id}`);
+			const client = new PostServices();
 
-			const { result } = await client.delete();
+			const res = await client.delete(_id);
 
-			if (!result) {
-				console.log("Failed to delete");
-				return;
-			}
+			if (res) return;
 
 			queryClient.setQueryData<ResponseResult<Post[]>>(["posts"], (oldData) => {
 				if (!oldData || !Array.isArray(oldData.result)) return oldData;
@@ -125,16 +123,11 @@ const PostCard = memo(
 
 		const submitPostUpdate = useCallback(
 			async (data: { content: string }) => {
-				const client = new ClientService("/post");
+				const client = new PostServices();
 
-				const payload = {
-					postId: _id,
-					content: data.content,
-				};
+				const res = await client.patch({ _id, content: data.content });
 
-				try {
-					await client.patch(payload);
-				} catch {
+				if (!res) {
 					setError("Error: Failed to update post, please try again!");
 					return;
 				}
