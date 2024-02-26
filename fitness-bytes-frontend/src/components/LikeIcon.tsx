@@ -43,28 +43,26 @@ const LikeIcon = ({ likes, postId }: Props) => {
 	};
 
 	return (
-		<>
-			<Stack flexDirection={"row"} alignItems={"center"}>
-				<IconButton
-					onClick={handleToggleLike}
-					sx={{ padding: "0" }}
-					aria-label="like this post">
-					<FavoriteIcon
-						sx={{
-							color: isLiked ? "error.main" : "inherit",
-						}}
-					/>
-				</IconButton>
-				<Typography
+		<Stack flexDirection={"row"} alignItems={"center"}>
+			<IconButton
+				onClick={handleToggleLike}
+				sx={{ padding: "0" }}
+				aria-label="like this post">
+				<FavoriteIcon
 					sx={{
-						paddingLeft: 1,
-						color: "text.secondary",
+						color: isLiked ? "error.main" : "inherit",
 					}}
-					variant="body2">
-					{likeCount}
-				</Typography>
-			</Stack>
-		</>
+				/>
+			</IconButton>
+			<Typography
+				sx={{
+					paddingLeft: 1,
+					color: "text.secondary",
+				}}
+				variant="body2">
+				{likeCount}
+			</Typography>
+		</Stack>
 	);
 };
 
