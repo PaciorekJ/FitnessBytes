@@ -9,10 +9,10 @@ import {
 	TextField,
 } from "@mui/material";
 import { UseFormProps, useForm } from "react-hook-form";
-import { AuthData } from "../services/SignupValidatorService";
+import { AuthData } from "../services/AuthValidatorService";
 import PasswordInput from "./PasswordInput";
 
-import { schema } from "../services/SignupValidatorService";
+import { schema } from "../services/AuthValidatorService";
 
 interface FormAlertState {
 	state: boolean;
