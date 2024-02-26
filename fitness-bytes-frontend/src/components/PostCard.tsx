@@ -53,7 +53,10 @@ const PostCard = memo(
 
 			const res = await client.delete(_id);
 
-			if (res) return;
+			if (!res) {
+				setError("Error: Failed to delete post, please try again!");
+				return;
+			}
 
 			queryClient.setQueryData<ResponseResult<Post[]>>(["posts"], (oldData) => {
 				if (!oldData || !Array.isArray(oldData.result)) return oldData;
@@ -96,18 +99,9 @@ const PostCard = memo(
 		};
 
 		const handleShare = async () => {
-			const copyToClipboard = (text: string) => {
-				navigator.clipboard.writeText(text).then(
-					() => console.log("Content copied to clipboard"),
-					(err) => console.error("Could not copy text:", err),
-				);
-			};
-
 			if (!navigator.share) {
-				copyToClipboard(`http://localhost:5301/auth/post/${_id}`);
-				alert(
-					"URL copied to clipboard. Please paste it where you want to share it.",
-				);
+				navigator.clipboard.writeText(`http://localhost:5301/auth/post/${_id}`);
+				alert("URL copied to clipboard");
 			} else {
 				try {
 					await navigator.share({
@@ -116,7 +110,7 @@ const PostCard = memo(
 						url: `http://localhost:5301/auth/post/${_id}`, // URL or resource to share.
 					});
 				} catch (error) {
-					console.error("Error sharing content:", error);
+					alert("Post sharing failed, Please Try again!");
 				}
 			}
 		};
@@ -125,7 +119,10 @@ const PostCard = memo(
 			async (data: { content: string }) => {
 				const client = new PostServices();
 
-				const res = await client.patch({ _id, content: data.content });
+				const res = await client.patch({
+					_id,
+					content: data.content,
+				});
 
 				if (!res) {
 					setError("Error: Failed to update post, please try again!");
@@ -144,6 +141,7 @@ const PostCard = memo(
 							}
 							return p;
 						});
+
 						return { result: [...(newPosts ?? [])] };
 					},
 				);
