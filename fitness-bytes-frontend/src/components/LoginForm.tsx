@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useCookies } from "react-cookie";
-import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../hooks/useUserStore";
 import ClientService from "../services/ClientService";
@@ -13,10 +12,9 @@ interface LoginResponse {
 }
 
 const LoginForm = () => {
-	const { setUser, username, _id } = useUserStore();
+	const { setUser } = useUserStore();
 	const [failedLogin, setFailedLogin] = useState(false);
 	const [, setCookie] = useCookies(["token"]);
-	const { register, handleSubmit } = useForm<FormData>();
 	const navigator = useNavigate();
 
 	async function handleLogin(data: FormData) {
