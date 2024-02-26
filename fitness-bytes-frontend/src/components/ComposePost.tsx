@@ -3,12 +3,11 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
 import { useQueryClient } from "@tanstack/react-query";
-import _ from "lodash";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../hooks/useUserStore";
 import Post from "../interfaces/Post";
-import ClientService from "../services/ClientService";
+import PostServices from "../services/PostServices";
 import { FormData } from "../services/PostValidatorService";
 import PostModal from "./PostModal";
 
@@ -21,47 +20,37 @@ const ComposePost = () => {
 	const [isOpen, setOpen] = useState(false);
 	const [error, setError] = useState("");
 
-	const addPost = (newPost: Post) => {
+	const openModal = () => setOpen(true);
+	const closeModal = () => setOpen(false);
+
+	const submitPost = async (data: FormData) => {
+		const postService = new PostServices();
+
+		const post = await postService.post({
+			_id: id,
+			username: username,
+			content: data.content,
+		});
+
+		if (!post) {
+			setError("Your post can not be posted at this time!");
+			setTimeout(() => {
+				closeModal();
+			}, 1000);
+			return;
+		}
+
 		navigator(`/auth/feed/${username}`);
 
 		queryClient.setQueryData(
 			["posts"],
 			(old: { result: Post[] } | undefined) => {
-				return { result: [newPost, ...(old?.result ?? [])] };
+				return { result: [post, ...(old?.result ?? [])] };
 			},
 		);
-	};
 
-	const openModal = () => setOpen(true);
-	const closeModal = () => setOpen(false);
-
-	const submitPost = async (data: FormData) => {
-		const { content } = data;
-
-		try {
-			const client = new ClientService("/post");
-
-			const res = await client.post({
-				userId: id,
-				username: username,
-				content: content,
-			});
-
-			if (_.isEmpty(res.result)) {
-				setError("Your post can not be posted at this time!");
-				setTimeout(() => {
-					closeModal();
-				}, 1000);
-				return;
-			}
-
-			addPost(res.result as Post);
-
-			closeModal();
-			setError("");
-		} catch {
-			setError("Something went Wrong while submitting the Post");
-		}
+		closeModal();
+		setError("");
 	};
 
 	return (
