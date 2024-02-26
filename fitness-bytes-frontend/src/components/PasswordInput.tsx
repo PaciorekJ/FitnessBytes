@@ -7,11 +7,11 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { RegisterOptions, UseFormRegister } from "react-hook-form";
-import { FormData } from "../services/SignupValidatorService";
+import { AuthData } from "../services/SignupValidatorService";
 
 interface Props {
-	register: UseFormRegister<FormData>;
-	options?: RegisterOptions<FormData, "password"> | undefined;
+	register: UseFormRegister<AuthData>;
+	options?: RegisterOptions<AuthData, "password"> | undefined;
 }
 
 // TODO: Add Passport to handle the login

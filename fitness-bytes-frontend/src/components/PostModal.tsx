@@ -21,10 +21,10 @@ import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FormData, MAX_CHAR, schema } from "../services/PostValidatorService";
+import { MAX_CHAR, PostData, schema } from "../services/PostValidatorService";
 
 interface ModalProps {
-	onSubmit: (data: FormData) => void;
+	onSubmit: (data: PostData) => void;
 	onClose?: () => void;
 	isOpen: boolean;
 	setOpen: (state: boolean) => void;
@@ -57,7 +57,7 @@ const PostModal = ({
 		watch,
 		reset,
 		formState: { isValid, isDirty, errors },
-	} = useForm<FormData>({ resolver: zodResolver(schema), mode: "all" });
+	} = useForm<PostData>({ resolver: zodResolver(schema), mode: "all" });
 
 	const [value, setValue] = useState(textValue);
 

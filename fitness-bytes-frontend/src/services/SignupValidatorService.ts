@@ -30,4 +30,4 @@ export const schema = z.object({
 		.min(MIN_PASSWORD_LENGTH, { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.` }),
 });
 
-export type FormData = z.infer<typeof schema>;
+export type AuthData = z.infer<typeof schema>;
