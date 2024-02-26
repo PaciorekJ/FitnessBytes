@@ -3,7 +3,7 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../hooks/useUserStore";
 import ClientService from "../services/ClientService";
-import { FormData } from "../services/SignupValidatorService";
+import { AuthData } from "../services/SignupValidatorService";
 import AuthForm from "./AuthForm";
 
 interface LoginResponse {
@@ -17,7 +17,7 @@ const LoginForm = () => {
 	const [, setCookie] = useCookies(["token"]);
 	const navigator = useNavigate();
 
-	async function handleLogin(data: FormData) {
+	async function handleLogin(data: AuthData) {
 		const client = new ClientService<LoginResponse>("user/login");
 
 		try {

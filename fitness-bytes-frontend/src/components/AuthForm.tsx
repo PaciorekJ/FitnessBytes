@@ -9,7 +9,7 @@ import {
 	TextField,
 } from "@mui/material";
 import { UseFormProps, useForm } from "react-hook-form";
-import { FormData } from "../services/SignupValidatorService";
+import { AuthData } from "../services/SignupValidatorService";
 import PasswordInput from "./PasswordInput";
 
 import { schema } from "../services/SignupValidatorService";
@@ -29,7 +29,7 @@ interface FormLinkProps {
 }
 
 interface Props {
-	formAction: (data: FormData) => void;
+	formAction: (data: AuthData) => void;
 	monitorFormValidity?: boolean;
 	formButton: FormButtonProps;
 	formLink: FormLinkProps;
@@ -43,7 +43,7 @@ const AuthForm = ({
 	monitorFormValidity = true,
 	formAlertState = { state: false, message: "" },
 }: Props) => {
-	const formOptions: UseFormProps<FormData> = monitorFormValidity
+	const formOptions: UseFormProps<AuthData> = monitorFormValidity
 		? { resolver: zodResolver(schema), mode: "onChange" }
 		: {};
 
@@ -51,7 +51,7 @@ const AuthForm = ({
 		register,
 		handleSubmit,
 		formState: { isDirty, errors, isValid },
-	} = useForm<FormData>(formOptions);
+	} = useForm<AuthData>(formOptions);
 
 	return (
 		<form

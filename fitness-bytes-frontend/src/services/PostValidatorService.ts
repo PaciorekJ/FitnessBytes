@@ -11,4 +11,4 @@ export const schema = z.object({
         .max(MAX_CHAR, { message: `Posts can only be up to ${MAX_CHAR} characters long`}),
 });
 
-export type FormData = z.infer<typeof schema>;
+export type PostData = z.infer<typeof schema>;
