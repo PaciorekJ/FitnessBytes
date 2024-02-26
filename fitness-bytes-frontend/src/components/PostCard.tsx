@@ -24,8 +24,9 @@ import ShareIcon from "@mui/icons-material/Share";
 import { useQueryClient } from "@tanstack/react-query";
 import useUserStore from "../hooks/useUserStore";
 import Report from "../interfaces/Report";
-import ClientService, { ResponseResult } from "../services/ClientService";
+import { ResponseResult } from "../services/ClientService";
 import PostServices from "../services/PostServices";
+import ReportServices from "../services/ReportServices";
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 import PostModal from "./PostModal";
@@ -75,22 +76,15 @@ const PostCard = memo(
 		}, [_id, postUsername, queryClient]);
 
 		const handleReport = async () => {
-			const client = new ClientService("/report");
+			const client = new ReportServices();
 
-			if (!userId) {
-				console.error("UserID Invalid");
-				return;
-			}
-
-			const report: Report = {
+			const res = await client.post({
 				ownerUsername: postUsername,
 				postId: _id,
 				userId: userId,
-			};
+			});
 
-			try {
-				await client.post(report);
-			} catch {
+			if (!res) {
 				alert("Something went wrong while trying to report " + postUsername);
 				return;
 			}
@@ -100,14 +94,15 @@ const PostCard = memo(
 
 		const handleShare = async () => {
 			if (!navigator.share) {
-				navigator.clipboard.writeText(`http://localhost:5301/auth/post/${_id}`);
+				navigator.clipboard.writeText(`http://localhost:5173/auth/post/${_id}`);
 				alert("URL copied to clipboard");
 			} else {
+				// http://localhost:5301/auth/post/
 				try {
 					await navigator.share({
 						title: `Post by ${postUsername}`, // Title of the thing you want to share.
 						text: content, // Text to accompany the thing you're sharing.
-						url: `http://localhost:5301/auth/post/${_id}`, // URL or resource to share.
+						url: `http://localhost:5173/auth/post/${_id}`, // URL or resource to share.
 					});
 				} catch (error) {
 					alert("Post sharing failed, Please Try again!");
