@@ -1,5 +1,5 @@
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { CircularProgress, IconButton, Typography } from "@mui/material";
+import { CircularProgress, IconButton, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import useIsLiked from "../hooks/useIsLiked";
 import useUserStore from "../hooks/useUserStore";
@@ -43,21 +43,28 @@ const LikeIcon = ({ likes, postId }: Props) => {
 	};
 
 	return (
-		<IconButton onClick={handleToggleLike} aria-label="like this post">
-			<FavoriteIcon
-				sx={{
-					color: isLiked ? "error.main" : "inherit",
-				}}
-			/>
-			<Typography
-				sx={{
-					paddingLeft: 1,
-					color: "text.secondary",
-				}}
-				variant="body2">
-				{likeCount}
-			</Typography>
-		</IconButton>
+		<>
+			<Stack flexDirection={"row"} alignItems={"center"}>
+				<IconButton
+					onClick={handleToggleLike}
+					sx={{ padding: "0" }}
+					aria-label="like this post">
+					<FavoriteIcon
+						sx={{
+							color: isLiked ? "error.main" : "inherit",
+						}}
+					/>
+				</IconButton>
+				<Typography
+					sx={{
+						paddingLeft: 1,
+						color: "text.secondary",
+					}}
+					variant="body2">
+					{likeCount}
+				</Typography>
+			</Stack>
+		</>
 	);
 };
 
