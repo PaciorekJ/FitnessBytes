@@ -13,7 +13,7 @@ export const schema = z.object({
 	username: z
 		.string()
     .regex(noSpacesRegex, { message: "Username must not contain spaces" })
-		.min(MIN_USERNAME_LENGTH, { message: `Username must be at least ${MIN_USERNAME_LENGTH}characters long.` }),
+		.min(MIN_USERNAME_LENGTH, { message: `Username must be at least ${MIN_USERNAME_LENGTH} characters long.` }),
 
 	password: z
 		.string()
