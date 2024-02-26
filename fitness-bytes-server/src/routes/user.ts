@@ -38,7 +38,8 @@ routerUser.post("/signup", async (req, res) => {
 
         if (userId) {
             const response: ResponseResult = {
-                message: "Error: Username already exists"
+                message: "Error: Username already exists",
+                result: false
             }
 
             return res.status(409).json(response);
@@ -55,7 +56,7 @@ routerUser.post("/signup", async (req, res) => {
         // Add the user with the hashed password
         await addUser(newUser);
 
-        const response: ResponseResult = { message: "" } 
+        const response: ResponseResult = { message: "", result: true } 
 
         res.status(201).json(response);
     } catch (error) {
