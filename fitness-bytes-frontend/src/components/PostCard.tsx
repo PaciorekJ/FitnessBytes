@@ -23,7 +23,6 @@ import ShareIcon from "@mui/icons-material/Share";
 
 import { useQueryClient } from "@tanstack/react-query";
 import useUserStore from "../hooks/useUserStore";
-import Report from "../interfaces/Report";
 import { ResponseResult } from "../services/ClientService";
 import PostServices from "../services/PostServices";
 import ReportServices from "../services/ReportServices";
@@ -97,7 +96,6 @@ const PostCard = memo(
 				navigator.clipboard.writeText(`http://localhost:5173/auth/post/${_id}`);
 				alert("URL copied to clipboard");
 			} else {
-				// http://localhost:5301/auth/post/
 				try {
 					await navigator.share({
 						title: `Post by ${postUsername}`, // Title of the thing you want to share.
