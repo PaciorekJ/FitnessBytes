@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { AuthData } from "../services/AuthValidatorService";
 import ClientService from "../services/ClientService";
-import { AuthData } from "../services/SignupValidatorService";
 import AuthForm from "./AuthForm";
 
 // TODO: Add Passport to handle the login

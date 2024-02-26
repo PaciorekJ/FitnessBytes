@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../hooks/useUserStore";
+import { AuthData } from "../services/AuthValidatorService";
 import ClientService from "../services/ClientService";
-import { AuthData } from "../services/SignupValidatorService";
 import AuthForm from "./AuthForm";
 
 interface LoginResponse {
