@@ -10,17 +10,10 @@ type PostResponse = ResponseResult<PostPatchResponse | PostDeleteResponse | Post
 class PostServices {
     private client: ClientService<PostResponse> | undefined;
     private res: ResponseResult<PostResponse> | undefined;
-
-    private checkResponse(res: ResponseResult<PostResponse>): unknown {
-        if (!res.result || res.message) {
-            return undefined;
-        }
-
-        return res.result as unknown
-    }
+    private endpoint = "/post";
 
     async post(post: Post): Promise<Post | undefined> {
-        this.client = new ClientService<PostResponse>('/post');
+        this.client = new ClientService<PostResponse>(this.endpoint);
 
         try {
             this.res = await this.client.post({
@@ -32,15 +25,11 @@ class PostServices {
             return undefined;
         }
 
-        if (this.res.message) {
-            return undefined;
-        }
-
-        return this.checkResponse(this.res) as PostPostResponse;
+        return this.client.checkResponse(this.res) as PostPostResponse;
     }
 
     async patch(post: Partial<Post>): Promise<boolean | undefined> {
-        this.client = new ClientService<PostResponse>('/post');
+        this.client = new ClientService<PostResponse>(this.endpoint);
 
         try {
             this.res = await this.client.patch({
@@ -51,19 +40,19 @@ class PostServices {
             return undefined;
         }
 
-        return this.checkResponse(this.res) as PostPatchResponse;
+        return this.client.checkResponse(this.res) as PostPatchResponse;
     }
 
     async delete(_id: string): Promise<boolean | undefined> {
-        const client = new ClientService<PostResponse>(`/post/${_id}`);
+        this.client = new ClientService<PostResponse>(`${this.endpoint}/${_id}`);
 
         try {
-            this.res = await client.delete();
+            this.res = await this.client.delete();
         } catch {
             return undefined;
         }
 
-        return this.checkResponse(this.res) as PostDeleteResponse;
+        return this.client.checkResponse(this.res) as PostDeleteResponse;
     }
 }
 

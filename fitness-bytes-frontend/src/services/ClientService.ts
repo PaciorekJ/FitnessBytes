@@ -20,6 +20,14 @@ class ClientService<T> {
         this.endpoint = endpoint;
     }
 
+    checkResponse(res: ResponseResult<T>): unknown {
+        if (!res.result || res.message) {
+            return undefined;
+        }
+
+        return res.result as unknown
+    }
+
     get = (config?: AxiosRequestConfig) =>{
         return axiosInstance.get<ResponseResult<T>>(this.endpoint, config)
         .then((res) => res.data);
