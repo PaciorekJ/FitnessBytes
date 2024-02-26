@@ -9,9 +9,6 @@ interface Props {
 
 const Message = ({ message }: Props) => {
 
-	const user = useUserStore();
-	console.log(user);
-
 	const username = useUserStore((s) => s.username);
 
 	const isLoading = false;

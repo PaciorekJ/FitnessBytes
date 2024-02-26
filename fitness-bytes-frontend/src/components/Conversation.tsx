@@ -1,5 +1,6 @@
 import { Stack } from "@mui/material";
 import { useEffect, useRef } from "react";
+import useUserStore from "../hooks/useUserStore";
 import { User } from "../pages/MessageBoard";
 import Message from "./Message";
 
@@ -13,6 +14,9 @@ const Conversation = ({
 	conversations,
 }: Props) => {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+
+	const user = useUserStore();
+	console.log(user);
 
 	const conversation = conversations.find(
 		(c) => c.username === selectedConversation,
