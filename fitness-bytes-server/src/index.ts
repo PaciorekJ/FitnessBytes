@@ -24,13 +24,13 @@ const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "") || 1000 * 60 *
 const app: Express = express();
 db.connect();
 
+// *** Set up session Store and Session ***
 const sessionStore: MongoStore = MongoStore.create({
     mongoUrl: process.env.DB_URL,
     autoRemove: 'interval',
-    autoRemoveInterval: 60 * 12, // In minutes. Default
+    autoRemoveInterval: (COOKIE_MAX_AGE/1000/60 * 1.2), // In Minutes
     collectionName: "sessions",
 });;
-
 app.use(session({
     secret: process.env.SECRETKEY!,
     resave: true,
@@ -39,8 +39,11 @@ app.use(session({
     cookie: { secure: false, maxAge: COOKIE_MAX_AGE, httpOnly: true } //TODO: Change this later
 }));
 
+// *** Enable Middlewares for parsing ***
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
+
+// *** CORS ***
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
@@ -365,53 +368,6 @@ app.patch("/post", async (req, res) => {
         }
 
         console.error("Error in /api/editPost:", error);
-        res.status(500).json(payload);
-    }
-});
-
-app.post(`/user/post/owner`, async (req, res) => {
-
-    const body = req.body || {};
-
-    let userId;
-    let postId;
-
-    try {
-        userId = new mongoose.Types.ObjectId(body.userId);
-        postId = new mongoose.Types.ObjectId(body.postId);
-    }
-    catch (err) {
-        const payload: ResponseResult = {
-            message: `${err}`,
-        }
-
-        return res.status(400).json(payload);
-    }
-
-    if (!postId || !userId) {
-
-        const payload: ResponseResult = {
-            message: "No postId or UserId",
-        }
-
-        return res.status(400).json(payload);
-    }
-
-    try {
-
-        const payload: ResponseResult = {
-            message: "",
-            result: await validateIsOwner(postId, userId)
-        }
-
-        res.status(200).json(payload);
-    } catch (error) {
-
-        const payload: ResponseResult = {
-            message: "Internal Server Error",
-        }
-
-        console.error("Error in /api/postOwner:", error);
         res.status(500).json(payload);
     }
 });
