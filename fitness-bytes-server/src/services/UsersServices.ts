@@ -1,6 +1,6 @@
 
-import mongoose, { ObjectId } from "mongoose";
-import UserModel, { IUser } from '../models/User';
+import mongoose from "mongoose";
+import UserModel, { IUser } from '../models/user';
 
 // *** Return True if addition was successful, false otherwise ***
 async function addUser(user: Partial<IUser>): Promise<boolean> {
@@ -8,7 +8,6 @@ async function addUser(user: Partial<IUser>): Promise<boolean> {
         await UserModel.create(user);
         return true;
     } catch (error) {
-        console.error("Error adding user:", error);
         return false;
     }
 }

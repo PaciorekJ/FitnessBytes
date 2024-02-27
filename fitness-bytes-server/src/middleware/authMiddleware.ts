@@ -1,7 +1,6 @@
 
 import { Request, Response } from 'express';
 import jwt from 'jwt-simple';
-import Payload from "../interfaces/Payload";
 
 function authMiddleware(req: Request & {user?: string}, res: Response, next: any) {
     const SECREYKEY = process.env.SECRETKEY || "";
@@ -10,7 +9,7 @@ function authMiddleware(req: Request & {user?: string}, res: Response, next: any
     const token = req.cookies.token;
 
     if (!token) {
-        const payload: Payload = {
+        const payload = {
             message: "Unauthorized: Token missing",
         }
         return res.status(401).json(payload);
@@ -28,7 +27,7 @@ function authMiddleware(req: Request & {user?: string}, res: Response, next: any
 
         console.error(error);
 
-        const payload: Payload = {
+        const payload = {
             message: "Unauthorized: Invalid token"
         }
 
