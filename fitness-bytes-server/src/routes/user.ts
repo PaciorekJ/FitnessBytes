@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { Request, Response, Router } from "express";
 import jwt from 'jwt-simple';
 import ResponseResult from '../interfaces/ResponseResult';
-import { IUser } from "../models/User";
+import { IUser } from "../models/user";
 import { addUser, getPasswordFromUsername, getUserIDFromUsername } from "../services/UsersServices";
 
 const SECREYKEY = process.env.SECRETKEY!;

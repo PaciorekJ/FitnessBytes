@@ -7,26 +7,48 @@ dotenv.config();
 
 import ResponseResult from './interfaces/ResponseResult';
 
-
+import MongoStore from 'connect-mongo';
+import session from 'express-session';
 import mongoose from 'mongoose';
 import { IPost } from './models/Post';
 import routerUser from './routes/user';
 import { isLiked, toggleLike, validateIsOwner } from './services/LikeServices';
-import { addPost, getPost, deletePost, editPost, findPosts, findUserPostCount, findUserPosts } from './services/PostServices';
-import db from './services/db';
+import { addPost, deletePost, editPost, findPosts, findUserPostCount, findUserPosts, getPost } from './services/PostServices';
 import report from './services/ReportServices';
 import { getUserIDFromUsername } from './services/UsersServices';
+import db from './services/db';
 
 const PORT = process.env.PORT || 3000;
+const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "") || 1000 * 60 * 60 * 24;
 
 const app: Express = express();
-
 db.connect();
+
+const sessionStore: MongoStore = MongoStore.create({
+    mongoUrl: process.env.DB_URL,
+    autoRemove: 'interval',
+    autoRemoveInterval: 60 * 12, // In minutes. Default
+    collectionName: "sessions",
+});;
+
+app.use(session({
+    secret: process.env.SECRETKEY!,
+    resave: true,
+    saveUninitialized: true,
+    store: sessionStore,
+    cookie: { secure: false, maxAge: COOKIE_MAX_AGE, httpOnly: true } //TODO: Change this later
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+}));
 
+app.get('/', (req, res) => {
+    res.send('Hey');
+})
 
 app.post('/report', async (req: Request, res: Response) => {
 
