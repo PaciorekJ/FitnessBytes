@@ -3,8 +3,9 @@ import bcrypt from 'bcrypt';
 import { Request, Response, Router } from "express";
 import jwt from 'jwt-simple';
 import ResponseResult from '../interfaces/ResponseResult';
+import { validatePassword } from '../libs/Auth';
 import { IUser } from "../models/user";
-import { addUser, getPasswordFromUsername, getUserIDFromUsername } from "../services/UsersServices";
+import { addUser, getUserIDFromUsername } from "../services/UsersServices";
 
 const SECREYKEY = process.env.SECRETKEY!;
 
@@ -85,19 +86,7 @@ routerUser.post("/login", async (req: Request, res: Response) => {
     }
 
     try {
-        // Retrieve the hashed password from the database
-        const retrievedPassword = await getPasswordFromUsername(username);
-    
-        if (!retrievedPassword) {
-            const response: ResponseResult = {
-                message: "Error: Invalid username or password",
-            }
-
-            return res.status(401).json(response);
-        }
-
-        // Compare the entered password with the hashed password
-        const passwordMatch = await bcrypt.compare(password, retrievedPassword);
+        const passwordMatch = await validatePassword(username, password);
 
         if (passwordMatch) {
             // Passwords match, create a JWT token
