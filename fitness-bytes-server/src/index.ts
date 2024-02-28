@@ -5,18 +5,19 @@ import express, { Express, Request, Response } from 'express';
 
 dotenv.config();
 
-import ResponseResult from './interfaces/ResponseResult';
-
 import MongoStore from 'connect-mongo';
 import session from 'express-session';
 import mongoose from 'mongoose';
+import ResponseResult from './interfaces/ResponseResult';
 import { IPost } from './models/Post';
 import routerUser from './routes/user';
-import { isLiked, toggleLike, validateIsOwner } from './services/LikeServices';
+import { isLiked, toggleLike } from './services/LikeServices';
 import { addPost, deletePost, editPost, findPosts, findUserPostCount, findUserPosts, getPost } from './services/PostServices';
 import report from './services/ReportServices';
 import { getUserIDFromUsername } from './services/UsersServices';
 import db from './services/db';
+import './services/passport';
+import passport from 'passport';
 
 const PORT = process.env.PORT || 3000;
 const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "") || 1000 * 60 * 60 * 24;
@@ -48,6 +49,10 @@ app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
 }));
+
+// *** Initialize passport middleware ***
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res) => {
     res.send('Hey');

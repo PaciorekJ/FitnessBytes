@@ -6,6 +6,7 @@ import ResponseResult from '../interfaces/ResponseResult';
 import { validatePassword } from '../libs/Auth';
 import { IUser } from "../models/user";
 import { addUser, getUserIDFromUsername } from "../services/UsersServices";
+import passport from 'passport';
 
 const SECREYKEY = process.env.SECRETKEY!;
 
@@ -71,7 +72,7 @@ routerUser.post("/signup", async (req, res) => {
     }
 });
 
-routerUser.post("/login", async (req: Request, res: Response) => {
+routerUser.post("/login", passport.authenticate('local'), async (req: Request, res: Response) => {
     const body = req.body || {};
     
     const username = body.username || "";
@@ -85,46 +86,13 @@ routerUser.post("/login", async (req: Request, res: Response) => {
         return res.status(400).json(response);
     }
 
-    try {
-        const passwordMatch = await validatePassword(username, password);
-
-        if (passwordMatch) {
-            // Passwords match, create a JWT token
-            const tokenPayload = { username: username };
-            const token = jwt.encode(tokenPayload, SECREYKEY);
-
-            const id = await getUserIDFromUsername(username);
-
-            // Send the token in the response
-            const response: ResponseResult = {
-                message: "",
-                result: {
-                    userId: id,
-                    token: token
-                }
-            }
-
-            res.json(response);
-
-        }
-        else {
-            const response: ResponseResult = {
-                message: "Error: Passwords don't match",
-            }
-    
-            // Passwords don't match
-            res.status(401).json(response);
-        }
-
-    } catch (error) {
-
-        const payload: ResponseResult = {
-            message: "Internal Server Error",
-        }
-
-        console.error("Error during login:", error);
-        res.status(500).json(payload);
+    const response: ResponseResult = { 
+        message: "",
+        result: true
     }
+
+    return res.status(200).json(response);
+    
 });
 
 export default routerUser;
