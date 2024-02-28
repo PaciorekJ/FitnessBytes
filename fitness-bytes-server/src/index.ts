@@ -8,6 +8,7 @@ dotenv.config();
 import MongoStore from 'connect-mongo';
 import session from 'express-session';
 import mongoose from 'mongoose';
+import passport from 'passport';
 import ResponseResult from './interfaces/ResponseResult';
 import { IPost } from './models/Post';
 import routerUser from './routes/user';
@@ -16,8 +17,6 @@ import { addPost, deletePost, editPost, findPosts, findUserPostCount, findUserPo
 import report from './services/ReportServices';
 import { getUserIDFromUsername } from './services/UsersServices';
 import db from './services/db';
-import './services/passport';
-import passport from 'passport';
 
 const PORT = process.env.PORT || 3000;
 const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "") || 1000 * 60 * 60 * 24;
@@ -37,7 +36,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true,
     store: sessionStore,
-    cookie: { secure: false, maxAge: COOKIE_MAX_AGE, httpOnly: true } //TODO: Change this later
+    cookie: { sameSite: false, secure: false, maxAge: COOKIE_MAX_AGE, httpOnly: true } //TODO: Change this later
 }));
 
 // *** Enable Middlewares for parsing ***
@@ -50,27 +49,27 @@ app.use(cors({
     credentials: true,
 }));
 
+import { authMiddleware } from './middleware/authMiddleware';
+import { IUser } from './models/user';
+import './services/passport';
+
 // *** Initialize passport middleware ***
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', (req, res) => {
-    res.send('Hey');
-})
-
-app.post('/report', async (req: Request, res: Response) => {
+app.post('/report', authMiddleware, async (req: Request, res: Response) => {
 
     const body = req.body || {};
 
     const ownerUsername = body.ownerUsername;
 
     let ownerId;
-    let userId;
     let postId;
+    let userId = (req.user as IUser)._id; // Retrieved from the session
     
     try {
         ownerId = await getUserIDFromUsername(ownerUsername)
-        userId = new mongoose.Types.ObjectId(body.userId);
+        userId = new mongoose.Types.ObjectId(userId);
         postId = new mongoose.Types.ObjectId(body.postId);
         if (!ownerId) throw new Error("Username was not valid");
     }
@@ -82,7 +81,7 @@ app.post('/report', async (req: Request, res: Response) => {
         return res.status(400).json(payload);
     }
 
-    if (!userId || !postId) {
+    if (!postId) {
 
         const response: ResponseResult = {
             message: "No postID or userID or postOwnerId",
@@ -155,15 +154,14 @@ app.get('/posts', async (req: Request, res: Response) => {
     return res.status(200).json(response);
 })
 
-app.post("/post/like", async (req, res) => {
+app.post("/post/like", authMiddleware, async (req, res) => {
 
-    const body = req.body || {};
-    let userId;
+    let userId = (req.user as IUser)._id;
     let postId;
 
     try {
-        userId = new mongoose.Types.ObjectId(body.userId);
-        postId = new mongoose.Types.ObjectId(body.postId);
+        userId = new mongoose.Types.ObjectId(userId);
+        postId = new mongoose.Types.ObjectId(req.body.postId);
     }
     catch (err) {
         const payload: ResponseResult = {
@@ -173,10 +171,10 @@ app.post("/post/like", async (req, res) => {
         return res.status(400).json(payload);
     }
 
-    if (!userId || !postId) {
+    if (!postId) {
 
         const response: ResponseResult = {
-            message: "No postID or userID",
+            message: "No postID",
         }
 
         return res.status(400).json(response);
@@ -201,18 +199,18 @@ app.post("/post/like", async (req, res) => {
     }
 });
 
-// authMiddleware
-app.post("/post", async (req, res) => {
+app.post("/post", authMiddleware, async (req, res) => {
 
-    const body = req.body || {};
-    const userId = body.userId || "";
-    const content = body.content || "";
-    const username = body.username || "";
-
-    if (!userId || content === "" || username === "") {
+    const content = req.body.content || "";
+    
+    const user = req.user as IUser;
+    const userId = user._id || "";
+    const username = user.username || "";
+    
+    if (content === "") {
 
         const response: ResponseResult = {
-            message: "No UserID or Content or Username",
+            message: "No Content Provided",
         }
 
         return res.status(400).json(response);
@@ -377,16 +375,15 @@ app.patch("/post", async (req, res) => {
     }
 });
 
-app.post('/user/post/liked', async (req, res) => {
+app.post('/user/post/liked', authMiddleware, async (req, res) => {
 
-    const body = req.body || {};
+    let userId = (req.user as IUser)._id; // Retrieved from the user's current session
 
-    let userId;
     let postId;
 
     try {
-        userId = new mongoose.Types.ObjectId(body.userId);
-        postId = new mongoose.Types.ObjectId(body.postId);
+        userId = new mongoose.Types.ObjectId(userId);
+        postId = new mongoose.Types.ObjectId(req.body.postId);
     }
     catch (err) {
         const payload: ResponseResult = {
@@ -396,7 +393,7 @@ app.post('/user/post/liked', async (req, res) => {
         return res.status(400).json(payload);
     }
 
-    if (!postId || !userId) {
+    if (!postId) {
 
         const payload: ResponseResult = {
             message: "No postId or UserId",
@@ -413,11 +410,11 @@ app.post('/user/post/liked', async (req, res) => {
         }
 
         res.status(200).json(payload);
+
     } catch (error) {
 
         const payload: ResponseResult = {
             message: "Internal Server Error",
-            result: await isLiked(postId, userId)
         }
 
         console.error("Error in /api/isLiked:", error);

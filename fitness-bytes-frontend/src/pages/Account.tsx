@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
-import usePosts from "../hooks/usePosts";
 import usePostCount from "../hooks/usePostCount";
+import usePosts from "../hooks/usePosts";
 
 const Account = () => {
 	const { username } = useParams();
@@ -61,7 +61,7 @@ const Account = () => {
 				<Divider orientation="horizontal" variant="fullWidth" />
 				<Stack>
 					{posts?.map((p) => (
-						<PostCard key={p._id} post={p} />
+						<PostCard key={p._id} {...p} />
 					))}
 				</Stack>
 			</Box>

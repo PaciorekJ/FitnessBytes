@@ -8,15 +8,12 @@ interface Props {
 }
 
 const Message = ({ message }: Props) => {
-
 	const username = useUserStore((s) => s.username);
 
 	const isLoading = false;
 	const Error = "";
 
 	const time = new Date(message.timeCreated || "").toString();
-
-	console.log(`${message.username} === ${username}`);
 
 	const isUsers = message.username === username;
 
