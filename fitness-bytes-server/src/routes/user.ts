@@ -1,14 +1,10 @@
 
 import bcrypt from 'bcrypt';
-import { Request, Response, Router } from "express";
-import jwt from 'jwt-simple';
+import { Router } from "express";
+import passport from 'passport';
 import ResponseResult from '../interfaces/ResponseResult';
-import { validatePassword } from '../libs/Auth';
 import { IUser } from "../models/user";
 import { addUser, getUserIDFromUsername } from "../services/UsersServices";
-import passport from 'passport';
-
-const SECREYKEY = process.env.SECRETKEY!;
 
 const routerUser = Router();
 
@@ -72,27 +68,27 @@ routerUser.post("/signup", async (req, res) => {
     }
 });
 
-routerUser.post("/login", passport.authenticate('local'), async (req: Request, res: Response) => {
-    const body = req.body || {};
-    
-    const username = body.username || "";
-    const password = body.password || "";
+routerUser.post("/login", passport.authenticate('local'));
 
-    if (!username || !password) {
+routerUser.post("/logout", (req, res, next) => {
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        
         const response: ResponseResult = { 
-            message: "Error: Username or password not present" 
+            message: "",
+            result: true,
         }
+        
+        res.status(200).json(response);
+      });
+})
 
-        return res.status(400).json(response);
+routerUser.get("/auth", (req, res) => {
+    if (req.isAuthenticated()){
+        const user = req.user as IUser;
+        return res.json({ result : user.username });
     }
-
-    const response: ResponseResult = { 
-        message: "",
-        result: true
-    }
-
-    return res.status(200).json(response);
-    
+    return res.status(401).json({result: ""})
 });
 
 export default routerUser;

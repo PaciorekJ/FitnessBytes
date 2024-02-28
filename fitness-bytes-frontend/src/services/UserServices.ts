@@ -2,13 +2,14 @@ import { AuthData } from "./AuthValidatorService";
 import ClientService, { ResponseResult } from "./ClientService";
 
 interface LoginResponse {
-	token: string;
-	userId: string;
+	_id: string;
 }
 
 type SignupResponse = boolean;
+type LogoutResponse = boolean;
+type AuthResponse = string;
 
-type UserResponse = ResponseResult<LoginResponse | SignupResponse>;
+type UserResponse = ResponseResult<LoginResponse | SignupResponse | AuthResponse | LogoutResponse>;
 
 class UserServices {
     private client: ClientService<UserResponse> | undefined;
@@ -37,6 +38,30 @@ class UserServices {
 		}
 
         return this.client.checkResponse(this.res) as SignupResponse;
+    }
+
+	async logout(): Promise<LogoutResponse | undefined> {
+        this.client = new ClientService<UserResponse>(`${this.endpoint}/logout`);
+
+		try {
+			this.res = await this.client.post({});
+		} catch {
+			return undefined;
+		}
+
+        return this.client.checkResponse(this.res) as LogoutResponse;
+    }
+
+	async isAuth(): Promise<AuthResponse | undefined> {
+        this.client = new ClientService<UserResponse>(`${this.endpoint}/auth`);
+
+		try {
+			this.res = await this.client.get();
+		} catch {
+			throw new Error("User is not authenticated");
+		}
+
+        return this.client.checkResponse(this.res) as AuthResponse;
     }
 }
 

@@ -19,7 +19,7 @@ class ReportServices {
     async post(report: Partial<Report>) {
         this.client = new ClientService(this.endpoint);
 
-        if (!report.ownerUsername || !report.postId || !report.userId) {
+        if (!report.ownerUsername || !report.postId) {
             return undefined;
         }
 
@@ -27,7 +27,6 @@ class ReportServices {
             this.res = await this.client.post({
                 ownerUsername: report.ownerUsername,
                 postId: report.postId,
-                userId: report.userId,
             });
         } catch {
             return undefined;

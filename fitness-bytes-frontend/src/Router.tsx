@@ -15,7 +15,7 @@ import Welcome from "./pages/Welcome";
 const router = createBrowserRouter([
 	{
 		path: "",
-		element: <Theme />,
+		element: <Theme children={undefined} />,
 		errorElement: (
 			<Theme>
 				<Error />

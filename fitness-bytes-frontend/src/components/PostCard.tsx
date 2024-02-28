@@ -30,19 +30,10 @@ import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 import PostModal from "./PostModal";
 
-interface Props {
-	post: Post;
-}
-
 const PostCard = memo(
-	({
-		post: { _id, content, username: postUsername, likes, timeCreated },
-	}: Props) => {
+	({ _id, content, username: postUsername, likes, timeCreated }: Post) => {
 		const queryClient = useQueryClient();
-		const { _id: userId, username: userUsername } = useUserStore((s) => ({
-			_id: s._id,
-			username: s.username,
-		}));
+		const currentUserUsername = useUserStore((s) => s.username);
 		const [isOpen, setOpen] = useState(false);
 		const [error, setError] = useState("");
 
@@ -80,7 +71,6 @@ const PostCard = memo(
 			const res = await client.post({
 				ownerUsername: postUsername,
 				postId: _id,
-				userId: userId,
 			});
 
 			if (!res) {
@@ -98,7 +88,7 @@ const PostCard = memo(
 			} else {
 				try {
 					await navigator.share({
-						title: `Post by ${postUsername}`, // Title of the thing you want to share.
+						title: `Fresh FitnessBytes from ${postUsername}`, // Title of the thing you want to share.
 						text: content, // Text to accompany the thing you're sharing.
 						url: `http://localhost:5173/auth/post/${_id}`, // URL or resource to share.
 					});
@@ -156,7 +146,7 @@ const PostCard = memo(
 				modal: (
 					<PostModal
 						onSubmit={submitPostUpdate}
-						username={userUsername}
+						username={currentUserUsername}
 						isOpen={isOpen}
 						ariaDescribedby="Modal that is used for editing a post on the platform"
 						ariaLabelledby="Modal For editing a post"
@@ -222,7 +212,7 @@ const PostCard = memo(
 								</IconButton>
 							</Stack>
 							<MoreOptions
-								isOwner={postUsername === userUsername}
+								isOwner={postUsername === currentUserUsername}
 								menuItems={MoreOptionsMenuItems}
 							/>
 						</Stack>

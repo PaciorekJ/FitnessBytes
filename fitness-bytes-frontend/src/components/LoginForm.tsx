@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../hooks/useUserStore";
 import { AuthData } from "../services/AuthValidatorService";
@@ -9,23 +8,20 @@ import AuthForm from "./AuthForm";
 const LoginForm = () => {
 	const { setUser } = useUserStore();
 	const [failedLogin, setFailedLogin] = useState(false);
-	const [, setCookie] = useCookies(["token"]);
 	const navigator = useNavigate();
 
 	async function handleLogin(data: AuthData) {
 		const client = new UserServices();
 
-		const res = await client.login(data);
-
-		if (!res) {
+		try {
+			await client.login(data);
+		}
+		catch {
 			setFailedLogin(true);
 			return;
 		}
 
-		const { userId, token } = res;
-
-		setCookie("token", token, { path: "/" });
-		setUser(userId, data.username);
+		setUser(data.username);
 		navigator("/auth/feed/" + data.username);
 	}
 

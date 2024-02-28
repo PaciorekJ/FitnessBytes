@@ -12,7 +12,7 @@ const Feed = () => {
 	return (
 		<Stack width={"100%"} alignItems={"center"}>
 			<div id="top"></div>
-			{!isLoading && posts.map((p) => <PostCard key={p._id} post={p} />)}
+			{!isLoading && posts.map((p) => <PostCard key={p._id} {...p} />)}
 			{isLoading && <CircularProgress />}
 		</Stack>
 	);

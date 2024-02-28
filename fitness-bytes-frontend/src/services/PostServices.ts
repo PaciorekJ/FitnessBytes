@@ -12,13 +12,11 @@ class PostServices {
     private res: ResponseResult<PostResponse> | undefined;
     private endpoint = "/post";
 
-    async post(post: Post): Promise<Post | undefined> {
+    async post(post: Partial<Post>): Promise<Post | undefined> {
         this.client = new ClientService<PostResponse>(this.endpoint);
 
         try {
             this.res = await this.client.post({
-                userId: post._id,
-                username: post.username,
                 content: post.content,
             });
         } catch {

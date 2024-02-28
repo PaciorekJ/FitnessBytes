@@ -7,7 +7,6 @@ type userPayload = IUser;
 
 interface loginPayload {
     _id?: mongoose.Types.ObjectId;
-    token: string;
 }
 
 interface ResponseResult {

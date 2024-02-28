@@ -19,8 +19,9 @@ import {
 	Tooltip,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useThemeStore from "../hooks/useThemeStore";
+import UserServices from "../services/UserServices";
 import AddFriend from "./AddFriend";
 import ComposePost from "./ComposePost";
 import LogoIcon from "./LogoIcon";
@@ -29,6 +30,7 @@ const Nav = () => {
 	const { mode, toggleTheme } = useThemeStore();
 	const { username } = useParams();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const navigator = useNavigate();
 
 	const open = Boolean(anchorEl);
 
@@ -38,6 +40,18 @@ const Nav = () => {
 
 	const handleClose = () => {
 		setAnchorEl(null);
+	};
+
+	const handleLogout = async () => {
+		handleClose();
+
+		const client = new UserServices();
+		try {
+			await client.logout();
+			navigator("/");
+		} catch {
+			return;
+		}
 	};
 
 	//TODO: For smaller layout condense nav to a Triple Bar button
@@ -132,7 +146,7 @@ const Nav = () => {
 								</ListItemIcon>
 								Manage Account
 							</MenuItem>
-							<MenuItem onClick={handleClose}>
+							<MenuItem onClick={handleLogout}>
 								<ListItemIcon>
 									<Logout fontSize="small" />
 								</ListItemIcon>

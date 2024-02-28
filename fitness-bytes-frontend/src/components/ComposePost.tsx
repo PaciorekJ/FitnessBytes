@@ -12,7 +12,6 @@ import { PostData } from "../services/PostValidatorService";
 import PostModal from "./PostModal";
 
 const ComposePost = () => {
-	const id = useUserStore((s) => s._id);
 	const username = useUserStore((s) => s.username);
 
 	const queryClient = useQueryClient();
@@ -27,8 +26,6 @@ const ComposePost = () => {
 		const postService = new PostServices();
 
 		const post = await postService.post({
-			_id: id,
-			username: username,
 			content: data.content,
 		});
 

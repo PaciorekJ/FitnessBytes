@@ -1,10 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
 
 const axiosInstance = axios.create({
-    params: {
-        token: localStorage.getItem('token'),
-    },
     baseURL: "http://localhost:5301/",
+    withCredentials: true,
 });
 
 export interface ResponseResult<T> {
