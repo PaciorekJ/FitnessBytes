@@ -6,9 +6,17 @@ import ResponseResult from '../interfaces/ResponseResult';
 import { IUser } from "../models/user";
 import { addUser, getUserIDFromUsername } from "../services/UsersServices";
 
-const routerUser = Router();
+const userRouter = Router();
 
-routerUser.post("/signup", async (req, res) => {
+userRouter.get("/auth", (req, res) => {
+    if (req.isAuthenticated()){
+        const user = req.user as IUser;
+        return res.json({ result : user.username });
+    }
+    return res.status(401).json({result: ""})
+});
+
+userRouter.post("/signup", async (req, res) => {
     const body = req.body || {};
 
     const username: string = body.username || "";
@@ -68,9 +76,9 @@ routerUser.post("/signup", async (req, res) => {
     }
 });
 
-routerUser.post("/login", passport.authenticate('local'));
+userRouter.post("/login", passport.authenticate('local'));
 
-routerUser.post("/logout", (req, res, next) => {
+userRouter.post("/logout", (req, res, next) => {
     req.logout(function(err) {
         if (err) { return next(err); }
         
@@ -83,12 +91,4 @@ routerUser.post("/logout", (req, res, next) => {
       });
 })
 
-routerUser.get("/auth", (req, res) => {
-    if (req.isAuthenticated()){
-        const user = req.user as IUser;
-        return res.json({ result : user.username });
-    }
-    return res.status(401).json({result: ""})
-});
-
-export default routerUser;
+export default userRouter;
