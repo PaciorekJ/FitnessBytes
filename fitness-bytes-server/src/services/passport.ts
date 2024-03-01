@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import passportLocal from 'passport-local';
 import { validatePassword } from '../libs/Auth';
-import UserModel from '../models/user';
+import UserModel from '../models/User';
 
 const verifyCallback = async (username: string, password: string, done: any) => {
     try {

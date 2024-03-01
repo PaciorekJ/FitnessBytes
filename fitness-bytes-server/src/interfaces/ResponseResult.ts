@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { IPost } from "../models/Post";
 import { IReport } from "../models/Report";
-import { IUser } from "../models/user";
+import { IUser } from "../models/User";
 
 type userPayload = IUser;
 

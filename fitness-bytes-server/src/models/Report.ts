@@ -7,9 +7,9 @@ interface IReport extends Document {
 }
 
 const ReportSchema: Schema = new Schema({
-  userId: { type: Schema.Types.ObjectId, required: true },
-  ownerId: { type: Schema.Types.ObjectId, required: true },
-  postId: { type: Schema.Types.ObjectId, required: true },
+  userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+  ownerId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+  postId: { type: Schema.Types.ObjectId, required: true, ref: 'Post'},
 });
 
 const ReportModel =  mongoose.model<IReport>('Report', ReportSchema)
