@@ -8,6 +8,8 @@ import express, { Express } from 'express';
 import session from 'express-session';
 import passport from 'passport';
 import ResponseResult from './interfaces/ResponseResult';
+import conversationRouter from './routes/conversation';
+import messageRouter from './routes/message';
 import postRouter from './routes/post';
 import postsRouter from './routes/posts';
 import reportRouter from './routes/report';
@@ -55,6 +57,8 @@ app.use('/report', reportRouter);
 app.use('/user', userRouter);
 app.use('/post', postRouter);
 app.use('/posts', postsRouter);
+app.use('/conversation', conversationRouter);
+app.use('/message', messageRouter);
 
 // *** Catch Stray Routes ***
 app.use((req, res, next) => {

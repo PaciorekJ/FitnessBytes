@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 interface IPostLike extends Document {
   postID: mongoose.ObjectId;
@@ -7,10 +7,10 @@ interface IPostLike extends Document {
 
 const PostLikeSchema: Schema = new Schema({
   postID: { type: Schema.Types.ObjectId, required: true, ref: 'Post' },
-  userID: { type: Schema.Types.ObjectId, required: true }
+  userID: { type: Schema.Types.ObjectId, required: true, ref: 'User' }
 });
 
 const PostLikeModel = mongoose.model<IPostLike>('PostLike', PostLikeSchema);
 
-export type { IPostLike }
+export type { IPostLike };
 export default PostLikeModel;

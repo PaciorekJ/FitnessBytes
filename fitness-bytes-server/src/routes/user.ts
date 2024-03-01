@@ -2,9 +2,7 @@
 import bcrypt from 'bcrypt';
 import { Router } from "express";
 import passport from 'passport';
-import ResponseResult from '../interfaces/ResponseResult';
-import { IUser } from "../models/user";
-import { addUser, getUserIDFromUsername } from "../services/UsersServices";
+import UserModel, { IUser } from "../models/User";
 
 const userRouter = Router();
 
@@ -13,7 +11,9 @@ userRouter.get("/auth", (req, res) => {
         const user = req.user as IUser;
         return res.json({ result : user.username });
     }
-    return res.status(401).json({result: ""})
+    return res.status(401).json({
+        message: "User needs authentication"
+    })
 });
 
 userRouter.post("/signup", async (req, res) => {
@@ -23,32 +23,26 @@ userRouter.post("/signup", async (req, res) => {
     const password: string = body.password || "";
 
     if (!username || !password) {
-        const response: ResponseResult = {
+        return res.status(400).json({
             message: "Error: Username or password not present"
-        }
-
-        return res.status(400).json(response);
+        });
     }
 
     if (username.indexOf(' ') !== -1 || password.indexOf(' ') !== -1) {
-        const response: ResponseResult = {
-            message: "Error: Username or password contains space"
-        }
 
-        return res.status(400).json(response);
+        return res.status(400).json({
+            message: "Error: Username or password contains space"
+        });
     }
 
     try {
         // Check if the username already exists
-        const userId = await getUserIDFromUsername(username);
+        const userId = await UserModel.findOne({ username: username }).select('_id');
 
         if (userId) {
-            const response: ResponseResult = {
+            return res.status(409).json({
                 message: "Error: Username already exists",
-                result: false
-            }
-
-            return res.status(409).json(response);
+            });
         }
 
         // Hash the password
@@ -59,35 +53,31 @@ userRouter.post("/signup", async (req, res) => {
             password: hashedPassword,
         }
 
-        // Add the user with the hashed password
-        await addUser(newUser);
+        const user = await UserModel.create(newUser);
 
-        const response: ResponseResult = { message: "", result: true } 
-
-        res.status(201).json(response);
-    } catch (error) {
-        console.error("Error while creating Account:", error);
-        
-        const response: ResponseResult = { 
-            message: "Error: Internal Server Error" 
-        }
-
-        res.status(500).json(response);
+        return res.status(201).json({ 
+            message: "", 
+            result: user
+        });
+    } catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
     }
 });
 
 userRouter.post("/login", passport.authenticate('local'));
 
 userRouter.post("/logout", (req, res, next) => {
-    req.logout(function(err) {
-        if (err) { return next(err); }
-        
-        const response: ResponseResult = { 
-            message: "",
-            result: true,
+    req.logout((e) => {
+        if (e) { 
+            return next(e); 
         }
         
-        res.status(200).json(response);
+        return res.status(200).json({ 
+            message: "",
+            result: true,
+        });
       });
 })
 

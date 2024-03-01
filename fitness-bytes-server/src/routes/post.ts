@@ -1,266 +1,185 @@
 import { Router } from "express";
 import mongoose from "mongoose";
-import ResponseResult from "../interfaces/ResponseResult";
 import { authMiddleware } from "../middleware/authMiddleware";
-import { IPost } from "../models/Post";
-import { IUser } from "../models/user";
-import { isLiked, toggleLike } from "../services/LikeServices";
-import { addPost, deletePost, editPost, getPost } from "../services/PostServices";
+import PostModel from "../models/Post";
+import PostLikeModel from "../models/PostLike";
+import { IUser } from "../models/User";
 
 const postRouter = Router();
 
 postRouter.get('/liked/:postId', authMiddleware, async (req, res) => {
 
-    let userId = (req.user as IUser)._id; // Retrieved from the user's current session
-    let postId;
+    const userId = (req.user as IUser)._id;
 
     try {
-        userId = new mongoose.Types.ObjectId(userId);
-        postId = new mongoose.Types.ObjectId(req.params.postId);
-    }
-    catch (err) {
-        const payload: ResponseResult = {
-            message: `${err}`,
-        }
+        const postId = new mongoose.Types.ObjectId(req.params.postId);
 
-        return res.status(400).json(payload);
-    }
+        const count = await PostLikeModel.countDocuments({ postID: postId, userID: userId });
 
-    try {
-
-        const payload: ResponseResult = {
+        res.status(200).json({
             message: "",
-            result: await isLiked(postId, userId)
-        }
+            result: count
+        });
 
-        res.status(200).json(payload);
-
-    } catch (error) {
-
-        const payload: ResponseResult = {
-            message: "Internal Server Error",
-        }
-        res.status(500).json(payload);
+    } 
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
     }
 });
 
 
 postRouter.post("/like", authMiddleware, async (req, res) => {
 
-    let userId = (req.user as IUser)._id;
-    let postId;
+    const userId = (req.user as IUser)._id;
 
     try {
-        userId = new mongoose.Types.ObjectId(userId);
-        postId = new mongoose.Types.ObjectId(req.body.postId);
-    }
-    catch (err) {
-        const payload: ResponseResult = {
-            message: `${err}`,
+        const postId = new mongoose.Types.ObjectId(req.body.postId);
+        
+        if (!postId) {
+            return res.status(400).json({
+                message: "No postID",
+            });
         }
 
-        return res.status(400).json(payload);
-    }
+        const existingLike = await PostLikeModel.findOne({ postID: postId, userID: userId });
 
-    if (!postId) {
-
-        const response: ResponseResult = {
-            message: "No postID",
-        }
-
-        return res.status(400).json(response);
-    }
-
-    try {
-
-        const response: ResponseResult = {
+        if (!existingLike) {
+            // *** Post is liked ***
+            await PostLikeModel.create({ postID: postId, userID: userId });
+            await PostModel.findByIdAndUpdate(postId, { $inc: { likes: 1 } });
+            return res.status(200).json({
+                message: "",
+                result: true,
+            });
+        } 
+        
+        // *** Post is unliked ***
+        await PostLikeModel.deleteOne({ postID: postId, userID: userId });
+        await PostModel.findByIdAndUpdate(postId, { $inc: { likes: -1 } });
+        return res.status(200).json({
             message: "",
-            result: await toggleLike(postId, userId)
-        }
-
-        res.status(200).json(response);
-    } catch (error) {
-
-        const response: ResponseResult = {
-            message: "Internal Server Error",
-        }
-
-        console.error("Error in /api/likePost:", error);
-        res.status(500).json(response);
+            result: false,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
     }
 });
 
 postRouter.post("/", authMiddleware, async (req, res) => {
 
-    const content = req.body.content || "";
+    const userId = (req.user as IUser)._id;
+    const username = (req.user as IUser).username;
+    const content = req.body.content;
     
-    const user = req.user as IUser;
-    const userId = user._id || "";
-    const username = user.username || "";
-    
-    if (content === "") {
-
-        const response: ResponseResult = {
+    if (!content) {
+        return res.status(400).json({
             message: "No Content Provided",
-        }
-
-        return res.status(400).json(response);
+        });
     }
 
     try {
 
-        const newPost: Partial<IPost> = {
+        const post = await PostModel.create({
             userId: userId,
             username: username,
             content: content,
-        }
+        });
 
-        const response: ResponseResult = {
+        return res.status(201).json({
             message: "",
-            result: await addPost(newPost),
-        }
-
-        res.status(201).json(response);
+            result: post,
+        });
         
-    } catch (error) {
-
-        const payload: ResponseResult = {
-            message: "Internal Server Error",
-        }
-
-        console.error("Error in /api/addPost:", error);
-        res.status(500).json(payload);
+    } catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
     }
 });
 
 postRouter.get("/:postId", async (req, res) => {
-    
-    let postId;
 
     try {
-        postId = new mongoose.Types.ObjectId(req.params.postId)
-    }
-    catch (err) {
-        const payload: ResponseResult = {
-            message: `${err}`,
+        const postId = new mongoose.Types.ObjectId(req.params.postId);
+
+        if (!postId) {
+            return res.status(400).json({
+                message: "Invalid PostId",
+            });
         }
 
-        return res.status(400).json(payload);
-    }
+        const post = await PostModel.findOne({_id: postId});
 
-    if (!postId) {
-
-        const payload: ResponseResult = {
-            message: "No postID",
-        }
-
-        return res.status(400).json(payload);
-    }
-
-    try {
-
-        const payload: ResponseResult = {
+        return res.status(200).json({
             message: "",
-            result: await getPost(postId),
-        }
-
-        res.status(200).json(payload);
-    } catch (error) {
-
-        const payload: ResponseResult = {
-            message: "Internal Server Error",
-        }
-
-        console.error("Error in get /post/:postId:", error);
-        res.status(500).json(payload);
+            result: post,
+        });
+            
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
     }
 });
 
 
 postRouter.delete("/:postId", async (req, res) => {
-    
-    let postId;
 
     try {
-        postId = new mongoose.Types.ObjectId(req.params.postId)
-    }
-    catch (err) {
-        const payload: ResponseResult = {
-            message: `${err}`,
+        const postId = new mongoose.Types.ObjectId(req.params.postId)
+
+        if (!postId) {
+            return res.status(400).json({
+                message: "Invalid postID",
+            });
         }
 
-        return res.status(400).json(payload);
-    }
+        // *** Remove all Likes ***
+        await PostLikeModel.deleteMany({ postID: postId });
 
-    if (!postId) {
+        const deletedPost = await PostModel.deleteOne({ _id: postId });
 
-        const payload: ResponseResult = {
-            message: "No postID",
-        }
-
-        return res.status(400).json(payload);
-    }
-
-    try {
-
-        const payload: ResponseResult = {
+        return res.status(200).json({
             message: "",
-            result: await deletePost(postId)
-        }
-
-        res.status(200).json(payload);
-    } catch (error) {
-
-        const payload: ResponseResult = {
-            message: "Internal Server Error",
-        }
-
-        console.error("Error in /api/deletePost:", error);
-        res.status(500).json(payload);
+            result: deletedPost
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
     }
 });
 
 postRouter.patch("/", authMiddleware, async (req, res) => {
 
-    let postId;
-    const content = req.body.content || "";
-
     try {
-        postId = new mongoose.Types.ObjectId(req.body.postId)
-    }
-    catch (err) {
-        const payload: ResponseResult = {
-            message: `${err}`,
+        const postId = new mongoose.Types.ObjectId(req.body.postId);
+        const content = req.body.content;
+
+        if (!postId || !content) {
+            return res.status(400).json({
+                message: "Invalid postId or Empty Content",
+            });
         }
 
-        return res.status(400).json(payload);
-    }
+        const result = await PostModel.updateOne({ _id: postId }, { $set: { content } });
 
-    if (!postId || content === "") {
-
-        const payload: ResponseResult = {
-            message: "No postId or Content",
-        }
-
-        return res.status(400).json(payload);
-    }
-
-    try {
-
-        const payload: ResponseResult = {
+        res.status(200).json({
             message: "",
-            result: await editPost(postId, content)
-        }
-
-        res.status(200).json(payload);
-    } catch (error) {
-
-        const payload: ResponseResult = {
-            message: "Internal Server Error",
-        }
-
-        console.error("Error in /api/editPost:", error);
-        res.status(500).json(payload);
+            result: result
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
     }
 });
 

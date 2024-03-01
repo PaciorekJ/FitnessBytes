@@ -1,47 +1,62 @@
 import { Router } from "express";
-import ResponseResult from "../interfaces/ResponseResult";
-import { findPosts, findUserPostCount, findUserPosts } from "../services/PostServices";
+import PostModel from "../models/Post";
 
 const postsRouter = Router();
 
 postsRouter.get('/', async (req, res) => {
 
-    const posts = await findPosts();
+    try {
+        const posts = await PostModel.find().sort({timeCreated: -1});
+        
+        return res.json({
+            message: "",
+            result: posts,
+        });
 
-    const response: ResponseResult = {
-        message: "",
-        result: posts,
+    } catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
     }
-
-    return res.status(200).json(response);
 })
 
 postsRouter.get('/:username', async (req, res) => {
 
     const username = req.params.username;
 
-    const posts = await findUserPosts(username);
+    try {
+        const posts = await PostModel.find({username: username}).sort({timeCreated: -1});
 
-    const response: ResponseResult = {
-        message: "",
-        result: posts,
-    };
+        return res.status(200).json({
+            message: "",
+            result: posts,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }
 
-    return res.status(200).json(response);
 })
 
 postsRouter.get('/count/:username', async (req, res) => {
 
     const username = req.params.username;
 
-    const count = await findUserPostCount(username);
-
-    const response: ResponseResult = {
-        message: "",
-        result: count,
-    };
-
-    return res.status(200).json(response);
+    try {
+        const count = await PostModel.find({username: username}).countDocuments();
+    
+        return res.status(200).json({
+            message: "",
+            result: count,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }
 })
 
 
