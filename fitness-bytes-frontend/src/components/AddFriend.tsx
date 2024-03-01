@@ -20,8 +20,8 @@ import { useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { User } from "../pages/MessageBoard";
 import users from "../data/user";
+import { User } from "../pages/MessageBoard";
 
 const style = {
 	position: "absolute",
@@ -34,35 +34,36 @@ const style = {
 	border: "2px solid #000",
 	borderRadius: "10px",
 	boxShadow: 24,
-	p: 4,
+	p: 6,
+	overflowY: "scroll",
 };
 
 const AddFriend = () => {
 	const [isOpen, setOpen] = useState(false);
 	const [searchResults, setSearchResults] = useState<User[]>([]);
 	const theme = useTheme();
-	
+
 	const { register, handleSubmit, setValue, reset } = useForm({
 		mode: "onChange",
 	});
-	
+
 	const openModal = () => setOpen(true);
 	const closeModal = () => setOpen(false);
-	
+
 	// TODO: Fetch users based the searchQuery
 	function handleSearch(data: FieldValues) {
 		const filterByQuery = (u: User) =>
-		u.username.toLowerCase().match(data.searchContent.toLowerCase());
-		
+			u.username.toLowerCase().match(data.searchContent.toLowerCase());
+
 		const results =
-		data.searchContent !== "" ? users.filter(filterByQuery) : [];
-		
+			data.searchContent !== "" ? users.filter(filterByQuery) : [];
+
 		setSearchResults(results);
 	}
 
 	// TODO: Send post request to add a user provided there UserId, and the friend's Id
 	const handleAddFriend = () => {};
-	
+
 	return (
 		<>
 			<Tooltip title="Add a Friend">

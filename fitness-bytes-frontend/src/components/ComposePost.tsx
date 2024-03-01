@@ -66,6 +66,7 @@ const ComposePost = () => {
 				isOpen={isOpen}
 				setOpen={setOpen}
 				error={error}
+				resetOnSubmit
 				textValue={""}
 			/>
 		</>

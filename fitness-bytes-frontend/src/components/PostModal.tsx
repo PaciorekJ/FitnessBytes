@@ -37,6 +37,7 @@ interface Props extends ModalProps {
 	username: string;
 	textValue: string;
 	buttonContent: string;
+	resetOnSubmit?: boolean;
 }
 
 const PostModal = ({
@@ -50,6 +51,7 @@ const PostModal = ({
 	ariaLabelledby,
 	ariaDescribedby,
 	buttonContent,
+	resetOnSubmit = false,
 }: Props) => {
 	const {
 		register,
@@ -99,8 +101,11 @@ const PostModal = ({
 				variant="outlined">
 				<form
 					onSubmit={handleSubmit((data) => {
-						onSubmit(data);
+						if (resetOnSubmit) {
+							setValue("");
+						}
 						reset();
+						onSubmit(data);
 					})}
 					onReset={() => {
 						if (onClose) onClose();

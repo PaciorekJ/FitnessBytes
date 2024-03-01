@@ -18,7 +18,7 @@ import db from './services/db';
 import './services/passport';
 
 const PORT = process.env.PORT || 3000;
-const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "") || 1000 * 60 * 60 * 24;
+const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "86400000"); // Default: 1 Day
 
 const app: Express = express();
 db.connect();
