@@ -1,6 +1,6 @@
 import { Stack, Typography } from "@mui/material";
 import useUserStore from "../hooks/useUserStore";
-import { IMessage } from "../pages/MessageBoard";
+import IMessage from "../interfaces/Message";
 import MessageBubble from "./MessageBubble";
 
 interface Props {
@@ -15,7 +15,7 @@ const Message = ({ message }: Props) => {
 
 	const time = new Date(message.timeCreated || "").toString();
 
-	const isUsers = message.username === username;
+	const isUsers = message.senderUsername === username;
 
 	return (
 		<Stack
@@ -25,7 +25,7 @@ const Message = ({ message }: Props) => {
 			}}>
 			{!Error && (
 				<>
-					<Typography>{message.username}</Typography>
+					<Typography>{message.senderUsername}</Typography>
 					<MessageBubble isCurrentUsers={isUsers}>
 						{message.content}
 					</MessageBubble>

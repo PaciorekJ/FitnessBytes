@@ -1,31 +1,26 @@
 import { Stack } from "@mui/material";
 import { useEffect, useRef } from "react";
-import { User } from "../pages/MessageBoard";
+import useConversation from "../hooks/useConversation";
+import IMessage from "../interfaces/Message";
 import Message from "./Message";
 
 interface Props {
-	conversation: string; // User of the selected conversation
-	conversations: User[];
+	conversationId: string; // User of the selected conversation
 }
 
-const Conversation = ({
-	conversation: selectedConversation,
-	conversations,
-}: Props) => {
+const Conversation = ({ conversationId }: Props) => {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
-
-	const conversation = conversations.find(
-		(c) => c.username === selectedConversation,
-	);
+	const { data } = useConversation(conversationId);
+	const conversation: IMessage[] = data?.result || [];
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView();
-	}, [conversation]);
+	}, [conversationId, data]);
 
 	return (
 		<>
 			<Stack gap={2}>
-				{conversation?.messages?.map((m, i) => {
+				{conversation.map((m, i) => {
 					return <Message key={"Conversation__Messages-" + i} message={m} />;
 				})}
 			</Stack>

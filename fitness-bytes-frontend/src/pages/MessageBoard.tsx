@@ -21,6 +21,7 @@ import {
 import React, { useState } from "react";
 import Conversation from "../components/Conversation";
 import Messenger from "../components/Messenger";
+import useConversations from "../hooks/useConversations";
 
 export interface IMessage {
 	username: string;
@@ -33,78 +34,81 @@ export interface User {
 	messages?: IMessage[];
 }
 
-const conversations: User[] = [
-	{
-		username: "Dave",
-		messages: [
-			{
-				username: "Dave",
-				content: "Hey",
-				timeCreated: new Date(),
-			},
-			{
-				username: "Dave",
-				content: "HEY",
-				timeCreated: new Date(),
-			},
-			{
-				username: "Jason",
-				content: "hey",
-				timeCreated: new Date(),
-			},
-			{
-				username: "Dave",
-				content: "Hey",
-				timeCreated: new Date(),
-			},
-			{
-				username: "Dave",
-				content: "HEY",
-				timeCreated: new Date(),
-			},
-			{
-				username: "Jason",
-				content: "hey",
-				timeCreated: new Date(),
-			},
-		],
-	},
-	{
-		username: "Paul",
-		messages: [
-			{
-				username: "Paul",
-				content: "Whats up",
-				timeCreated: new Date(),
-			},
-			{
-				username: "Jason",
-				content: "Hey",
-				timeCreated: new Date(),
-			},
-		],
-	},
-	{
-		username: "Leory",
-		messages: [
-			{
-				username: "Leory",
-				content: "Whats up",
-				timeCreated: new Date(),
-			},
-			{
-				username: "Leory",
-				content: "Hey",
-				timeCreated: new Date(),
-			},
-		],
-	},
-];
+// const conversations: User[] = [
+// 	{
+// 		username: "Dave",
+// 		messages: [
+// 			{
+// 				username: "Dave",
+// 				content: "Hey",
+// 				timeCreated: new Date(),
+// 			},
+// 			{
+// 				username: "Dave",
+// 				content: "HEY",
+// 				timeCreated: new Date(),
+// 			},
+// 			{
+// 				username: "Jason",
+// 				content: "hey",
+// 				timeCreated: new Date(),
+// 			},
+// 			{
+// 				username: "Dave",
+// 				content: "Hey",
+// 				timeCreated: new Date(),
+// 			},
+// 			{
+// 				username: "Dave",
+// 				content: "HEY",
+// 				timeCreated: new Date(),
+// 			},
+// 			{
+// 				username: "Jason",
+// 				content: "hey",
+// 				timeCreated: new Date(),
+// 			},
+// 		],
+// 	},
+// 	{
+// 		username: "Paul",
+// 		messages: [
+// 			{
+// 				username: "Paul",
+// 				content: "Whats up",
+// 				timeCreated: new Date(),
+// 			},
+// 			{
+// 				username: "Jason",
+// 				content: "Hey",
+// 				timeCreated: new Date(),
+// 			},
+// 		],
+// 	},
+// 	{
+// 		username: "Leory",
+// 		messages: [
+// 			{
+// 				username: "Leory",
+// 				content: "Whats up",
+// 				timeCreated: new Date(),
+// 			},
+// 			{
+// 				username: "Leory",
+// 				content: "Hey",
+// 				timeCreated: new Date(),
+// 			},
+// 		],
+// 	},
+// ];
 
 const MessageBoard = () => {
-	const [conversation, setConversation] = useState("");
+	const { data } = useConversations();
+	const [conversationId, setConversationId] = useState("");
 	const [open, setOpen] = useState(true);
 	const theme = useTheme();
+
+	const conversations = data?.result;
 
 	const toggleDrawer = () => setOpen(!open);
 
@@ -124,33 +128,38 @@ const MessageBoard = () => {
 					sx={{ ml: 2.5, my: 1 }}>
 					New Conversation
 				</Button>
-				{conversations.map((c, i) => (
-					<React.Fragment key={"Contact__" + c.username + "-" + i}>
-						<Box
-							bgcolor={
-								c.username === conversation ? theme.palette.primary.light : ""
-							}
-							color={c.username === conversation ? "white" : ""}>
-							<ListItem
-								disablePadding
-								secondaryAction={
-									<IconButton edge="end" aria-label="delete">
-										<DeleteIcon />
-									</IconButton>
-								}>
-								<ListItemButton onClick={() => setConversation(c.username)}>
-									<ListItemIcon>
-										<Avatar aria-label="User Icon">
-											{c.username.charAt(0)}
-										</Avatar>
-									</ListItemIcon>
-									<ListItemText primary={c.username} />
-								</ListItemButton>
-							</ListItem>
-						</Box>
-						{i < conversations.length - 1 && <Divider />}
-					</React.Fragment>
-				))}
+				{conversations &&
+					conversations.map((c, i) => {
+						const convoTitle =
+							c.title || c.participants.join(", ") || "Empty Conversation";
+						return (
+							<React.Fragment key={"Contact__" + convoTitle + "-" + i}>
+								<Box
+									bgcolor={
+										c._id === conversationId ? theme.palette.primary.light : ""
+									}
+									color={c._id === conversationId ? "white" : ""}>
+									<ListItem
+										disablePadding
+										secondaryAction={
+											<IconButton edge="end" aria-label="delete">
+												<DeleteIcon />
+											</IconButton>
+										}>
+										<ListItemButton onClick={() => setConversationId(c._id)}>
+											<ListItemIcon>
+												<Avatar aria-label="User Icon">
+													{convoTitle.charAt(0)}
+												</Avatar>
+											</ListItemIcon>
+											<ListItemText primary={convoTitle} />
+										</ListItemButton>
+									</ListItem>
+								</Box>
+								{i < conversations.length - 1 && <Divider />}
+							</React.Fragment>
+						);
+					})}
 			</List>
 		</Box>
 	);
@@ -169,13 +178,12 @@ const MessageBoard = () => {
 					</Drawer>
 				</Grid>
 				<Grid item xs={5}>
-					{(conversation && (
+					{(conversationId && (
 						<Stack minHeight={"78vh"} justifyContent={"end"}>
-							<Conversation
-								conversations={conversations}
-								conversation={conversation}
-							/>
-							<Messenger />
+							{conversations && (
+								<Conversation conversationId={conversationId} />
+							)}
+							<Messenger conversationId={conversationId} />
 						</Stack>
 					)) || (
 						<Typography align={"center"}>No Conversation Selected</Typography>

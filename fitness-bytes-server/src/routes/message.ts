@@ -8,7 +8,7 @@ import { IUser } from "../models/User";
 const messageRouter = Router();
 
 messageRouter.get('/:conversationId', authMiddleware, async (req, res) => {
-    const userId = (req.user as IUser)._id; 
+    const username = (req.user as IUser).username;
     let _id: string | mongoose.Types.ObjectId = req.params.conversationId;
 
     // *** Verify User has access to this conversation ***
@@ -21,8 +21,8 @@ messageRouter.get('/:conversationId', authMiddleware, async (req, res) => {
         return;
     }
     try {
-        const participants : mongoose.Types.ObjectId[] = (await ConversationModel.findById(_id).select('participants -_id'))?.participants || [];
-        const isAMember = participants.some(p => p.equals(userId));
+        const participants : string[] = (await ConversationModel.findById(_id).select('participants -_id'))?.participants || [];
+        const isAMember = participants.some(p => p === username);
         if (!isAMember) {
             res.status(403).json({
                 message: "Forbidden, You are not a member of this conversation",
@@ -45,6 +45,7 @@ messageRouter.get('/:conversationId', authMiddleware, async (req, res) => {
 
 messageRouter.post('/', authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id; 
+    const username = (req.user as IUser).username;
     const content = req.body.content;
     let _id = req.body.conversation;
 
@@ -68,6 +69,7 @@ messageRouter.post('/', authMiddleware, async (req, res) => {
         const message = await MessageModel.create({
             conversation: _id,
             sender: userId,
+            senderUsername: username,
             content
         } as Partial<IMessage>);
     
