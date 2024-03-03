@@ -6,7 +6,7 @@ const noSpacesRegex = /^\S*$/;
 const containsNumberRegex = /\d+/;
 const containsCapitalLetterRegex = /[A-Z]+/;
 
-const MIN_USERNAME_LENGTH = 10;
+const MIN_USERNAME_LENGTH = 3;
 const MIN_PASSWORD_LENGTH = 3;
 
 export const schema = z.object({
@@ -24,9 +24,9 @@ export const schema = z.object({
 		.regex(containsNumberRegex, {
 			message: "Password should contain at least 1 number",
 		})
-		.regex(containsCapitalLetterRegex, {
-			message: "Password should contain at least 1 capital letter",
-		})
+		// .regex(containsCapitalLetterRegex, {
+		// 	message: "Password should contain at least 1 capital letter",
+		// })
 		.min(MIN_PASSWORD_LENGTH, { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.` }),
 });
 
