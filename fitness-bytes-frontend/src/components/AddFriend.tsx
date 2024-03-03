@@ -21,7 +21,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import users from "../data/user";
-import { User } from "../pages/MessageBoard";
+import User from "../interfaces/User";
+import ClientService from "../services/ClientService";
+import FriendRequest from "../interfaces/FriendRequest";
 
 const style = {
 	position: "absolute",
@@ -50,19 +52,30 @@ const AddFriend = () => {
 	const openModal = () => setOpen(true);
 	const closeModal = () => setOpen(false);
 
-	// TODO: Fetch users based the searchQuery
-	function handleSearch(data: FieldValues) {
-		const filterByQuery = (u: User) =>
-			u.username.toLowerCase().match(data.searchContent.toLowerCase());
+	async function handleSearch(data: FieldValues) {
+		const reqConfig = {
+			params: {
+				query: data.searchContent,
+			},
+		};
 
-		const results =
-			data.searchContent !== "" ? users.filter(filterByQuery) : [];
+		const client = new ClientService<User[]>("/user/search");
 
-		setSearchResults(results);
+		const { result: users } = await client.get(reqConfig);
+
+		setSearchResults(users || []);
 	}
 
 	// TODO: Send post request to add a user provided there UserId, and the friend's Id
-	const handleAddFriend = () => {};
+	const handleAddFriend = async (_id: string) => {
+		const client = new ClientService<FriendRequest>('/friendRequest');
+
+		const { result: createdFriendRequest } = await client.post({
+			recipientId: _id,
+		});
+
+		alert(`Friend Request has been issued to ${createdFriendRequest?.requesterId}`);
+	};
 
 	return (
 		<>
@@ -101,7 +114,7 @@ const AddFriend = () => {
 						</IconButton>
 					</Stack>
 					<List>
-						{searchResults.map((u, i) => (
+						{searchResults.map((u: User, i) => (
 							<React.Fragment key={"Search__Result-" + u.username + " " + i}>
 								<ListItemButton>
 									<ListItemIcon>
@@ -117,7 +130,7 @@ const AddFriend = () => {
 												closeModal();
 												setSearchResults([]);
 												reset();
-												handleAddFriend();
+												handleAddFriend(u._id);
 											}}>
 											<PersonAddOutlinedIcon color="primary" />
 										</IconButton>

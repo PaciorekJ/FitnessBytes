@@ -6,6 +6,37 @@ import UserModel, { IUser } from "../models/User";
 
 const userRouter = Router();
 
+userRouter.get("/search", async (req, res) => {
+    const {query} = req.query as {query: string};
+
+    if (!query) {
+        return res.json({
+            message: "",
+            result: []
+        })
+    }
+    try {
+        const regex = new RegExp(query, 'i');
+
+        const users = await UserModel.find({
+            $or: [
+              { username: regex },
+              { email: regex }
+            ]
+        }).select("_id username");
+
+        res.json({
+            message: "",
+            result: users
+        })
+    } 
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }
+});
+
 userRouter.get("/auth", (req, res) => {
     if (req.isAuthenticated()){
         const user = req.user as IUser;
