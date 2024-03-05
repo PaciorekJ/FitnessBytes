@@ -9,6 +9,7 @@ import session from 'express-session';
 import passport from 'passport';
 import ResponseResult from './interfaces/ResponseResult';
 import conversationRouter from './routes/conversation';
+import friendRequestRouter from './routes/friendRequest';
 import messageRouter from './routes/message';
 import postRouter from './routes/post';
 import postsRouter from './routes/posts';
@@ -16,7 +17,7 @@ import reportRouter from './routes/report';
 import userRouter from './routes/user';
 import db from './services/db';
 import './services/passport';
-import friendRequestRouter from './routes/friendRequest';
+import friendRouter from './routes/friend';
 
 const PORT = process.env.PORT || 3000;
 const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "86400000"); // Default: 1 Day
@@ -52,7 +53,7 @@ app.use(cors({
 // *** Initialize passport middleware ***
 app.use(passport.initialize());
 app.use(passport.session());
-
+//65ce6af7e17b4a23a81c81cd
 // *** Initialize Routes ***
 app.use('/report', reportRouter);
 app.use('/user', userRouter);
@@ -61,6 +62,7 @@ app.use('/posts', postsRouter);
 app.use('/conversation', conversationRouter);
 app.use('/message', messageRouter);
 app.use('/friendRequest', friendRequestRouter);
+app.use('/friend', friendRouter);
 
 // *** Catch Stray Routes ***
 app.use((req, res, next) => {

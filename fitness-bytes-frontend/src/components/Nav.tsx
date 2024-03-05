@@ -80,7 +80,7 @@ const Nav = () => {
 							</IconButton>
 						</Tooltip>
 						<Tooltip title="Notifications">
-							<IconButton>
+							<IconButton href={"/auth/notifications/"}>
 								<Badge badgeContent={10} variant="dot" color="secondary">
 									<NotificationsNoneIcon color="primary" />
 								</Badge>

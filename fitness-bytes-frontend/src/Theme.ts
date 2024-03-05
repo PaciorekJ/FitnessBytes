@@ -68,13 +68,13 @@ const darkTheme = {
         MuiButton: {
           styleOverrides: {
             root: {
-              "&.Mui-disabled": {
-                background: "#LLLLLL",
-                color: "#FFFFFF",
-              }
+				"&.Mui-disabled": {
+				background: "#LLLLLL",
+				color: "#FFFFFF",
+				},
             }
           }
-        }
+        },
       }
 };
 
@@ -139,7 +139,25 @@ const getTheme = (mode: PaletteMode) => {
                     borderColor: "none",
                 },
             },
-        }
+        },
+		// MuiIconButton: {
+		// 	styleOverrides: {
+		// 		root: {
+		// 			":hover": {
+		// 				background: theme.palette.background.default,
+		// 			}
+		// 		}
+		// 	}
+		// },
+		// MuiListItemButton: {
+		// 	styleOverrides: {
+		// 		root: {
+		// 			":hover": {
+		// 				background: theme.palette.background.paper,
+		// 			}-
+		// 		}
+		// 	}
+		// }
 	};
 
 	return theme;
