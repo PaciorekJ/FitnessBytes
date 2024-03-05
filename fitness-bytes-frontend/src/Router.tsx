@@ -8,6 +8,7 @@ import Error from "./pages/Error";
 import Feed from "./pages/Feed";
 import Login from "./pages/Login";
 import MessageBoard from "./pages/MessageBoard";
+import Notifications from "./pages/Notifications";
 import Post from "./pages/Post";
 import Signup from "./pages/Signup";
 import Welcome from "./pages/Welcome";
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
 					{
 						path: "messages/:username",
 						element: <MessageBoard />,
+					},
+					{
+						path: "notifications/",
+						element: <Notifications />,
 					},
 				],
 			},

@@ -21,9 +21,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import users from "../data/user";
+import FriendRequest from "../interfaces/FriendRequest";
 import User from "../interfaces/User";
 import ClientService from "../services/ClientService";
-import FriendRequest from "../interfaces/FriendRequest";
 
 const style = {
 	position: "absolute",
@@ -68,13 +68,15 @@ const AddFriend = () => {
 
 	// TODO: Send post request to add a user provided there UserId, and the friend's Id
 	const handleAddFriend = async (_id: string) => {
-		const client = new ClientService<FriendRequest>('/friendRequest');
+		const client = new ClientService<FriendRequest>("/friendRequest");
 
 		const { result: createdFriendRequest } = await client.post({
 			recipientId: _id,
 		});
 
-		alert(`Friend Request has been issued to ${createdFriendRequest?.requesterId}`);
+		alert(
+			`Friend Request has been issued to ${createdFriendRequest?.requesterId}`,
+		);
 	};
 
 	return (
@@ -90,6 +92,9 @@ const AddFriend = () => {
 				aria-labelledby="Modal For Posting"
 				aria-describedby="Modal that is used for posting on the platform">
 				<Box sx={style}>
+					<Typography variant="h3" paddingBottom={3}>
+						Find A Friend
+					</Typography>
 					<Stack
 						sx={{
 							flexDirection: "row",
@@ -116,7 +121,7 @@ const AddFriend = () => {
 					<List>
 						{searchResults.map((u: User, i) => (
 							<React.Fragment key={"Search__Result-" + u.username + " " + i}>
-								<ListItemButton>
+								<ListItemButton href={"/auth/account/" + u.username}>
 									<ListItemIcon>
 										<Avatar>{u.username.charAt(0)}</Avatar>
 									</ListItemIcon>
