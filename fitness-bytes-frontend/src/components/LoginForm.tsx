@@ -15,14 +15,13 @@ const LoginForm = () => {
 
 		try {
 			await client.login(data);
-		}
-		catch {
+		} catch {
 			setFailedLogin(true);
 			return;
 		}
 
 		setUser(data.username);
-		navigator("/auth/feed/" + data.username);
+		navigator("/auth/feed/");
 	}
 
 	return (

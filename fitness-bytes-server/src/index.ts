@@ -9,15 +9,16 @@ import session from 'express-session';
 import passport from 'passport';
 import ResponseResult from './interfaces/ResponseResult';
 import conversationRouter from './routes/conversation';
+import friendRouter from './routes/friend';
 import friendRequestRouter from './routes/friendRequest';
 import messageRouter from './routes/message';
+import notificationRouter from './routes/notifcations';
 import postRouter from './routes/post';
 import postsRouter from './routes/posts';
 import reportRouter from './routes/report';
 import userRouter from './routes/user';
 import db from './services/db';
 import './services/passport';
-import friendRouter from './routes/friend';
 
 const PORT = process.env.PORT || 3000;
 const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "86400000"); // Default: 1 Day
@@ -63,6 +64,7 @@ app.use('/conversation', conversationRouter);
 app.use('/message', messageRouter);
 app.use('/friendRequest', friendRequestRouter);
 app.use('/friend', friendRouter);
+app.use('/notifications', notificationRouter);
 
 // *** Catch Stray Routes ***
 app.use((req, res, next) => {

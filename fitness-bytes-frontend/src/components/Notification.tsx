@@ -38,7 +38,7 @@ const Notification = ({
 				{icon}
 				<Typography>{content}</Typography>
 			</Stack>
-			<Stack flexDirection={"row"}>
+			<Stack gap={2} flexDirection={"row"}>
 				<Stack
 					sx={{
 						flexDirection: "row",
@@ -47,10 +47,10 @@ const Notification = ({
 					}}>
 					{actions && (
 						<>
-							<IconButton onClick={actionOnAccept}>
+							<IconButton color="success" onClick={actionOnAccept}>
 								<CheckCircleOutlineOutlinedIcon />
 							</IconButton>
-							<IconButton onClick={actionOnReject}>
+							<IconButton color="error" onClick={actionOnReject}>
 								<CancelOutlinedIcon />
 							</IconButton>
 						</>

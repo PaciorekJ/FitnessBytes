@@ -1,31 +1,27 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
-import FriendModel from "../models/Friend";
+import { NotificationModel } from "../models/Notification";
 import { IUser } from "../models/User";
 
-const friendRouter = Router();
+const notificationRouter = Router();
 
-friendRouter.get('/', authMiddleware, async (req, res) => {
+notificationRouter.get("/", authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
 
     try {
-        const friendships = await FriendModel.find({
-            $or: [
-                { userId1: userId },
-                { userId2: userId },
-            ]
+        const userNotifcations = await NotificationModel.find({
+            recipientId: userId,
         })
 
         return res.json({
             message: "",
-            result: friendships
+            result: userNotifcations,
         })
-    }
-    catch (e) {
+    } catch (e) {
         return res.status(500).json({ 
             message: `Error: Internal Server Error: ${e}` 
         });
     }
 })
 
-export default friendRouter;
+export default notificationRouter;

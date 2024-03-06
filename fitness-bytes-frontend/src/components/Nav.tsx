@@ -19,8 +19,9 @@ import {
 	Tooltip,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useThemeStore from "../hooks/useThemeStore";
+import useUserStore from "../hooks/useUserStore";
 import UserServices from "../services/UserServices";
 import AddFriend from "./AddFriend";
 import ComposePost from "./ComposePost";
@@ -28,7 +29,7 @@ import LogoIcon from "./LogoIcon";
 
 const Nav = () => {
 	const { mode, toggleTheme } = useThemeStore();
-	const { username } = useParams();
+	const username = useUserStore((s) => s.username);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const navigator = useNavigate();
 
@@ -87,7 +88,7 @@ const Nav = () => {
 							</IconButton>
 						</Tooltip>
 						<Tooltip title="Messages">
-							<IconButton href={`/auth/messages/${username}`}>
+							<IconButton href={`/auth/messages/`}>
 								<Badge badgeContent={10} color="secondary">
 									<MailOutlinedIcon color="primary" />
 								</Badge>
@@ -99,7 +100,7 @@ const Nav = () => {
 							</IconButton>
 						</Tooltip>
 						<Tooltip title="Home">
-							<IconButton href={`/auth/feed/${username}#top`}>
+							<IconButton href={`/auth/feed/#top`}>
 								<HomeIcon color="primary" />
 							</IconButton>
 						</Tooltip>
