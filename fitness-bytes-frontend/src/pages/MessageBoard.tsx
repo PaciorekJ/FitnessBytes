@@ -22,11 +22,13 @@ import React, { useState } from "react";
 import Conversation from "../components/Conversation";
 import Messenger from "../components/Messenger";
 import useConversations from "../hooks/useConversations";
+import AddConversationModal from "../components/AddConversationModal";
 
 
 const MessageBoard = () => {
 	const { data } = useConversations();
 	const [conversationId, setConversationId] = useState("");
+	const [addConvoOpen, addConvoSetOpen] = useState(false);
 	const [open, setOpen] = useState(true);
 	const theme = useTheme();
 
@@ -35,55 +37,59 @@ const MessageBoard = () => {
 	const toggleDrawer = () => setOpen(!open);
 
 	const list = () => (
-		<Box
-			sx={{ width: 250 }}
-			role="presentation"
-			onClick={toggleDrawer}
-			onKeyDown={toggleDrawer}
-			justifyItems={"center"}>
-			<List>
-				<Button
-					variant="contained"
-					color={"secondary"}
-					startIcon={<AddCircleIcon />}
-					size="large"
-					sx={{ ml: 2.5, my: 1 }}>
-					New Conversation
-				</Button>
-				{conversations &&
-					conversations.map((c, i) => {
-						const convoTitle =
-							c.title || c.participants.join(", ") || "Empty Conversation";
-						return (
-							<React.Fragment key={"Contact__" + convoTitle + "-" + i}>
-								<Box
-									bgcolor={
-										c._id === conversationId ? theme.palette.primary.light : ""
-									}
-									color={c._id === conversationId ? "white" : ""}>
-									<ListItem
-										disablePadding
-										secondaryAction={
-											<IconButton edge="end" aria-label="delete">
-												<DeleteIcon />
-											</IconButton>
-										}>
-										<ListItemButton onClick={() => setConversationId(c._id)}>
-											<ListItemIcon>
-												<Avatar aria-label="User Icon">
-													{convoTitle.charAt(0)}
-												</Avatar>
-											</ListItemIcon>
-											<ListItemText primary={convoTitle} />
-										</ListItemButton>
-									</ListItem>
-								</Box>
-								{i < conversations.length - 1 && <Divider />}
-							</React.Fragment>
-						);
-					})}
-			</List>
-		</Box>
+		<>
+			<AddConversationModal isOpen={addConvoOpen} setOpen={addConvoSetOpen}/>
+			<Box
+				sx={{ width: 250 }}
+				role="presentation"
+				onClick={toggleDrawer}
+				onKeyDown={toggleDrawer}
+				justifyItems={"center"}>
+				<List>
+					<Button
+						variant="contained"
+						color={"secondary"}
+						startIcon={<AddCircleIcon />}
+						size="large"
+						sx={{ ml: 2.5, my: 1 }}
+						onClick={() => addConvoSetOpen(true)}>
+						New Conversation
+					</Button>
+					{conversations &&
+						conversations.map((c, i) => {
+							const convoTitle =
+								c.title || c.participants.join(", ") || "Empty Conversation";
+							return (
+								<React.Fragment key={"Contact__" + convoTitle + "-" + i}>
+									<Box
+										bgcolor={
+											c._id === conversationId ? theme.palette.primary.light : ""
+										}
+										color={c._id === conversationId ? "white" : ""}>
+										<ListItem
+											disablePadding
+											secondaryAction={
+												<IconButton edge="end" aria-label="delete">
+													<DeleteIcon />
+												</IconButton>
+											}>
+											<ListItemButton onClick={() => setConversationId(c._id)}>
+												<ListItemIcon>
+													<Avatar aria-label="User Icon">
+														{convoTitle.charAt(0)}
+													</Avatar>
+												</ListItemIcon>
+												<ListItemText primary={convoTitle} />
+											</ListItemButton>
+										</ListItem>
+									</Box>
+									{i < conversations.length - 1 && <Divider />}
+								</React.Fragment>
+							);
+						})}
+				</List>
+			</Box>
+		</>
 	);
 
 	return (

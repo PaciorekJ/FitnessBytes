@@ -66,7 +66,6 @@ const AddFriend = () => {
 		setSearchResults(users || []);
 	}
 
-	// TODO: Send post request to add a user provided there UserId, and the friend's Id
 	const handleAddFriend = async (_id: string) => {
 		const client = new ClientService<FriendRequest>("/friendRequest");
 
@@ -89,8 +88,8 @@ const AddFriend = () => {
 			<Modal
 				open={isOpen}
 				onClose={closeModal}
-				aria-labelledby="Modal For Posting"
-				aria-describedby="Modal that is used for posting on the platform">
+				aria-labelledby="Modal For Finding new friends"
+				aria-describedby="Modal that is used for finding new friends on the platform">
 				<Box sx={style}>
 					<Typography variant="h3" paddingBottom={3}>
 						Find A Friend

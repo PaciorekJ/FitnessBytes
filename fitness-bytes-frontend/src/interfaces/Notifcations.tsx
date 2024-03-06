@@ -1,31 +1,32 @@
 import { Avatar, Typography } from "@mui/material";
-import { ReactNode } from "react";
 import Notification from "../components/Notification";
+import ClientService from "../services/ClientService";
 
 // Base Notification interface with a type property
-interface Notification {
+interface INotification {
 	type:
 		| "Friend Request"
 		| "Post Liked"
 		| "Post Replied"
 		| "Message Received"
 		| "Group Activity";
-	render?: (key: string) => ReactNode;
+	recipientId: string;
 }
 
-interface NotificationPayload {
-	fromUserId: string;
-	fromUsername: string;
-	timestamp: Date;
+interface FriendRequestPayload extends INotification {
+	requesterId: string;
+	requesterUsername: string;
+	timeCreated: string;
 }
 
 class NotificationFactory {
-	create(payload: Notification & NotificationPayload) {
+	create(payload: INotification) {
 		if (payload.type === "Friend Request") {
+			const friendRequestPayload = payload as FriendRequestPayload;
 			return new FriendRequestNotification(
-				payload.fromUserId,
-				payload.fromUsername,
-				payload.timestamp,
+				friendRequestPayload.requesterId,
+				friendRequestPayload.requesterUsername,
+				new Date(friendRequestPayload.timeCreated),
 			);
 		}
 		return null;
@@ -35,21 +36,59 @@ class NotificationFactory {
 // Extending the Notification interface for a Friend Request Notification
 class FriendRequestNotification {
 	constructor(
-		private fromUserId: string,
-		private fromUsername: string,
-		private timestamp: Date,
+		private requesterId: string,
+		private requesterUsername: string,
+		private timeCreated: Date,
 	) {}
 
-	render = (key: string) => {
+	render = () => {
 		return (
 			<Notification
-				key={key}
+				key={`${this.requesterId}__${this.requesterUsername}__${this.timeCreated}`}
 				actions
-				actionOnAccept={() => console.log("Accepted")}
-				actionOnReject={() => console.log("Rejected")}
+				actionOnAccept={async () => {
+					const client = new ClientService("/friendRequest/accept");
+
+					try {
+						const newFriend = await client.post({
+							requesterId: this.requesterId,
+						});
+
+						if (newFriend) {
+							alert(`You and ${this.requesterUsername} are now friends!`);
+						}
+					} catch {
+						alert(
+							`An Error occurred while attempting to accept ${this.requesterUsername}'s friend request.`,
+						);
+					}
+				}}
+				actionOnReject={async () => {
+					const client = new ClientService<boolean>("/friendRequest/decline");
+
+					try {
+						const res = await client.post({
+							requesterId: this.requesterId,
+						});
+
+						console.log("Decline: " + res.result);
+
+						if (res.result) {
+							alert(
+								`You've Successfully declined ${this.requesterUsername}'s friend request!`,
+							);
+						} else {
+							throw new Error("Couldn't Decline Friend Request");
+						}
+					} catch {
+						alert(
+							`An Error occurred while declining ${this.requesterUsername}'s friend request!`,
+						);
+					}
+				}}
 				icon={
 					<>
-						<Avatar>{this.fromUsername.charAt(0)}</Avatar>
+						<Avatar>{this.requesterUsername.charAt(0)}</Avatar>
 					</>
 				}
 				content={
@@ -58,10 +97,10 @@ class FriendRequestNotification {
 						<Typography component="b" fontWeight={600}>
 							friend request
 						</Typography>{" "}
-						from {this.fromUsername}
+						from {this.requesterUsername}
 					</>
 				}
-				timestamp={this.timestamp}
+				timestamp={this.timeCreated}
 			/>
 		);
 	};
@@ -109,10 +148,10 @@ interface GroupActivityNotification extends Notification {
 export { FriendRequestNotification, NotificationFactory };
 
 export type {
+	FriendRequestPayload,
 	GroupActivityNotification,
+	INotification,
 	MessageReceivedNotification,
-	Notification,
-	NotificationPayload,
 	PostLikedNotification,
 	PostRepliedNotification,
 };

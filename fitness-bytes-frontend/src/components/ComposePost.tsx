@@ -37,7 +37,7 @@ const ComposePost = () => {
 			return;
 		}
 
-		navigator(`/auth/feed/${username}`);
+		navigator(`/auth/feed/`);
 
 		queryClient.setQueryData(
 			["posts"],

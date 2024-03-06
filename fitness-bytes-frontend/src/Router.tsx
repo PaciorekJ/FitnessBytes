@@ -54,7 +54,7 @@ const router = createBrowserRouter([
 						element: <Account />,
 					},
 					{
-						path: "feed/:username",
+						path: "feed",
 						element: <Feed />,
 					},
 					{
@@ -62,7 +62,7 @@ const router = createBrowserRouter([
 						element: <Post />,
 					},
 					{
-						path: "messages/:username",
+						path: "messages",
 						element: <MessageBoard />,
 					},
 					{

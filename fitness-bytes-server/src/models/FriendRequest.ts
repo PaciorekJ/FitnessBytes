@@ -1,6 +1,6 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
-interface IFriendRequest {
+interface IFriendRequest extends Document {
     requesterId: mongoose.Types.ObjectId;
     recipientId: mongoose.Types.ObjectId;
 }
