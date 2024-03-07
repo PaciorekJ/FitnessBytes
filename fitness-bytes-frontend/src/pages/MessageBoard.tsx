@@ -19,17 +19,16 @@ import {
 	useTheme,
 } from "@mui/material";
 import React, { useState } from "react";
+import AddConversationModal from "../components/AddConversationModal";
 import Conversation from "../components/Conversation";
 import Messenger from "../components/Messenger";
 import useConversations from "../hooks/useConversations";
-import AddConversationModal from "../components/AddConversationModal";
-
 
 const MessageBoard = () => {
 	const { data } = useConversations();
 	const [conversationId, setConversationId] = useState("");
-	const [addConvoOpen, addConvoSetOpen] = useState(false);
 	const [open, setOpen] = useState(true);
+	const [addConvoOpen, addConvoSetOpen] = useState(false);
 	const theme = useTheme();
 
 	const conversations = data?.result;
@@ -38,7 +37,7 @@ const MessageBoard = () => {
 
 	const list = () => (
 		<>
-			<AddConversationModal isOpen={addConvoOpen} setOpen={addConvoSetOpen}/>
+			<AddConversationModal isOpen={addConvoOpen} setOpen={addConvoSetOpen} />
 			<Box
 				sx={{ width: 250 }}
 				role="presentation"
@@ -52,7 +51,10 @@ const MessageBoard = () => {
 						startIcon={<AddCircleIcon />}
 						size="large"
 						sx={{ ml: 2.5, my: 1 }}
-						onClick={() => addConvoSetOpen(true)}>
+						onClick={(e) => {
+							addConvoSetOpen(true);
+							e.stopPropagation();
+						}}>
 						New Conversation
 					</Button>
 					{conversations &&
@@ -63,7 +65,9 @@ const MessageBoard = () => {
 								<React.Fragment key={"Contact__" + convoTitle + "-" + i}>
 									<Box
 										bgcolor={
-											c._id === conversationId ? theme.palette.primary.light : ""
+											c._id === conversationId
+												? theme.palette.primary.light
+												: ""
 										}
 										color={c._id === conversationId ? "white" : ""}>
 										<ListItem

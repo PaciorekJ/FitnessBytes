@@ -1,6 +1,7 @@
 import {
 	Avatar,
 	Box,
+	Checkbox,
 	Divider,
 	IconButton,
 	InputBase,
@@ -19,6 +20,7 @@ import users from "../data/user";
 import User from "../interfaces/User";
 
 import SearchIcon from "@mui/icons-material/Search";
+import ClientService from "../services/ClientService";
 
 interface Props {
 	isOpen: boolean;
@@ -54,11 +56,11 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 		// 	},
 		// };
 
-		// const client = new ClientService<User[]>("/friend/");
+		const client = new ClientService<User[]>("/friend/");
 
-		// const { result: users } = await client.get(reqConfig);
+		const { result: users } = await client.get();
 
-		// setSearchResults(users || []);
+		setSearchResults(users || []);
 
 		console.log(data.searchContent);
 	}
@@ -106,11 +108,9 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 								<ListItem>
 									<Typography>{u.username}</Typography>
 								</ListItem>
-								<ListItemIcon>
-									<IconButton onClick={(e) => {}}>
-										<SearchIcon />
-									</IconButton>
-								</ListItemIcon>
+								<Checkbox 
+                                value={`${u.username}-${u._id}`}
+                                />
 							</ListItemButton>
 							{i < users.length - 1 && <Divider />}
 						</React.Fragment>

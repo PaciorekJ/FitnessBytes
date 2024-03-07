@@ -9,12 +9,47 @@ friendRouter.get('/', authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
 
     try {
-        const friendships = await FriendModel.find({
-            $or: [
-                { userId1: userId },
-                { userId2: userId },
-            ]
-        })
+        const friendships = await FriendModel.aggregate([
+            {
+                $match: {
+                    $or: [{ userId1: userId }, { userId2: userId }],
+                }
+            },
+            {
+                $addFields: {
+                    friendId: {
+                        $cond: {
+                            if: { $eq: ["$userId1", userId] },
+                            then: "$userId2",
+                            else: "$userId1"
+                        }
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "friendId",
+                    foreignField: "_id",
+                    as: "friendDetails"
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    friendDetails: {
+                        _id: 1,
+                        username: 1
+                    }
+                }
+            },
+            {
+                $unwind: "$friendDetails"
+            },
+            {
+                $replaceRoot: { newRoot: "$friendDetails" }
+            }
+        ]).exec();
 
         return res.json({
             message: "",
