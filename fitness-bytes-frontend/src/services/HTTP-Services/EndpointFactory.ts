@@ -1,4 +1,5 @@
 
+import { AxiosRequestConfig } from "axios";
 import ClientService, { ResponseResult } from "./ClientService";
 
 class EndpointFactory<ParentResponse> {
@@ -7,12 +8,12 @@ class EndpointFactory<ParentResponse> {
 
     constructor(private endpoint: string) {}
 
-    get<GetResponse>(path: string = "/") {
+    get<GetResponse>(path: string = "/", config: AxiosRequestConfig<unknown> = {}) {
         return async (id: string = ""): Promise<GetResponse | undefined> => {
             this.client = new ClientService<ParentResponse>(`${this.endpoint}${path}${id}`);
     
             try {
-                this.res = await this.client.get();
+                this.res = await this.client.get(config);
             } catch {
                 return undefined;
             }
@@ -21,12 +22,12 @@ class EndpointFactory<ParentResponse> {
         }
     }
 
-    delete<DeleteResponse>(path: string = "/") {
+    delete<DeleteResponse>(path: string = "/", config: AxiosRequestConfig<unknown> = {}) {
         return async (id: string): Promise<DeleteResponse | undefined> => {
             this.client = new ClientService<ParentResponse>(`${this.endpoint}${path}${id}`);
     
             try {
-                this.res = await this.client.delete();
+                this.res = await this.client.delete(config);
             } catch {
                 return undefined;
             }
@@ -35,12 +36,12 @@ class EndpointFactory<ParentResponse> {
         }
     }
 
-    post<PostResponse, T>(path: string = "/") {
+    post<PostResponse, T>(path: string = "/", config: AxiosRequestConfig<unknown> = {}) {
         return async (postContent: Partial<T>): Promise<PostResponse | undefined> => {
             this.client = new ClientService<ParentResponse>(`${this.endpoint}${path}`);
     
             try {
-                this.res = await this.client.post(postContent);
+                this.res = await this.client.post(postContent, config);
             } catch {
                 return undefined;
             }
@@ -49,13 +50,14 @@ class EndpointFactory<ParentResponse> {
         }
     }
 
-    patch<PatchResponse, T>(path: string = "/") {
+    patch<PatchResponse, T>(path: string = "/", config: AxiosRequestConfig<unknown> = {}) {
         return async (patchContent: Partial<T>): Promise<PatchResponse | undefined> => {
             this.client = new ClientService<ParentResponse>(`${this.endpoint}${path}`);
     
             try {
-                this.res = await this.client.patch(patchContent);
+                this.res = await this.client.patch(patchContent, config);
             } catch {
+                console.log("Failed")
                 return undefined;
             }
     
