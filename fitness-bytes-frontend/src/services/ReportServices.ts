@@ -15,7 +15,7 @@ type ReportResponse = ResponseResult<ReportPostResponse>;
 class ReportServices {
     private static fact = new EndpointFactory<ReportResponse>("/report");
 
-    static post = ReportServices.fact.post<ReportPostResponse, Report>();
+    static create = ReportServices.fact.post<ReportPostResponse, Report>();
 }
 
 export default ReportServices;

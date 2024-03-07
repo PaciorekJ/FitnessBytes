@@ -23,7 +23,7 @@ const ComposePost = () => {
 	const closeModal = () => setOpen(false);
 
 	const submitPost = async (data: PostData) => {
-		const post = await PostServices.post({
+		const post = await PostServices.create({
 			content: data.content,
 		});
 

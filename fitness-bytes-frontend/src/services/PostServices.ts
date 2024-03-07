@@ -11,8 +11,8 @@ type PostResponse = ResponseResult<PostPatchResponse | PostDeleteResponse | Post
 class PostServices {
     private static fact = new EndpointFactory<PostResponse>("/post");
 
-    static post = PostServices.fact.post<PostPostResponse, Post>();
-    static patch = PostServices.fact.patch<PostPatchResponse, Post>();
+    static create = PostServices.fact.post<PostPostResponse, Post>();
+    static update = PostServices.fact.patch<PostPatchResponse, Post>();
     static delete = PostServices.fact.delete<PostDeleteResponse>();
 }
 

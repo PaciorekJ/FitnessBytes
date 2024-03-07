@@ -40,7 +40,6 @@ const PostCard = memo(
 		const time = new Date(timeCreated || "").toString();
 
 		const handleDelete = useCallback(async () => {
-
 			const res = await PostServices.delete(_id);
 
 			if (!res) {
@@ -65,8 +64,7 @@ const PostCard = memo(
 		}, [_id, postUsername, queryClient]);
 
 		const handleReport = async () => {
-			
-			const res = await ReportServices.post({
+			const res = await ReportServices.create({
 				ownerUsername: postUsername,
 				postId: _id,
 			});
@@ -98,8 +96,7 @@ const PostCard = memo(
 
 		const submitPostUpdate = useCallback(
 			async (data: { content: string }) => {
-
-				const res = await PostServices.patch({
+				const res = await PostServices.update({
 					_id,
 					content: data.content,
 				});
