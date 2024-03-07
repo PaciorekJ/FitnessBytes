@@ -9,12 +9,9 @@ const GuestLayout = () => {
 
 	useEffect(() => {
 		const authUser = async () => {
-			const client = new UserServices();
-			try {
-				const username = await client.isAuth();
-				navigator(`/auth/feed/${username}`);
-			} catch {
-				return;
+			const res = await UserServices.isAuth();
+			if (res) {
+				navigator(`/auth/feed/`);
 			}
 		};
 

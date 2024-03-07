@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { INotification } from "../interfaces/Notifcations";
-import ClientService from "../services/ClientService";
+import ClientService from "../services/HTTP-Services/ClientService";
 
 const useNotifications = () => {
     const client = new ClientService<INotification[]>('/notifications'); 

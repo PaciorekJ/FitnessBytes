@@ -20,10 +20,9 @@ import { useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import users from "../data/user";
 import FriendRequest from "../interfaces/FriendRequest";
 import User from "../interfaces/User";
-import ClientService from "../services/ClientService";
+import ClientService from "../services/HTTP-Services/ClientService";
 
 const style = {
 	position: "absolute",
@@ -140,7 +139,7 @@ const AddFriend = () => {
 										</IconButton>
 									</ListItemIcon>
 								</ListItemButton>
-								{i < users.length - 1 && <Divider />}
+								<Divider />
 							</React.Fragment>
 						))}
 					</List>

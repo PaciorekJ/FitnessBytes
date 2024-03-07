@@ -8,10 +8,8 @@ const UserLayout = () => {
 
 	useEffect(() => {
 		const authUser = async () => {
-			const client = new UserServices();
-			try {
-				await client.isAuth();
-			} catch {
+			const res = await UserServices.isAuth();
+			if (!res) {
 				navigator("/");
 			}
 		};

@@ -2,7 +2,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { CircularProgress, IconButton, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import useIsLiked from "../hooks/useIsLiked";
-import ClientService from "../services/ClientService";
+import ClientService from "../services/HTTP-Services/ClientService";
 
 interface Props {
 	likes: number;

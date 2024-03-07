@@ -18,11 +18,13 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import AddConversationModal from "../components/AddConversationModal";
 import Conversation from "../components/Conversation";
 import Messenger from "../components/Messenger";
 import useConversations from "../hooks/useConversations";
+import ConversationService from "../services/ConversationService";
 
 const MessageBoard = () => {
 	const { data } = useConversations();
@@ -31,9 +33,17 @@ const MessageBoard = () => {
 	const [addConvoOpen, addConvoSetOpen] = useState(false);
 	const theme = useTheme();
 
+	const queryClient = useQueryClient();
+
 	const conversations = data?.result;
 
 	const toggleDrawer = () => setOpen(!open);
+
+	const deleteConversation = async (id: string) => {
+		await ConversationService.delete(id);
+
+		queryClient.invalidateQueries({ queryKey: ["conversations"] });
+	};
 
 	const list = () => (
 		<>
@@ -73,7 +83,14 @@ const MessageBoard = () => {
 										<ListItem
 											disablePadding
 											secondaryAction={
-												<IconButton edge="end" aria-label="delete">
+												<IconButton
+													onClick={(e) => {
+														e.stopPropagation();
+														setOpen(true);
+														deleteConversation(c._id);
+													}}
+													edge="end"
+													aria-label="delete">
 													<DeleteIcon />
 												</IconButton>
 											}>

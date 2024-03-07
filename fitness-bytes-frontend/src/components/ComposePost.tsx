@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import useUserStore from "../hooks/useUserStore";
 import Post from "../interfaces/Post";
 import PostServices from "../services/PostServices";
-import { PostData } from "../services/PostValidatorService";
+import { PostData } from "../services/Validators/PostValidatorService";
 import PostModal from "./PostModal";
 
 const ComposePost = () => {
@@ -23,9 +23,7 @@ const ComposePost = () => {
 	const closeModal = () => setOpen(false);
 
 	const submitPost = async (data: PostData) => {
-		const postService = new PostServices();
-
-		const post = await postService.post({
+		const post = await PostServices.post({
 			content: data.content,
 		});
 

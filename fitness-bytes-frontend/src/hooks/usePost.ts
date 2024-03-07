@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Post from "../interfaces/Post";
-import ClientService from "../services/ClientService";
+import ClientService from "../services/HTTP-Services/ClientService";
 
 const usePost = (postId: string = "") => {
     const client = new ClientService<Post>(`/post/${postId}`);
