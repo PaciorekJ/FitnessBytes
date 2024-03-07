@@ -23,6 +23,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import FriendRequest from "../interfaces/FriendRequest";
 import User from "../interfaces/User";
 import ClientService from "../services/HTTP-Services/ClientService";
+import UserServices from "../services/UserServices";
 
 const style = {
 	position: "absolute",
@@ -52,15 +53,7 @@ const AddFriend = () => {
 	const closeModal = () => setOpen(false);
 
 	async function handleSearch(data: FieldValues) {
-		const reqConfig = {
-			params: {
-				query: data.searchContent,
-			},
-		};
-
-		const client = new ClientService<User[]>("/user/search");
-
-		const { result: users } = await client.get(reqConfig);
+		const users = await UserServices.search(data.searchContent);
 
 		setSearchResults(users || []);
 	}

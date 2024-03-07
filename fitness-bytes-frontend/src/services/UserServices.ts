@@ -1,3 +1,4 @@
+import User from "../interfaces/User";
 import { ResponseResult } from "./HTTP-Services/ClientService";
 import EndpointFactory from "./HTTP-Services/EndpointFactory";
 import { AuthData } from "./Validators/AuthValidatorService";
@@ -17,6 +18,7 @@ class UserServices {
 	static signup = UserServices.fact.post<SignupResponse, AuthData>("/signup");
 	static logout = () => UserServices.fact.post<LogoutResponse, undefined>("/logout")(undefined);
 	static isAuth = () => UserServices.fact.get<AuthResponse>("/auth")("");
+	static search = (query: string) => UserServices.fact.get<User[]>("/search", { params: { query } })("");
 }
 
 export default UserServices;

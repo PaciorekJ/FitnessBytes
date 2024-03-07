@@ -21,6 +21,7 @@ import User from "../interfaces/User";
 import SearchIcon from "@mui/icons-material/Search";
 import { useQueryClient } from "@tanstack/react-query";
 import ClientService from "../services/HTTP-Services/ClientService";
+import ConversationService from "../services/ConversationService";
 
 interface Props {
 	isOpen: boolean;
@@ -119,16 +120,13 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 				<form
 					onSubmit={async (e) => {
 						e.preventDefault();
-						console.log(participants);
 						setParticipants([]);
 
-						const client = new ClientService("/conversation/");
-
 						const participantsUsernames = participants.map((u) => u.username);
-						await client.post({
+						await ConversationService.create({
 							participants: participantsUsernames,
 							messageContent: "Hey Everyone",
-						});
+						})
 
 						queryClient.invalidateQueries({queryKey: ["conversations"]});
 						setOpen(false);

@@ -21,7 +21,7 @@ type ConversationResponse = ResponseResult<GetConversationsResponse |
 class ConversationService {
     private static fact = new EndpointFactory<ConversationResponse>("/conversation");
 
-    static create = this.fact.post<PostConversationResponse, Conversation>();
+    static create = this.fact.post<PostConversationResponse, Conversation & {messageContent: string}>();
     static delete = this.fact.delete<DeleteConversationResponse>();
     static getAll = () => this.fact.get<GetConversationsResponse>()("");
     static getOne = (_id: string) => this.fact.get<GetConversationResponse>()(_id);

@@ -160,20 +160,20 @@ postRouter.delete("/:postId", async (req, res) => {
 postRouter.patch("/", authMiddleware, async (req, res) => {
 
     try {
-        const postId = new mongoose.Types.ObjectId(req.body.postId);
+        const _id = new mongoose.Types.ObjectId(req.body._id);
         const content = req.body.content;
 
-        if (!postId || !content) {
+        if (!_id || !content) {
             return res.status(400).json({
                 message: "Invalid postId or Empty Content",
             });
         }
 
-        const result = await PostModel.updateOne({ _id: postId }, { $set: { content } });
+        const result = await PostModel.updateOne({ _id }, { $set: { content } });
 
         res.status(200).json({
             message: "",
-            result: result
+            result: result.modifiedCount
         });
     }
     catch (e) {
