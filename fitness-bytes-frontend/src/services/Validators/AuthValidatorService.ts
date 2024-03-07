@@ -4,7 +4,7 @@ import { z } from 'zod';
 const containsSpecialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
 const noSpacesRegex = /^\S*$/;
 const containsNumberRegex = /\d+/;
-const containsCapitalLetterRegex = /[A-Z]+/;
+// const containsCapitalLetterRegex = /[A-Z]+/;
 
 const MIN_USERNAME_LENGTH = 3;
 const MIN_PASSWORD_LENGTH = 3;
