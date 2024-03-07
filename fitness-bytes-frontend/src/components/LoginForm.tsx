@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../hooks/useUserStore";
-import { AuthData } from "../services/AuthValidatorService";
 import UserServices from "../services/UserServices";
+import { AuthData } from "../services/Validators/AuthValidatorService";
 import AuthForm from "./AuthForm";
 
 const LoginForm = () => {
@@ -11,16 +11,12 @@ const LoginForm = () => {
 	const navigator = useNavigate();
 
 	async function handleLogin(data: AuthData) {
-		const client = new UserServices();
-
-		try {
-			await client.login(data);
-		} catch {
+		const res = await UserServices.login(data);
+		if (!res) {
 			setFailedLogin(true);
 			return;
 		}
-
-		setUser(data.username);
+		setUser(res as unknown as string);
 		navigator("/auth/feed/");
 	}
 

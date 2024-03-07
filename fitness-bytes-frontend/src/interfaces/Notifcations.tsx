@@ -1,6 +1,6 @@
 import { Avatar, Typography } from "@mui/material";
 import Notification from "../components/Notification";
-import ClientService from "../services/ClientService";
+import ClientService from "../services/HTTP-Services/ClientService";
 
 // Base Notification interface with a type property
 interface INotification {

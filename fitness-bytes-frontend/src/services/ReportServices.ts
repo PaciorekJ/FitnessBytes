@@ -1,4 +1,5 @@
-import ClientService, { ResponseResult } from "./ClientService";
+import { ResponseResult } from "./HTTP-Services/ClientService";
+import EndpointFactory from "./HTTP-Services/EndpointFactory";
 
 interface Report {
     _id: string;
@@ -12,30 +13,9 @@ type ReportPostResponse = Report;
 type ReportResponse = ResponseResult<ReportPostResponse>;
 
 class ReportServices {
-    private client: ClientService<ReportResponse> | undefined;
-    private res: ResponseResult<ReportResponse> | undefined;
-    private endpoint = "/report";
+    private static fact = new EndpointFactory<ReportResponse>("/report");
 
-    async post(report: Partial<Report>) {
-        this.client = new ClientService(this.endpoint);
-
-        if (!report.ownerUsername || !report.postId) {
-            return undefined;
-        }
-
-        try {
-            this.res = await this.client.post({
-                ownerUsername: report.ownerUsername,
-                postId: report.postId,
-            });
-        } catch {
-            return undefined;
-        }
-
-        return this.client.checkResponse(this.res) as ReportPostResponse;
-    }
-
-
+    static post = ReportServices.fact.post<ReportPostResponse, Report>();
 }
 
 export default ReportServices;

@@ -1,68 +1,22 @@
-import { AuthData } from "./AuthValidatorService";
-import ClientService, { ResponseResult } from "./ClientService";
+import { ResponseResult } from "./HTTP-Services/ClientService";
+import EndpointFactory from "./HTTP-Services/EndpointFactory";
+import { AuthData } from "./Validators/AuthValidatorService";
 
-interface LoginResponse {
-	_id: string;
-}
 
 type SignupResponse = boolean;
 type LogoutResponse = boolean;
+type LoginResponse = string;
 type AuthResponse = string;
 
 type UserResponse = ResponseResult<LoginResponse | SignupResponse | AuthResponse | LogoutResponse>;
 
 class UserServices {
-    private client: ClientService<UserResponse> | undefined;
-    private res: ResponseResult<UserResponse> | undefined;
-    private endpoint = "/user";
+	private static fact = new EndpointFactory<UserResponse>("/user");
 
-    async login(credentials: AuthData): Promise<LoginResponse | undefined> {
-        this.client = new ClientService<UserResponse>(`${this.endpoint}/login`);
-
-		try {
-			this.res = await this.client.post(credentials);
-		} catch {
-			return undefined;
-		}
-
-        return this.client.checkResponse(this.res) as LoginResponse;
-    }
-
-    async signup(credentials: AuthData): Promise<SignupResponse | undefined> {
-        this.client = new ClientService<UserResponse>(`${this.endpoint}/signup`);
-
-		try {
-			this.res = await this.client.post(credentials);
-		} catch {
-			return undefined;
-		}
-
-        return this.client.checkResponse(this.res) as SignupResponse;
-    }
-
-	async logout(): Promise<LogoutResponse | undefined> {
-        this.client = new ClientService<UserResponse>(`${this.endpoint}/logout`);
-
-		try {
-			this.res = await this.client.post({});
-		} catch {
-			return undefined;
-		}
-
-        return this.client.checkResponse(this.res) as LogoutResponse;
-    }
-
-	async isAuth(): Promise<AuthResponse | undefined> {
-        this.client = new ClientService<UserResponse>(`${this.endpoint}/auth`);
-
-		try {
-			this.res = await this.client.get();
-		} catch {
-			throw new Error("User is not authenticated");
-		}
-
-        return this.client.checkResponse(this.res) as AuthResponse;
-    }
+	static login = UserServices.fact.post<LoginResponse, AuthData>("/login");
+	static signup = UserServices.fact.post<SignupResponse, AuthData>("/signup");
+	static logout = () => UserServices.fact.post<LogoutResponse, undefined>("/logout")(undefined);
+	static isAuth = () => UserServices.fact.get<AuthResponse>("/auth")("");
 }
 
 export default UserServices;

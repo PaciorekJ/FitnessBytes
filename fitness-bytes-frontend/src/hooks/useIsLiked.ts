@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import ClientService from "../services/ClientService";
+import ClientService from "../services/HTTP-Services/ClientService";
 
 const useIsLiked = (postId: string) => {
 

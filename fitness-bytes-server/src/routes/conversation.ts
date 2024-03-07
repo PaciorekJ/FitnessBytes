@@ -70,7 +70,7 @@ conversationRouter.delete('/:conversationId', async (req, res) => {
 
     res.json({
         message: "",
-        result: await ConversationModel.deleteOne({_id})
+        result: (await ConversationModel.deleteOne({_id})).deletedCount
     })
 })
 

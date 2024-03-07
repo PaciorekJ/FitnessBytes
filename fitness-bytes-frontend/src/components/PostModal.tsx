@@ -21,7 +21,11 @@ import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
-import { MAX_CHAR, PostData, schema } from "../services/PostValidatorService";
+import {
+	MAX_CHAR,
+	PostData,
+	schema,
+} from "../services/Validators/PostValidatorService";
 
 interface ModalProps {
 	onSubmit: (data: PostData) => void;

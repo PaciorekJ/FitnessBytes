@@ -43,7 +43,8 @@ userRouter.get("/auth", (req, res) => {
         return res.json({ result : user.username });
     }
     return res.status(401).json({
-        message: "User needs authentication"
+        message: "User needs authentication",
+        result: undefined
     })
 });
 
@@ -97,7 +98,12 @@ userRouter.post("/signup", async (req, res) => {
     }
 });
 
-userRouter.post("/login", passport.authenticate('local'));
+userRouter.post("/login", passport.authenticate('local'), (req, res) => {
+    return res.json({
+        message: "",
+        result: (req.user as IUser).username,
+    });
+});
 
 userRouter.post("/logout", (req, res, next) => {
     req.logout((e) => {

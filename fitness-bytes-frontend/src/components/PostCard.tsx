@@ -23,7 +23,7 @@ import ShareIcon from "@mui/icons-material/Share";
 
 import { useQueryClient } from "@tanstack/react-query";
 import useUserStore from "../hooks/useUserStore";
-import { ResponseResult } from "../services/ClientService";
+import { ResponseResult } from "../services/HTTP-Services/ClientService";
 import PostServices from "../services/PostServices";
 import ReportServices from "../services/ReportServices";
 import LikeIcon from "./LikeIcon";
@@ -40,9 +40,8 @@ const PostCard = memo(
 		const time = new Date(timeCreated || "").toString();
 
 		const handleDelete = useCallback(async () => {
-			const client = new PostServices();
 
-			const res = await client.delete(_id);
+			const res = await PostServices.delete(_id);
 
 			if (!res) {
 				setError("Error: Failed to delete post, please try again!");
@@ -66,9 +65,8 @@ const PostCard = memo(
 		}, [_id, postUsername, queryClient]);
 
 		const handleReport = async () => {
-			const client = new ReportServices();
-
-			const res = await client.post({
+			
+			const res = await ReportServices.post({
 				ownerUsername: postUsername,
 				postId: _id,
 			});
@@ -100,9 +98,8 @@ const PostCard = memo(
 
 		const submitPostUpdate = useCallback(
 			async (data: { content: string }) => {
-				const client = new PostServices();
 
-				const res = await client.patch({
+				const res = await PostServices.patch({
 					_id,
 					content: data.content,
 				});

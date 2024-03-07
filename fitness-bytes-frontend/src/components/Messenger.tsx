@@ -9,7 +9,7 @@ import Stack from "@mui/material/Stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { FieldValues, useForm } from "react-hook-form";
 import IMessage from "../interfaces/Message";
-import ClientService from "../services/ClientService";
+import ClientService from "../services/HTTP-Services/ClientService";
 
 interface Props {
 	conversationId: string;

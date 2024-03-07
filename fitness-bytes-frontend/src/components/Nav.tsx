@@ -46,12 +46,10 @@ const Nav = () => {
 	const handleLogout = async () => {
 		handleClose();
 
-		const client = new UserServices();
-		try {
-			await client.logout();
+		const res = await UserServices.logout();
+
+		if (res) {
 			navigator("/");
-		} catch {
-			return;
 		}
 	};
 
