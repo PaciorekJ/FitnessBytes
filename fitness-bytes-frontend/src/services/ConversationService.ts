@@ -10,21 +10,16 @@ interface IConversation {
     title?: string;
 }
 
-type PostConversationResponse = {
-    conversation: IConversation,
-    message: IMessage,
-}
-
-type ConversationResponse = ResponseResult< IConversation[] | IConversation | boolean | PostConversationResponse >;
+type ConversationResponse = ResponseResult< IConversation[] | IConversation | boolean >;
 
 class ConversationServices {
     private static factConvo = new EndpointFactory<ConversationResponse>("/conversation");
 
-    static create = this.factConvo.post<PostConversationResponse, IConversation & {messageContent: string}>();
+    static create = this.factConvo.post<IConversation, IConversation>();
     static delete = this.factConvo.delete<boolean>();
     static getAll = () => this.factConvo.get<IConversation[]>()("");
     static getOne = (_id: string) => this.factConvo.get<IConversation>()(_id);
 }
 
-export type { IConversation };
+export type {IConversation};
 export default ConversationServices;

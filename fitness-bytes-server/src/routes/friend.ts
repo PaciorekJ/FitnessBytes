@@ -8,7 +8,8 @@ const friendRouter = Router();
 friendRouter.get('/', authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
     const { query } = req.query as {query: string};
-    const regex = new RegExp(query, 'i');
+
+    const regex = new RegExp((query || ".*"), 'i');
 
     try {
         const friendships = await FriendModel.aggregate([
