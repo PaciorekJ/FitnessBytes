@@ -78,7 +78,7 @@ friendRequestRouter.post('/accept', authMiddleware, async (req, res) => {
     
     if (!req.body.requesterId) {
         return res.status(400).json({
-            message: "Missing recipientId or requesterId",
+            message: "Missing requesterId",
         })
     }
     try {
@@ -117,20 +117,26 @@ friendRequestRouter.post('/decline', authMiddleware, async (req, res) => {
     
     if (!req.body.requesterId) {
         return res.status(400).json({
-            message: "Missing recipientId or requesterId",
+            message: "Missing requesterId",
         })
     }
     try {
         const requesterId = new mongoose.Types.ObjectId(req.body.requesterId);
 
-        const response = await FriendRequestModel.deleteOne({
+        const friendRequest = await FriendRequestModel.deleteOne({
             recipientId,
             requesterId
         })
 
+        if (!friendRequest.deletedCount) {
+            return res.status(404).json({
+                message: "Action couldn't be carried out as the friend request doesn't exist"
+            })
+        }
+
         return res.status(200).json({
             message: "",
-            result: response.deletedCount,
+            result: friendRequest.deletedCount,
         });
     }
     catch (e) {

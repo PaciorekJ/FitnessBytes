@@ -15,7 +15,7 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
@@ -32,7 +32,7 @@ const style = {
 	height: "75%",
 	bgcolor: "background.default",
 	border: "2px solid #000",
-	borderRadius: "10px",
+	borderRadius: "25px",
 	boxShadow: 24,
 	p: 6,
 	overflowY: "scroll",
@@ -59,7 +59,13 @@ const AddFriend = () => {
 	const handleAddFriend = async (_id: string) => {
 		const friendRequest = await FriendRequestServices.create(_id);
 
-		alert(`Friend Request has been issued to ${friendRequest?.recipientId}`);
+		if (friendRequest) {
+			alert(`Friend Request has been issued to ${friendRequest?.recipientId}`);
+		} else {
+			alert(
+				`Friend Request could not be send. A friend request is already pending or you guys are already friends`,
+			);
+		}
 	};
 
 	return (

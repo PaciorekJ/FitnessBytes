@@ -7,16 +7,10 @@ import UserModel, { IUser } from "../models/User";
 const userRouter = Router();
 
 userRouter.get("/search", async (req, res) => {
-    const {query} = req.query as {query: string};
+    const { query } = req.query as {query: string};
 
-    if (!query) {
-        return res.json({
-            message: "",
-            result: []
-        })
-    }
     try {
-        const regex = new RegExp(query, 'i');
+        const regex = new RegExp((query || ".*"), 'i');
 
         const users = await UserModel.find({
             $or: [

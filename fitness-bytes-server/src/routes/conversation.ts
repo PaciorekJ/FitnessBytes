@@ -2,7 +2,6 @@ import { Router } from "express";
 import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware";
 import ConversationModel, { IConversation } from "../models/Conversation";
-import MessageModel from "../models/Message";
 import { IUser } from "../models/User";
 
 const conversationRouter = Router();
@@ -73,40 +72,31 @@ conversationRouter.delete('/:conversationId', async (req, res) => {
         result: (await ConversationModel.deleteOne({_id})).deletedCount
     })
 })
-
-// *** Note: Conversations require a message to create one ***
 conversationRouter.post('/', authMiddleware, async (req, res) => {
-    const userId = (req.user as IUser)._id;
     const username = (req.user as IUser).username;
     
     try {
-        let messageContent = req.body.messageContent;
         let title = req.body.title || null;
         const participants = (req.body.participants as string[]).filter((p) => p !== username);
+        
+        if (!participants.length) {
+            return res.status(400).json({
+                message: "A Conversation requires at least 1 participant besides the creator"
+            })
+        }
         
         const updatedParticipants = [...participants, username]
         const conversation = await ConversationModel.create({
             participants: updatedParticipants,
             title,
         } as Partial<IConversation>);
-        
-        // *** Add Message to new Conversation ***
-        const message = await MessageModel.create({
-            conversation: conversation._id,
-            sender: userId,
-            senderUsername: username,
-            content: messageContent,
-        });
     
-        res.status(201).json({
+        return res.status(201).json({
             message: "",
-            result: {
-                conversation: conversation,
-                message: message,
-            }
+            result: conversation
         })
     } catch (e) {
-        res.status(500).json({
+        return res.status(500).json({
             message: `${e}`,
         })
     }

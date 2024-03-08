@@ -14,7 +14,7 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import IUser from "../interfaces/User";
 
@@ -83,7 +83,7 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 			aria-labelledby="Modal For Finding new friends"
 			aria-describedby="Modal that is used for finding new friends on the platform">
 			<Box sx={style}>
-				<Typography variant="h3" paddingBottom={3}>
+				<Typography variant="h4" component={"h3"} paddingBottom={3}>
 					Select the Conversation Member(s)
 				</Typography>
 				<Stack
@@ -115,18 +115,29 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 						setParticipants([]);
 
 						const participantsUsernames = participants.map((u) => u.username);
-						await ConversationServices.create({
-							participants: participantsUsernames,
-							messageContent: "Hey Everyone",
-						});
+						if (participantsUsernames.length) {
+							await ConversationServices.create({
+								participants: participantsUsernames,
+							});
+							queryClient.invalidateQueries({ queryKey: ["conversations"] });
+						} else {
+							alert("You must have 2 or more participant's in a conversation");
+						}
 
-						queryClient.invalidateQueries({ queryKey: ["conversations"] });
 						setOpen(false);
 					}}>
-					<Button type="submit">Create Conversation</Button>
+					<Stack margin={2}>
+						<Button type="submit" color="secondary" variant="contained">
+							Create Conversation
+						</Button>
+					</Stack>
 					<List>
 						{searchResults.map((u: IUser, i) => (
-							<React.Fragment key={"Search__Result-" + u.username + " " + i}>
+							<Stack
+								sx={{
+									flexDirection: "row",
+								}}
+								key={"Search__Result-" + u.username + " " + i}>
 								<ListItemIcon>
 									<Avatar>{u.username.charAt(0)}</Avatar>
 								</ListItemIcon>
@@ -135,7 +146,7 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 								</ListItem>
 								<Checkbox onClick={() => toggleParticipants(u)} />
 								<Divider />
-							</React.Fragment>
+							</Stack>
 						))}
 					</List>
 				</form>
