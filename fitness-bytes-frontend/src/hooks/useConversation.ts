@@ -1,13 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import IMessage from "../interfaces/Message";
-import ClientService from "../services/HTTP-Services/ClientService";
+import MessageServices from "../services/MessageServices";
 
 const useConversation = (id: string) => {
-    const client = new ClientService<IMessage[]>(`/message/${id}`);
 
     return useQuery({
         queryKey: [`conversation-${id}`, id],
-        queryFn: client.get,
+        queryFn: () => MessageServices.getAll(id),
     })
 }
 

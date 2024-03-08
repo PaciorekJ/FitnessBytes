@@ -6,8 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../hooks/useUserStore";
-import Post from "../interfaces/Post";
-import PostServices from "../services/PostServices";
+import PostServices, { IPost } from "../services/PostServices";
 import { PostData } from "../services/Validators/PostValidatorService";
 import PostModal from "./PostModal";
 
@@ -37,12 +36,10 @@ const ComposePost = () => {
 
 		navigator(`/auth/feed/`);
 
-		queryClient.setQueryData(
-			["posts"],
-			(old: { result: Post[] } | undefined) => {
-				return { result: [post, ...(old?.result ?? [])] };
-			},
-		);
+		queryClient.setQueryData(["posts"], (oldPosts: IPost[] | undefined) => [
+			post,
+			...(oldPosts || []),
+		]);
 
 		closeModal();
 		setError("");

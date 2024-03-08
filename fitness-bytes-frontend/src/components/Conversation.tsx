@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
 import { useEffect, useRef } from "react";
 import useConversation from "../hooks/useConversation";
-import IMessage from "../interfaces/Message";
+import { IMessage } from "../services/MessageServices";
 import Message from "./Message";
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 const Conversation = ({ conversationId }: Props) => {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const { data } = useConversation(conversationId);
-	const conversation: IMessage[] = data?.result || [];
+	const conversation: IMessage[] = data || [];
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView();

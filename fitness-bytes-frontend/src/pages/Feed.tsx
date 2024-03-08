@@ -2,12 +2,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Stack from "@mui/material/Stack";
 import PostCard from "../components/PostCard";
 import usePosts from "../hooks/usePosts";
-import Post from "../interfaces/Post";
+import { IPost } from "../services/PostServices";
 
 const Feed = () => {
 	const { data, isLoading } = usePosts();
 
-	const posts: Post[] = data?.result || [];
+	const posts: IPost[] = data || [];
 
 	return (
 		<Stack width={"100%"} alignItems={"center"}>

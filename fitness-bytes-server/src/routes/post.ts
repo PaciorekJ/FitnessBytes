@@ -18,13 +18,14 @@ postRouter.get('/liked/:postId', authMiddleware, async (req, res) => {
 
         res.status(200).json({
             message: "",
-            result: count
+            result: (count ? true: false)
         });
 
     } 
     catch (e) {
         return res.status(500).json({ 
-            message: `Error: Internal Server Error: ${e}` 
+            message: `Error: Internal Server Error: ${e}`, 
+            result: 0,
         });
     }
 });

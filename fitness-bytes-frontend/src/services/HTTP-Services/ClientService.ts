@@ -19,10 +19,6 @@ class ClientService<T> {
     }
 
     checkResponse(res: ResponseResult<T>): unknown {
-        if (!res.result || res.message) {
-            return undefined;
-        }
-
         return res.result as unknown
     }
 

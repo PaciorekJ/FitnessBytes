@@ -1,17 +1,7 @@
 import { Avatar, Typography } from "@mui/material";
 import Notification from "../components/Notification";
-import ClientService from "../services/HTTP-Services/ClientService";
-
-// Base Notification interface with a type property
-interface INotification {
-	type:
-		| "Friend Request"
-		| "Post Liked"
-		| "Post Replied"
-		| "Message Received"
-		| "Group Activity";
-	recipientId: string;
-}
+import FriendRequestServices from "./FriendRequestServices";
+import { INotification } from "./NotificationServices";
 
 interface FriendRequestPayload extends INotification {
 	requesterId: string;
@@ -47,44 +37,30 @@ class FriendRequestNotification {
 				key={`${this.requesterId}__${this.requesterUsername}__${this.timeCreated}`}
 				actions
 				actionOnAccept={async () => {
-					const client = new ClientService("/friendRequest/accept");
+					const newFriend = await FriendRequestServices.accept(
+						this.requesterId,
+					);
 
-					try {
-						const newFriend = await client.post({
-							requesterId: this.requesterId,
-						});
-
-						if (newFriend) {
-							alert(`You and ${this.requesterUsername} are now friends!`);
-						}
-					} catch {
-						alert(
-							`An Error occurred while attempting to accept ${this.requesterUsername}'s friend request.`,
-						);
+					if (newFriend) {
+						alert(`You and ${this.requesterUsername} are now friends!`);
+						return;
 					}
+					alert(
+						`An Error occurred while attempting to accept ${this.requesterUsername}'s friend request.`,
+					);
 				}}
 				actionOnReject={async () => {
-					const client = new ClientService<boolean>("/friendRequest/decline");
+					const success = await FriendRequestServices.decline(this.requesterId);
 
-					try {
-						const res = await client.post({
-							requesterId: this.requesterId,
-						});
-
-						console.log("Decline: " + res.result);
-
-						if (res.result) {
-							alert(
-								`You've Successfully declined ${this.requesterUsername}'s friend request!`,
-							);
-						} else {
-							throw new Error("Couldn't Decline Friend Request");
-						}
-					} catch {
+					if (success) {
 						alert(
-							`An Error occurred while declining ${this.requesterUsername}'s friend request!`,
+							`You've Successfully declined ${this.requesterUsername}'s friend request!`,
 						);
+						return;
 					}
+					alert(
+						`An Error occurred while declining ${this.requesterUsername}'s friend request!`,
+					);
 				}}
 				icon={
 					<>
@@ -107,7 +83,7 @@ class FriendRequestNotification {
 }
 
 // Extending the Notification interface for a Post Liked Notification
-interface PostLikedNotification extends Notification {
+interface PostLikedNotification extends INotification {
 	type: "Post Liked";
 	postId: string;
 	likedByUserId: string;
@@ -116,7 +92,7 @@ interface PostLikedNotification extends Notification {
 }
 
 // Extending the Notification interface for a Post Replied Notification
-interface PostRepliedNotification extends Notification {
+interface PostRepliedNotification extends INotification {
 	type: "Post Replied";
 	postId: string;
 	replyId: string;
@@ -126,7 +102,7 @@ interface PostRepliedNotification extends Notification {
 }
 
 // Extending the Notification interface for a Message Received Notification
-interface MessageReceivedNotification extends Notification {
+interface MessageReceivedNotification extends INotification {
 	type: "Message Received";
 	messageId: string;
 	fromUserId: string;
@@ -136,7 +112,7 @@ interface MessageReceivedNotification extends Notification {
 }
 
 // Extending the Notification interface for a Group Activity Notification
-interface GroupActivityNotification extends Notification {
+interface GroupActivityNotification extends INotification {
 	type: "Group Activity";
 	groupId: string;
 	activityType: "Member Joined" | "Event Created" | "Post Created";
@@ -150,7 +126,6 @@ export { FriendRequestNotification, NotificationFactory };
 export type {
 	FriendRequestPayload,
 	GroupActivityNotification,
-	INotification,
 	MessageReceivedNotification,
 	PostLikedNotification,
 	PostRepliedNotification,

@@ -1,14 +1,11 @@
 
 import { useQuery } from "@tanstack/react-query";
-import Post from "../interfaces/Post";
-import ClientService from "../services/HTTP-Services/ClientService";
+import PostServices from "../services/PostServices";
 
-const usePost = (postId: string = "") => {
-    const client = new ClientService<Post>(`/post/${postId}`);
-
+const usePost = (_id: string = "") => {
     return useQuery({
-        queryKey: [`post-${postId}`],
-        queryFn: client.get,
+        queryKey: [`post-${_id}`],
+        queryFn: () => PostServices.getOne(_id),
     });
 }
 

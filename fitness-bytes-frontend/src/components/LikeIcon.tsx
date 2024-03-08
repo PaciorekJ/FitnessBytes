@@ -2,7 +2,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { CircularProgress, IconButton, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import useIsLiked from "../hooks/useIsLiked";
-import ClientService from "../services/HTTP-Services/ClientService";
+import PostServices from "../services/PostServices";
 
 interface Props {
 	likes: number;
@@ -13,28 +13,20 @@ const LikeIcon = ({ likes, postId }: Props) => {
 	const { data, isLoading } = useIsLiked(postId);
 	const [likeCount, setLikeCount] = useState(likes);
 
-	const { result } = data || {};
-	const [isLiked, setLiked] = useState<boolean>(result || false);
-
+	const [isLiked, setLiked] = useState<boolean>(data || false);
 	useEffect(() => {
-		if (result !== undefined) {
-			setLiked(result);
+		if (data) {
+			setLiked(data);
 		}
-	}, [result]);
+	}, [data]);
 
+	
 	if (isLoading) return <CircularProgress />;
 
 	const handleToggleLike = async () => {
-		const client = new ClientService<boolean>("/post/like");
-
-		const json = {
-			postId: postId,
-		};
-
-		const { result } = await client.post(json);
+		const result = await PostServices.like(postId);
 
 		setLikeCount(result ? likeCount + 1 : likeCount - 1);
-
 		setLiked(!isLiked);
 	};
 

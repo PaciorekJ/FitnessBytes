@@ -15,9 +15,9 @@ import usePosts from "../hooks/usePosts";
 const Account = () => {
 	const { username } = useParams();
 
-	const { data: postData } = usePosts(username);
+	const { data } = usePosts(username);
 
-	const posts = postData?.result || [];
+	const posts = data || [];
 
 	const { data: postCountData, isLoading: postCountIsLoading } = usePostCount(
 		username || "",
