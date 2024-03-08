@@ -20,10 +20,8 @@ import { useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import FriendRequest from "../interfaces/FriendRequest";
-import User from "../interfaces/User";
-import ClientService from "../services/HTTP-Services/ClientService";
-import UserServices from "../services/UserServices";
+import FriendRequestServices from "../services/FriendRequestServices";
+import UserServices, { IUser } from "../services/UserServices";
 
 const style = {
 	position: "absolute",
@@ -42,7 +40,7 @@ const style = {
 
 const AddFriend = () => {
 	const [isOpen, setOpen] = useState(false);
-	const [searchResults, setSearchResults] = useState<User[]>([]);
+	const [searchResults, setSearchResults] = useState<IUser[]>([]);
 	const theme = useTheme();
 
 	const { register, handleSubmit, setValue, reset } = useForm({
@@ -59,15 +57,9 @@ const AddFriend = () => {
 	}
 
 	const handleAddFriend = async (_id: string) => {
-		const client = new ClientService<FriendRequest>("/friendRequest");
+		const friendRequest = await FriendRequestServices.create(_id);
 
-		const { result: createdFriendRequest } = await client.post({
-			recipientId: _id,
-		});
-
-		alert(
-			`Friend Request has been issued to ${createdFriendRequest?.requesterId}`,
-		);
+		alert(`Friend Request has been issued to ${friendRequest?.recipientId}`);
 	};
 
 	return (
@@ -110,7 +102,7 @@ const AddFriend = () => {
 						</IconButton>
 					</Stack>
 					<List>
-						{searchResults.map((u: User, i) => (
+						{searchResults.map((u: IUser, i) => (
 							<React.Fragment key={"Search__Result-" + u.username + " " + i}>
 								<ListItemButton href={"/auth/account/" + u.username}>
 									<ListItemIcon>

@@ -57,7 +57,6 @@ class EndpointFactory<ParentResponse> {
             try {
                 this.res = await this.client.patch(patchContent, config);
             } catch {
-                console.log("Failed")
                 return undefined;
             }
     

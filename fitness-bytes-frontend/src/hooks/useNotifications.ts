@@ -1,13 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { INotification } from "../interfaces/Notifcations";
-import ClientService from "../services/HTTP-Services/ClientService";
+import NotificationServices from "../services/NotificationServices";
 
 const useNotifications = () => {
-    const client = new ClientService<INotification[]>('/notifications'); 
 
     return useQuery({
         queryKey: ["notifications"],
-        queryFn: client.get,
+        queryFn: NotificationServices.getAll,
     })
 }
 

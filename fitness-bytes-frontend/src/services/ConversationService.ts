@@ -1,31 +1,30 @@
 
-import Conversation from "../interfaces/Conversation";
-import Message from "../interfaces/Message";
 import { ResponseResult } from "./HTTP-Services/ClientService";
 import EndpointFactory from "./HTTP-Services/EndpointFactory";
+import { IMessage } from "./MessageServices";
 
-type GetConversationsResponse = Conversation[];
-type GetConversationResponse = Conversation;
-type DeleteConversationResponse = boolean;
+interface IConversation {
+    _id: string;
+    participants: string[];
+    timeCreated?: Date;
+    title?: string;
+}
 
 type PostConversationResponse = {
-    conversation: Conversation,
-    message: Message,
+    conversation: IConversation,
+    message: IMessage,
 }
 
-type ConversationResponse = ResponseResult<GetConversationsResponse | 
-                                    GetConversationResponse | 
-                                    DeleteConversationResponse | 
-                                    PostConversationResponse>;
+type ConversationResponse = ResponseResult< IConversation[] | IConversation | boolean | PostConversationResponse >;
 
-class ConversationService {
-    private static fact = new EndpointFactory<ConversationResponse>("/conversation");
+class ConversationServices {
+    private static factConvo = new EndpointFactory<ConversationResponse>("/conversation");
 
-    static create = this.fact.post<PostConversationResponse, Conversation & {messageContent: string}>();
-    static delete = this.fact.delete<DeleteConversationResponse>();
-    static getAll = () => this.fact.get<GetConversationsResponse>()("");
-    static getOne = (_id: string) => this.fact.get<GetConversationResponse>()(_id);
-
+    static create = this.factConvo.post<PostConversationResponse, IConversation & {messageContent: string}>();
+    static delete = this.factConvo.delete<boolean>();
+    static getAll = () => this.factConvo.get<IConversation[]>()("");
+    static getOne = (_id: string) => this.factConvo.get<IConversation>()(_id);
 }
 
-export default ConversationService;
+export type { IConversation };
+export default ConversationServices;

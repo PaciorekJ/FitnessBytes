@@ -1,6 +1,6 @@
 import { CircularProgress, Typography } from "@mui/material";
 import useNotifications from "../hooks/useNotifications";
-import { NotificationFactory } from "../interfaces/Notifcations";
+import { NotificationFactory } from "../services/NotifcationFactory";
 
 const fact = new NotificationFactory();
 

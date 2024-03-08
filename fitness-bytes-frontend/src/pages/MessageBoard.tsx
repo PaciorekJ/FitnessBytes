@@ -24,10 +24,10 @@ import AddConversationModal from "../components/AddConversationModal";
 import Conversation from "../components/Conversation";
 import Messenger from "../components/Messenger";
 import useConversations from "../hooks/useConversations";
-import ConversationService from "../services/ConversationService";
+import ConversationServices from "../services/ConversationService";
 
 const MessageBoard = () => {
-	const { data } = useConversations();
+	const { data: conversations } = useConversations();
 	const [conversationId, setConversationId] = useState("");
 	const [open, setOpen] = useState(true);
 	const [addConvoOpen, addConvoSetOpen] = useState(false);
@@ -35,13 +35,14 @@ const MessageBoard = () => {
 
 	const queryClient = useQueryClient();
 
-	const conversations = data?.result;
-
 	const toggleDrawer = () => setOpen(!open);
 
 	const deleteConversation = async (id: string) => {
-		await ConversationService.delete(id);
+		await ConversationServices.delete(id);
 
+		if (id === conversationId) {
+			setConversationId("");
+		}
 		queryClient.invalidateQueries({ queryKey: ["conversations"] });
 	};
 

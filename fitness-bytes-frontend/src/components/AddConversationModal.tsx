@@ -16,12 +16,12 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import User from "../interfaces/User";
+import IUser from "../interfaces/User";
 
 import SearchIcon from "@mui/icons-material/Search";
 import { useQueryClient } from "@tanstack/react-query";
-import ClientService from "../services/HTTP-Services/ClientService";
-import ConversationService from "../services/ConversationService";
+import ConversationServices from "../services/ConversationService";
+import FriendServices from "../services/FriendServices";
 
 interface Props {
 	isOpen: boolean;
@@ -51,11 +51,11 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 
 	const queryClient = useQueryClient();
 
-	const [searchResults, setSearchResults] = useState<User[]>([]);
-	const [participants, setParticipants] = useState<User[]>([]);
+	const [searchResults, setSearchResults] = useState<IUser[]>([]);
+	const [participants, setParticipants] = useState<IUser[]>([]);
 
-	const toggleParticipants = (user: User) => {
-		const newParticipants: User[] = [];
+	const toggleParticipants = (user: IUser) => {
+		const newParticipants: IUser[] = [];
 		let present = false;
 		participants.forEach((p) => {
 			if (p._id !== user._id || p.username !== user.username) {
@@ -72,15 +72,7 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 	};
 
 	async function handleSearch(data: FieldValues) {
-		const q = data.searchContent || "";
-		const reqConfig = {
-			params: {
-				query: q,
-			},
-		};
-
-		const client = new ClientService<User[]>("/friend/");
-		const { result: users } = await client.get(reqConfig);
+		const users = await FriendServices.search(data.searchContent || "");
 		setSearchResults(users || []);
 	}
 
@@ -123,17 +115,17 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 						setParticipants([]);
 
 						const participantsUsernames = participants.map((u) => u.username);
-						await ConversationService.create({
+						await ConversationServices.create({
 							participants: participantsUsernames,
 							messageContent: "Hey Everyone",
-						})
+						});
 
-						queryClient.invalidateQueries({queryKey: ["conversations"]});
+						queryClient.invalidateQueries({ queryKey: ["conversations"] });
 						setOpen(false);
 					}}>
 					<Button type="submit">Create Conversation</Button>
 					<List>
-						{searchResults.map((u: User, i) => (
+						{searchResults.map((u: IUser, i) => (
 							<React.Fragment key={"Search__Result-" + u.username + " " + i}>
 								<ListItemIcon>
 									<Avatar>{u.username.charAt(0)}</Avatar>

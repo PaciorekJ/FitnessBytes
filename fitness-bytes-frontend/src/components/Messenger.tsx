@@ -8,8 +8,7 @@ import {
 import Stack from "@mui/material/Stack";
 import { useQueryClient } from "@tanstack/react-query";
 import { FieldValues, useForm } from "react-hook-form";
-import IMessage from "../interfaces/Message";
-import ClientService from "../services/HTTP-Services/ClientService";
+import MessageServices, { IMessage } from "../services/MessageServices";
 
 interface Props {
 	conversationId: string;
@@ -20,22 +19,19 @@ const Messenger = ({ conversationId }: Props) => {
 	const queryClient = useQueryClient();
 
 	const handleUserMessage = async (data: FieldValues) => {
-		const content = data.message;
-
-		const client = new ClientService<IMessage>("message/");
-
-		const { result: newMessage } = await client.post({
-			conversation: conversationId,
-			content,
-		});
+		const newMessage = await MessageServices.create(
+			conversationId,
+			data.message,
+		);
 
 		reset();
 
 		queryClient.setQueryData(
 			[`conversation-${conversationId}`, conversationId],
-			(old: { result: IMessage[] } | undefined) => {
-				return { result: [...(old?.result ?? []), newMessage] };
-			},
+			(conversation: IMessage[] | undefined) => [
+				...(conversation || []),
+				newMessage,
+			],
 		);
 	};
 

@@ -11,7 +11,6 @@ import {
 	Stack,
 	Typography,
 } from "@mui/material";
-import Post from "../interfaces/Post";
 
 import { memo, useCallback, useState } from "react";
 
@@ -23,15 +22,14 @@ import ShareIcon from "@mui/icons-material/Share";
 
 import { useQueryClient } from "@tanstack/react-query";
 import useUserStore from "../hooks/useUserStore";
-import { ResponseResult } from "../services/HTTP-Services/ClientService";
-import PostServices from "../services/PostServices";
+import PostServices, { IPost } from "../services/PostServices";
 import ReportServices from "../services/ReportServices";
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 import PostModal from "./PostModal";
 
 const PostCard = memo(
-	({ _id, content, username: postUsername, likes, timeCreated }: Post) => {
+	({ _id, content, username: postUsername, likes, timeCreated }: IPost) => {
 		const queryClient = useQueryClient();
 		const currentUserUsername = useUserStore((s) => s.username);
 		const [isOpen, setOpen] = useState(false);
@@ -47,19 +45,12 @@ const PostCard = memo(
 				return;
 			}
 
-			queryClient.setQueryData<ResponseResult<Post[]>>(["posts"], (oldData) => {
-				if (!oldData || !Array.isArray(oldData.result)) return oldData;
-
-				const updatedPosts = oldData.result.filter((c) => c._id !== _id);
-
+			queryClient.setQueryData<IPost[]>(["posts"], (oldPosts) => {
 				queryClient.invalidateQueries({
 					queryKey: [`userPostCount-${postUsername}`],
 				});
 
-				return {
-					...oldData,
-					result: updatedPosts,
-				};
+				return oldPosts?.filter((post) => post._id !== _id) || [];
 			});
 		}, [_id, postUsername, queryClient]);
 
@@ -106,10 +97,9 @@ const PostCard = memo(
 					return;
 				}
 
-				queryClient.setQueryData(
-					["posts"],
-					(old: { result: Post[] } | undefined) => {
-						const newPosts = old?.result.map((p) => {
+				queryClient.setQueryData(["posts"], (oldPosts: IPost[] | undefined) => {
+					return (
+						oldPosts?.map((p) => {
 							if (p._id === _id) {
 								return {
 									...p,
@@ -117,11 +107,9 @@ const PostCard = memo(
 								};
 							}
 							return p;
-						});
-
-						return { result: [...(newPosts ?? [])] };
-					},
-				);
+						}) || []
+					);
+				});
 
 				setOpen(false);
 			},

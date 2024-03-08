@@ -2,6 +2,7 @@ import { CircularProgress, Stack } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import usePost from "../hooks/usePost";
+import { IPost } from "../services/PostServices";
 
 const Post = () => {
 	const { postId } = useParams();
@@ -10,7 +11,7 @@ const Post = () => {
 
 	const navigator = useNavigate();
 
-	const post = data?.result;
+	const post = data || ({} as IPost);
 
 	if (!post) {
 		navigator("/Error");
@@ -19,7 +20,7 @@ const Post = () => {
 
 	return (
 		<Stack width={"100%"} alignItems={"center"}>
-			{!isLoading && <PostCard post={post} />}
+			{!isLoading && <PostCard {...post} />}
 			{isLoading && <CircularProgress />}
 		</Stack>
 	);
