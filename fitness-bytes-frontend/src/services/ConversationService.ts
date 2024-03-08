@@ -1,7 +1,6 @@
 
 import { ResponseResult } from "./HTTP-Services/ClientService";
 import EndpointFactory from "./HTTP-Services/EndpointFactory";
-import { IMessage } from "./MessageServices";
 
 interface IConversation {
     _id: string;
@@ -21,5 +20,5 @@ class ConversationServices {
     static getOne = (_id: string) => this.factConvo.get<IConversation>()(_id);
 }
 
-export type {IConversation};
+export type { IConversation };
 export default ConversationServices;
