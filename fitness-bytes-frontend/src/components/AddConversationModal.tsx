@@ -16,12 +16,12 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import IUser from "../interfaces/User";
 
 import SearchIcon from "@mui/icons-material/Search";
 import { useQueryClient } from "@tanstack/react-query";
 import ConversationServices from "../services/ConversationService";
 import FriendServices from "../services/FriendServices";
+import { IUser } from "../services/UserServices";
 
 interface Props {
 	isOpen: boolean;

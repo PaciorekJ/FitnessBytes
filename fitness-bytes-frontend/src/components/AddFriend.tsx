@@ -15,7 +15,7 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";

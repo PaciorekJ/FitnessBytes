@@ -1,7 +1,7 @@
 import { Logout, Settings } from "@mui/icons-material";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import Diversity3Icon from "@mui/icons-material/Diversity3";
+// import Diversity3Icon from "@mui/icons-material/Diversity3";
 import HomeIcon from "@mui/icons-material/Home";
 import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
@@ -92,11 +92,11 @@ const Nav = () => {
 								</Badge>
 							</IconButton>
 						</Tooltip>
-						<Tooltip title="My Groups">
+						{/* <Tooltip title="My Groups">
 							<IconButton>
 								<Diversity3Icon color="primary" />
 							</IconButton>
-						</Tooltip>
+						</Tooltip> */}
 						<Tooltip title="Home">
 							<IconButton href={`/auth/feed/#top`}>
 								<HomeIcon color="primary" />
