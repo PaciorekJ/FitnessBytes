@@ -11,7 +11,7 @@ const MessageBubble = ({ isCurrentUsers, children }: Props) => {
 
 	const MessageRightStyles = {
 		borderRadius: "25px 25px 0 25px",
-		bgcolor: theme.palette.secondary.light,
+		bgcolor: theme.palette.warning.dark,
 	};
 
 	const MessageLeftStyles = {

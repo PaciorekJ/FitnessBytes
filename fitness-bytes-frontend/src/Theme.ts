@@ -62,6 +62,7 @@ const darkTheme = {
 		text: {
 			primary: "#E0F7FA", // Light cyan for primary text to stand out against the dark background
 			secondary: "#B2EBF2", // Slightly dimmer for secondary text
+			disabled: "#9E9E9E"
 		},
 	},
     components: {
@@ -98,7 +99,7 @@ const getTheme = (mode: PaletteMode) => {
 		MuiSvgIcon: {
 			styleOverrides: {
 				root: {
-					color: mode === "light" ? "" : theme.palette.primary.main,
+					color: mode === "light" ? "" : theme.palette.secondary.main,
 				},
 			},
 		},
