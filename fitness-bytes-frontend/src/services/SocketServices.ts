@@ -5,7 +5,7 @@ type CallbackNames = "Message Recieved";
 type CallbackFn = (m: IMessage) => void;
 
 class SocketServices {
-    private static socket: Socket = io("http://localhost:5301/");
+    private static socket: Socket | undefined;
     private static roomId = "";
     private static callbacks: { [key: string]: CallbackFn; } = {
         "Message Recieved": () => {
@@ -14,6 +14,7 @@ class SocketServices {
     };
 
     static setUp = () => {
+        this.socket = io("http://localhost:5301/");
         this.socket.on("Message Recieved", this.messageRecieved);
     }
 
@@ -29,20 +30,20 @@ class SocketServices {
             message
         };
 
-        this.socket.emit("Message Sent", SendMessageRequest);
+        this.socket?.emit("Message Sent", SendMessageRequest);
     }
 
     static join = (id: string) => {
         if (SocketServices.roomId) {
-            this.socket.emit("Leave Conversation", id);
+            this.socket?.emit("Leave Conversation", id);
             SocketServices.roomId = "";
         }
-        this.socket.emit("Join Conversation", id);
+        this.socket?.emit("Join Conversation", id);
         SocketServices.roomId = id;
     }
 
     static leave = (id: string) => {
-        this.socket.emit("Leave Conversation", id);
+        this.socket?.emit("Leave Conversation", id);
         SocketServices.roomId = "";
     }
 

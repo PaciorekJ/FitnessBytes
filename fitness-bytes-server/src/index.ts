@@ -84,21 +84,18 @@ app.use((req, res, next) => {
 })
 
 io.on('connection', (socket) => {
-    console.log("Number of connections -", socket.id);
+    console.log("New Connection -", socket.id);
     
     socket.on("Join Conversation", (id) => {
         socket.join(id);
-        console.log(`Socket ${socket.id} Joined conversation ${id}`);
     })
 
     socket.on('Leave Conversation', (id) => {
         socket.leave(id);
-        console.log(`Socket ${socket.id} left conversation ${id}`);
     });
 
     socket.on("Message Sent", ({id, message}) => {
         socket.to(id).emit("Message Recieved", message);
-        console.log("Message Sent : ", message, " to ", id);
     });
 });
 
