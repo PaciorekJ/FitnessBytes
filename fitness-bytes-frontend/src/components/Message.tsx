@@ -1,7 +1,8 @@
 import { Stack, Typography } from "@mui/material";
 import useUserStore from "../hooks/useUserStore";
-import MessageBubble from "./MessageBubble";
 import { IMessage } from "../services/MessageServices";
+import ParseDateFromNow from "../utils/ParseDate";
+import MessageBubble from "./MessageBubble";
 
 interface Props {
 	message: IMessage;
@@ -13,7 +14,7 @@ const Message = ({ message }: Props) => {
 	const isLoading = false;
 	const Error = "";
 
-	const time = new Date(message.timeCreated || "").toString();
+	const time = ParseDateFromNow(new Date(message.timeCreated || ""));
 
 	const isUsers = message.senderUsername === username;
 
@@ -21,19 +22,23 @@ const Message = ({ message }: Props) => {
 		<Stack
 			sx={{
 				flexDirection: "column",
-				...(isUsers ? { alignItems: "end" } : {alignItems: "start" }),
+				...(isUsers ? { alignItems: "end" } : { alignItems: "start" }),
 			}}>
 			{!Error && (
 				<>
-					<Typography>{message.senderUsername}</Typography>
+					<Typography color={"text.secondary"}>
+						{message.senderUsername}
+					</Typography>
 					<MessageBubble isCurrentUsers={isUsers}>
 						{message.content}
 					</MessageBubble>
 					{message.timeCreated && (
-						<Typography variant={"body2"}>{time}</Typography>
+						<Typography variant={"body2"} color={"text.disabled"}>
+							{time}
+						</Typography>
 					)}
 					{!isLoading && (
-						<Typography variant={"body2"}>
+						<Typography variant={"body2"} color={"text.disabled"}>
 							{isUsers ? "Sent" : "Recieved"}
 						</Typography>
 					)}

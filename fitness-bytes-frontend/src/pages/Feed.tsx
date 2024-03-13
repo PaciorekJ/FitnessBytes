@@ -10,10 +10,22 @@ const Feed = () => {
 	const posts: IPost[] = data || [];
 
 	return (
-		<Stack width={"100%"} alignItems={"center"}>
+		<Stack
+			boxSizing={"border-box"}
+			width={"100%"}
+			paddingX={"5rem"}
+			alignItems={"center"}>
 			<div id="top"></div>
-			{!isLoading && posts.map((p) => <PostCard key={p._id} {...p} />)}
-			{isLoading && <CircularProgress />}
+			{posts.map((p) => (
+				<PostCard key={p._id} {...p} />
+			))}
+			{isLoading && (
+				<CircularProgress
+					sx={{ marginTop: "10%" }}
+					size={"5%"}
+					color="secondary"
+				/>
+			)}
 		</Stack>
 	);
 };

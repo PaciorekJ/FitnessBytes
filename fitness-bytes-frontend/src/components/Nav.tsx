@@ -55,7 +55,7 @@ const Nav = () => {
 
 	//TODO: For smaller layout condense nav to a Triple Bar button
 	return (
-		<Stack zIndex={"100"} height={"10vh"}>
+		<Stack zIndex={"100"} position={"sticky"} top={0} height={"10vh"}>
 			<Paper square>
 				<Stack
 					sx={{
@@ -80,14 +80,14 @@ const Nav = () => {
 						</Tooltip>
 						<Tooltip title="Notifications">
 							<IconButton href={"/auth/notifications/"}>
-								<Badge badgeContent={10} variant="dot" color="secondary">
+								<Badge badgeContent={10} variant="dot" color="warning">
 									<NotificationsNoneIcon color="primary" />
 								</Badge>
 							</IconButton>
 						</Tooltip>
 						<Tooltip title="Messages">
 							<IconButton href={`/auth/messages/`}>
-								<Badge badgeContent={10} color="secondary">
+								<Badge badgeContent={10} color="warning">
 									<MailOutlinedIcon color="primary" />
 								</Badge>
 							</IconButton>

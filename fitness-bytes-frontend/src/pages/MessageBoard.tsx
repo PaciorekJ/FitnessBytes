@@ -142,8 +142,17 @@ const MessageBoard = () => {
 
 	return (
 		<>
-			<Box position={"sticky"} bgcolor={"background.default"} top={0} left={0}>
-				<IconButton onClick={toggleDrawer}>
+			<Box position={"sticky"} top={"10vh"} left={0}>
+				<IconButton
+					size="large"
+					sx={{
+						"bgcolor": "background.default",
+						borderRadius: "0 50px 50px 0",
+						"&:hover": {
+							bgcolor: "background.default",
+						},
+					}}
+					onClick={toggleDrawer}>
 					<RecentActorsIcon fontSize={"large"} color="primary" />
 				</IconButton>
 			</Box>

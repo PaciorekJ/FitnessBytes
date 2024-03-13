@@ -8,22 +8,24 @@ const fact = new NotificationFactory();
 const Notifications = () => {
 	const { data, isLoading } = useNotifications();
 	const notifications = data || [];
-	if (isLoading) {
-		return (
-			<Stack padding={15} alignItems={"center"} width={"100vw"}>
-				<CircularProgress color="inherit" />
-			</Stack>
-		);
-	} else if (!notifications.length) {
-		return (
-			<Stack padding={15} alignItems={"center"} width={"100vw"}>
-				<Typography> No Notifications</Typography>
-			</Stack>
-		);
-	}
-	return notifications.map((n) => (
-		<React.Fragment key={n._id}>{fact.create(n)}</React.Fragment>
-	));
+
+	return (
+		<>
+			{isLoading && (
+				<Stack padding={15} alignItems={"center"} width={"100vw"}>
+					<CircularProgress size={"5%"} color="secondary" />
+				</Stack>
+			)}
+			{!notifications.length && !isLoading && (
+				<Stack padding={15} alignItems={"center"} width={"100vw"}>
+					<Typography> No Notifications</Typography>
+				</Stack>
+			)}
+			{notifications.map((n) => (
+				<React.Fragment key={n._id}>{fact.create(n)}</React.Fragment>
+			))}
+		</>
+	);
 };
 
 export default Notifications;

@@ -24,6 +24,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import useUserStore from "../hooks/useUserStore";
 import PostServices, { IPost } from "../services/PostServices";
 import ReportServices from "../services/ReportServices";
+import ParseDateFromNow from "../utils/ParseDate";
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 import PostModal from "./PostModal";
@@ -35,7 +36,7 @@ const PostCard = memo(
 		const [isOpen, setOpen] = useState(false);
 		const [error, setError] = useState("");
 
-		const time = new Date(timeCreated || "").toString();
+		const time = ParseDateFromNow(new Date(timeCreated || ""));
 
 		const handleDelete = useCallback(async () => {
 			const res = await PostServices.delete(_id);
@@ -157,16 +158,20 @@ const PostCard = memo(
 		];
 
 		return (
-			<Box padding={1}>
+			<Box padding={1} minWidth={"100%"}>
 				<Paper variant="outlined">
 					<Link href={"/auth/account/" + postUsername} underline="none">
 						<CardHeader
 							titleTypographyProps={{ fontSize: "1.2rem" }}
-							title={postUsername}
+							title={
+								<Typography variant="body1" color={"text.secondary"}>
+									{postUsername}
+								</Typography>
+							}
 							avatar={
 								<Avatar aria-label="User Icon">{postUsername.charAt(0)}</Avatar>
 							}
-							subheader={time || ""}
+							subheader={<Typography color={"text.disabled"} variant="body2">{time || ""}</Typography>}
 						/>
 					</Link>
 					<Box paddingX={2}>
