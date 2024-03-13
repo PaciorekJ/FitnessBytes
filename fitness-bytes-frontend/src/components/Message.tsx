@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import useUserStore from "../hooks/useUserStore";
-import IMessage from "../interfaces/Message";
 import MessageBubble from "./MessageBubble";
+import { IMessage } from "../services/MessageServices";
 
 interface Props {
 	message: IMessage;
@@ -21,7 +21,7 @@ const Message = ({ message }: Props) => {
 		<Stack
 			sx={{
 				flexDirection: "column",
-				...(isUsers ? { alignItems: "end" } : {}),
+				...(isUsers ? { alignItems: "end" } : {alignItems: "start" }),
 			}}>
 			{!Error && (
 				<>

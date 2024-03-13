@@ -23,7 +23,7 @@ const MessageBubble = ({ isCurrentUsers, children }: Props) => {
 		<Box
 			sx={{
 				padding: "1rem",
-				width: "75%",
+				maxWidth: "75%",
 				color: theme.palette.primary.contrastText,
 				...(isCurrentUsers ? MessageRightStyles : MessageLeftStyles),
 			}}>

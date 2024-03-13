@@ -5,6 +5,7 @@ import {
 	Avatar,
 	Box,
 	Button,
+	CircularProgress,
 	Divider,
 	Drawer,
 	Grid,
@@ -19,21 +20,36 @@ import {
 	useTheme,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
+import _ from "lodash";
+import React, { useEffect, useState } from "react";
 import AddConversationModal from "../components/AddConversationModal";
 import Conversation from "../components/Conversation";
 import Messenger from "../components/Messenger";
 import useConversations from "../hooks/useConversations";
 import ConversationServices from "../services/ConversationService";
+import { IMessage } from "../services/MessageServices";
+import SocketServices from "../services/SocketServices";
 
 const MessageBoard = () => {
 	const { data: conversations } = useConversations();
 	const [conversationId, setConversationId] = useState("");
 	const [open, setOpen] = useState(true);
+	const [newMessage, setNewMessage] = useState<IMessage>({} as IMessage);
 	const [addConvoOpen, addConvoSetOpen] = useState(false);
 	const theme = useTheme();
 
 	const queryClient = useQueryClient();
+
+	useEffect(() => {
+		if (_.isEmpty(newMessage)) return;
+		queryClient.setQueryData(
+			[`conversation-${conversationId}`, conversationId],
+			(conversation: IMessage[] | undefined) => [
+				...(conversation || []),
+				newMessage,
+			],
+		);
+	}, [conversationId, newMessage, queryClient]);
 
 	const toggleDrawer = () => setOpen(!open);
 
@@ -42,6 +58,7 @@ const MessageBoard = () => {
 
 		if (id === conversationId) {
 			setConversationId("");
+			SocketServices.leave(id);
 		}
 		queryClient.invalidateQueries({ queryKey: ["conversations"] });
 	};
@@ -68,7 +85,7 @@ const MessageBoard = () => {
 						}}>
 						New Conversation
 					</Button>
-					{conversations &&
+					{(conversations &&
 						conversations.map((c, i) => {
 							const convoTitle =
 								c.title || c.participants.join(", ") || "Empty Conversation";
@@ -95,7 +112,12 @@ const MessageBoard = () => {
 													<DeleteIcon />
 												</IconButton>
 											}>
-											<ListItemButton onClick={() => setConversationId(c._id)}>
+											<ListItemButton
+												onClick={() => {
+													SocketServices.leave(conversationId);
+													setConversationId(c._id);
+													SocketServices.join(c._id);
+												}}>
 												<ListItemIcon>
 													<Avatar aria-label="User Icon">
 														{convoTitle.charAt(0)}
@@ -108,7 +130,11 @@ const MessageBoard = () => {
 									{i < conversations.length - 1 && <Divider />}
 								</React.Fragment>
 							);
-						})}
+						})) || (
+						<Stack width={"100%"} alignItems={"center"}>
+							<CircularProgress />
+						</Stack>
+					)}
 				</List>
 			</Box>
 		</>
@@ -133,7 +159,10 @@ const MessageBoard = () => {
 							{conversations && (
 								<Conversation conversationId={conversationId} />
 							)}
-							<Messenger conversationId={conversationId} />
+							<Messenger
+								setNewMessage={setNewMessage}
+								conversationId={conversationId}
+							/>
 						</Stack>
 					)) || (
 						<Typography align={"center"}>No Conversation Selected</Typography>

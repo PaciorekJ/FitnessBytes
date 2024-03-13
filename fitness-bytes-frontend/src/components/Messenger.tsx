@@ -6,33 +6,30 @@ import {
 	OutlinedInput,
 } from "@mui/material";
 import Stack from "@mui/material/Stack";
-import { useQueryClient } from "@tanstack/react-query";
 import { FieldValues, useForm } from "react-hook-form";
 import MessageServices, { IMessage } from "../services/MessageServices";
+import SocketServices from "../services/SocketServices";
 
 interface Props {
 	conversationId: string;
+	setNewMessage: (m: IMessage) => void;
 }
 
-const Messenger = ({ conversationId }: Props) => {
+const Messenger = ({ conversationId, setNewMessage }: Props) => {
 	const { register, reset, handleSubmit } = useForm();
-	const queryClient = useQueryClient();
+
+	SocketServices.registerCallback("Message Recieved", setNewMessage);
 
 	const handleUserMessage = async (data: FieldValues) => {
-		const newMessage = await MessageServices.create(
-			conversationId,
-			data.message,
-		);
+		const newMessage =
+			(await MessageServices.create(conversationId, data.message)) ||
+			({} as IMessage);
+
+		SocketServices.SendMessage(newMessage);
 
 		reset();
 
-		queryClient.setQueryData(
-			[`conversation-${conversationId}`, conversationId],
-			(conversation: IMessage[] | undefined) => [
-				...(conversation || []),
-				newMessage,
-			],
-		);
+		setNewMessage(newMessage);
 	};
 
 	return (

@@ -6,7 +6,9 @@ import MongoStore from 'connect-mongo';
 import cors from 'cors';
 import express, { Express } from 'express';
 import session from 'express-session';
+import { createServer } from 'http';
 import passport from 'passport';
+import { Server } from 'socket.io';
 import ResponseResult from './interfaces/ResponseResult';
 import conversationRouter from './routes/conversation';
 import friendRouter from './routes/friend';
@@ -25,6 +27,13 @@ const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "86400000"); // De
 
 const app: Express = express();
 db.connect();
+
+const server = createServer(app);
+const io = new Server(server, {
+    cors: {
+      origin: process.env.FRONTEND_URL,
+    }
+  });
 
 // *** Set up session Store and Session ***
 const sessionStore: MongoStore = MongoStore.create({
@@ -74,6 +83,25 @@ app.use((req, res, next) => {
     res.status(404).json(payload);
 })
 
-app.listen(PORT, () => {
+io.on('connection', (socket) => {
+    console.log("Number of connections -", socket.id);
+    
+    socket.on("Join Conversation", (id) => {
+        socket.join(id);
+        console.log(`Socket ${socket.id} Joined conversation ${id}`);
+    })
+
+    socket.on('Leave Conversation', (id) => {
+        socket.leave(id);
+        console.log(`Socket ${socket.id} left conversation ${id}`);
+    });
+
+    socket.on("Message Sent", ({id, message}) => {
+        socket.to(id).emit("Message Recieved", message);
+        console.log("Message Sent : ", message, " to ", id);
+    });
+});
+
+server.listen(PORT, () => {
     console.log(`Listening on Port ${PORT}...`);
 });

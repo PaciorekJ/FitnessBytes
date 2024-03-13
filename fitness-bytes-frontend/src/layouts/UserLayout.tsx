@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Nav from "../components/Nav";
 import UserServices from "../services/UserServices";
+import SocketServices from "../services/SocketServices";
 
 const UserLayout = () => {
 	const navigator = useNavigate();
@@ -12,6 +13,8 @@ const UserLayout = () => {
 			if (!res) {
 				navigator("/");
 			}
+
+			SocketServices.setUp();
 		};
 
 		authUser();
