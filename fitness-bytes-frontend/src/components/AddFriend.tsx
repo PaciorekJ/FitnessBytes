@@ -18,25 +18,9 @@ import {
 import { useState } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
-import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import FriendRequestServices from "../services/FriendRequestServices";
 import UserServices, { IUser } from "../services/UserServices";
-
-const style = {
-	position: "absolute",
-	top: "50%",
-	left: "50%",
-	transform: "translate(-50%, -50%)",
-	width: "66%",
-	height: "75%",
-	bgcolor: "background.default",
-	border: "2px solid #000",
-	borderRadius: "25px",
-	boxShadow: 24,
-	p: 6,
-	overflowY: "scroll",
-};
 
 const AddFriend = () => {
 	const [isOpen, setOpen] = useState(false);
@@ -49,6 +33,21 @@ const AddFriend = () => {
 
 	const openModal = () => setOpen(true);
 	const closeModal = () => setOpen(false);
+
+	const style = {
+		position: "absolute",
+		top: "50%",
+		left: "50%",
+		transform: "translate(-50%, -50%)",
+		width: "66%",
+		height: "75%",
+		bgcolor: "background.default",
+		border: "2px solid #000",
+		borderRadius: "25px",
+		boxShadow: "0px 0px 10vh " + theme.palette.primary.light,
+		p: 3,
+		overflowY: "scroll",
+	};
 
 	async function handleSearch(data: FieldValues) {
 		const users = await UserServices.search(data.searchContent);
@@ -81,7 +80,7 @@ const AddFriend = () => {
 				aria-labelledby="Modal For Finding new friends"
 				aria-describedby="Modal that is used for finding new friends on the platform">
 				<Box sx={style}>
-					<Typography variant="h3" paddingBottom={3}>
+					<Typography variant="h4" component="h3" paddingBottom={3}>
 						Find A Friend
 					</Typography>
 					<Stack
@@ -89,7 +88,7 @@ const AddFriend = () => {
 							flexDirection: "row",
 							border: `2px double  ${theme.palette.text.primary}`,
 							borderRadius: "25px",
-							padding: 1,
+							padding: 0.5,
 						}}>
 						<InputBase
 							sx={{ marginLeft: 1, flex: 1, border: 0 }}
@@ -109,15 +108,17 @@ const AddFriend = () => {
 					</Stack>
 					<List>
 						{searchResults.map((u: IUser, i) => (
-							<React.Fragment key={"Search__Result-" + u.username + " " + i}>
+							<ListItem key={"Search__Result-" + u.username + " " + i}>
 								<ListItemButton href={"/auth/account/" + u.username}>
-									<ListItemIcon>
-										<Avatar>{u.username.charAt(0)}</Avatar>
-									</ListItemIcon>
-									<ListItem>
-										<Typography>{u.username}</Typography>
-									</ListItem>
-									<ListItemIcon>
+									<Stack flexDirection={"row"}>
+										<ListItemIcon>
+											<Avatar>{u.username.charAt(0)}</Avatar>
+										</ListItemIcon>
+										<ListItem>
+											<Typography>{u.username}</Typography>
+										</ListItem>
+									</Stack>
+									<ListItemIcon sx={{ marginLeft: "auto" }}>
 										<IconButton
 											onClick={(e) => {
 												e.preventDefault();
@@ -131,7 +132,7 @@ const AddFriend = () => {
 									</ListItemIcon>
 								</ListItemButton>
 								<Divider />
-							</React.Fragment>
+							</ListItem>
 						))}
 					</List>
 				</Box>

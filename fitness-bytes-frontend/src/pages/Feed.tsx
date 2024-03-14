@@ -13,6 +13,8 @@ const Feed = () => {
 		<Stack
 			boxSizing={"border-box"}
 			width={"100%"}
+			maxWidth={"700px"}
+			margin={"auto"}
 			paddingX={"5rem"}
 			alignItems={"center"}>
 			<div id="top"></div>

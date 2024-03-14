@@ -147,7 +147,7 @@ const MessageBoard = () => {
 					size="large"
 					sx={{
 						"bgcolor": "background.default",
-						borderRadius: "0 50px 50px 0",
+						"borderRadius": "0 50px 50px 0",
 						"&:hover": {
 							bgcolor: "background.default",
 						},
@@ -164,7 +164,7 @@ const MessageBoard = () => {
 				</Grid>
 				<Grid item xs={5}>
 					{(conversationId && (
-						<Stack minHeight={"78vh"} justifyContent={"end"}>
+						<Stack minHeight={"78vh"} maxWidth={"800px"} marginX={"auto"} justifyContent={"end"}>
 							{conversations && (
 								<Conversation conversationId={conversationId} />
 							)}
@@ -174,7 +174,9 @@ const MessageBoard = () => {
 							/>
 						</Stack>
 					)) || (
-						<Typography align={"center"}>No Conversation Selected</Typography>
+						<Typography align={"center"} color={"text.disabled"}>
+							No Conversation Selected
+						</Typography>
 					)}
 				</Grid>
 			</Grid>
