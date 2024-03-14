@@ -9,6 +9,7 @@ import {
 	Divider,
 	TextField,
 	Typography,
+	useTheme,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
@@ -62,10 +63,11 @@ const PostModal = ({
 		handleSubmit,
 		watch,
 		reset,
-		formState: { isValid, isDirty, errors },
+		formState: { isValid },
 	} = useForm<PostData>({ resolver: zodResolver(schema), mode: "all" });
 
 	const [value, setValue] = useState(textValue);
+	const theme = useTheme();
 
 	const handleChange = (e: {
 		preventDefault: () => void;
@@ -97,9 +99,9 @@ const PostModal = ({
 					width: "98%",
 					maxWidth: "600px",
 					bgcolor: "background.default",
-					border: "2px solid #000",
+					border: "2px solid primary.light",
 					borderRadius: "25px",
-					boxShadow: 24,
+					boxShadow: "0px 0px 10vh " + theme.palette.primary.light,
 					p: 2,
 				}}
 				variant="outlined">
@@ -136,9 +138,6 @@ const PostModal = ({
 						<Divider />
 					</Box>
 					{error && <Alert color="error">{error}</Alert>}
-					{isDirty && errors.content && (
-						<Alert color="error">{errors.content.message}</Alert>
-					)}
 					<Box padding={2}>
 						<TextField
 							sx={{ border: "1px solid" }}

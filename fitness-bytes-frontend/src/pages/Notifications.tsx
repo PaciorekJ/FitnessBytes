@@ -18,7 +18,7 @@ const Notifications = () => {
 			)}
 			{!notifications.length && !isLoading && (
 				<Stack padding={15} alignItems={"center"} width={"100vw"}>
-					<Typography> No Notifications</Typography>
+					<Typography color={"text.disabled"}> No Notifications</Typography>
 				</Stack>
 			)}
 			{notifications.map((n) => (
