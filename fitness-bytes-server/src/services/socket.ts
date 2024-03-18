@@ -1,6 +1,11 @@
 import { Express } from 'express';
 import { createServer } from "http";
 import { Server } from "socket.io";
+
+enum EmitActions {
+    notification = "Notification"
+}
+
 class Socket {
     static server: any;
     static io: any;
@@ -31,4 +36,5 @@ class Socket {
     }
 }
 
+export type { EmitActions }
 export default Socket;

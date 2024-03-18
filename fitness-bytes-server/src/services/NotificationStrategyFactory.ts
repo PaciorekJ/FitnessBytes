@@ -1,10 +1,11 @@
-import { NotificationTypes } from "../models/Notification";
-import NotificationStrategy from "./NotificationStrategy";
-import NotificationStrategyFriend from "./NotificationStrategyFriend";
+import mongoose from "mongoose";
+import { FriendNotificationModel, FriendRequestNotificationModel, MessageNotificationModel, NotificationTypes, PostLikedNotificationModel } from "../models/Notification";
 
-import NotificationStrategyFriendRequest from "./NotificationStrategyFriendRequest";
-import NotificationStrategyMessage from "./NotificationStrategyMessage";
-import NotificationStrategyPostLiked from "./NotificationStrategyPostLiked";
+import { Request } from "express";
+import { IConversation } from "../models/Conversation";
+import { IFriendRequest } from "../models/FriendRequest";
+import { IPost } from "../models/Post";
+import UserModel, { IUser } from "../models/User";
 
 class NotificationStrategyFactory {
     static create(type: NotificationTypes) {
@@ -22,6 +23,76 @@ class NotificationStrategyFactory {
         }
         return new NotificationStrategy().handle;
     }
+}
+
+class NotificationStrategy<T> {
+    handle(data: T, req?: Request): void | Promise<void> {
+        console.error("Notification Strategy selected is not valid");
+    }
+}
+
+class NotificationStrategyMessage implements NotificationStrategy<IConversation> {
+	async handle(data: IConversation, req: Request): Promise<void> {
+        const userId = (req.user as IUser)._id
+        try {
+            data.participantIds.map(async (participantId)=> {
+                const id = new mongoose.Types.ObjectId(participantId);
+                if (id.equals(userId)) return;
+                
+                await MessageNotificationModel.create({
+                    recipientId: id,
+                    conversationId: data._id,
+                    senderId: (req.user as IUser)._id,
+                    senderUsername: (req.user as IUser).username,
+                });
+            })
+            console.log("Message Processed");
+        }
+        catch {
+            console.log("Failed to process message");
+        }
+	}
+}
+
+class NotificationStrategyPostLiked extends NotificationStrategy<IPost> {
+	async handle(data: IPost, req: Request): Promise<void> {
+		console.log("PostLike Processed");
+        const id: mongoose.Types.ObjectId = (req.user as IUser)._id
+        if (id.equals(data.userId)) return;
+		await PostLikedNotificationModel.create({
+            recipientId: data.userId,
+            postId: data._id,
+            likerId: (req.user as IUser)._id,
+            likerUsername: (req.user as IUser).username,
+        });
+	}
+}
+
+class NotificationStrategyFriendRequest implements NotificationStrategy<IFriendRequest> {
+    async handle(data: IFriendRequest, req: Request): Promise<void> {
+        console.log("Friend Request Processed");
+        await FriendRequestNotificationModel.create({
+            recipientId: data.recipientId,
+            requesterId: data.requesterId,
+            requesterUsername: (req.user as IUser).username
+        });
+    }
+}
+
+class NotificationStrategyFriend implements NotificationStrategy<IFriendRequest> {
+	async handle(data: IFriendRequest, req: Request): Promise<void> {
+		const { username: requesterUsername } = await UserModel.findById(data.requesterId) as IUser;
+		await FriendNotificationModel.create({
+			recipientId: data.recipientId,
+			requesterId: data.requesterId,
+			requesterUsername
+		});
+		await FriendNotificationModel.create({
+			recipientId: data.requesterId,
+			requesterId: data.requesterId,
+			requesterUsername: (req.user as IUser).username
+		});
+	}
 }
 
 export default NotificationStrategyFactory;
