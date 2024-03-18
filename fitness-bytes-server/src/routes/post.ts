@@ -4,6 +4,8 @@ import { authMiddleware } from "../middleware/authMiddleware";
 import PostModel from "../models/Post";
 import PostLikeModel from "../models/PostLike";
 import { IUser } from "../models/User";
+import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
+import { NotificationTypes } from "../models/Notification";
 
 const postRouter = Router();
 
@@ -46,8 +48,11 @@ postRouter.post("/like", authMiddleware, async (req, res) => {
 
         const existingLike = await PostLikeModel.findOne({ postID: postId, userID: userId });
 
+        
         if (!existingLike) {
             // *** Post is liked ***
+            const post = await PostModel.findById(postId);
+            NotificationStrategyFactory.create(NotificationTypes.PostLiked)(post, req);
             await PostLikeModel.create({ postID: postId, userID: userId });
             await PostModel.findByIdAndUpdate(postId, { $inc: { likes: 1 } });
             return res.status(200).json({

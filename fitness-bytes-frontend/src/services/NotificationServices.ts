@@ -8,17 +8,19 @@ interface INotification {
     _id: string;
 	type:
 		| "Friend Request"
+		| "New Friend"
 		| "Post Liked"
 		| "Post Replied"
 		| "Message Received"
 		| "Group Activity";
 	recipientId: string;
+	timeCreated: Date;
 }
 
-type NotifcationResponse = ResponseResult<INotification[]>;
+type NotificationResponse = ResponseResult<INotification[]>;
 
 class NotificationServices {
-	private static fact = new EndpointFactory<NotifcationResponse>("/notifications");
+	private static fact = new EndpointFactory<NotificationResponse>("/notifications");
 
     static getAll = () => this.fact.get<INotification[]>()();
     static delete = this.fact.delete<boolean>();

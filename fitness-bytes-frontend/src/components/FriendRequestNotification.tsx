@@ -6,7 +6,6 @@ import { INotification } from "../services/NotificationServices";
 interface FriendRequestProps extends INotification {
 	requesterId: string;
 	requesterUsername: string;
-	timeCreated: string;
 }
 
 const FriendRequestNotification = ({
@@ -54,7 +53,8 @@ const FriendRequestNotification = ({
 					<Typography component="b" fontWeight={600}>
 						friend request
 					</Typography>{" "}
-					from {requesterUsername}
+					from{" "}
+					<a href={"/auth/account/" + requesterUsername}>{requesterUsername}</a>
 				</>
 			}
 			timestamp={new Date(timeCreated)}

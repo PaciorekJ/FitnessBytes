@@ -1,26 +1,32 @@
 import { ReactNode } from "react";
 import FriendRequestNotification, {
-	FriendRequestProps,
+	FriendRequestProps as FriendRequestNotificationProps,
 } from "../components/FriendRequestNotification";
 import { INotification } from "./NotificationServices";
+import FriendNotification, { FriendNotificationProps } from "../components/FriendNotification";
+import MessageNotification, { MessageNotificationProps } from "../components/MessageNotification";
+import PostLikedNotification, { PostLikedNotificationProps } from "../components/PostLikedNotification";
 
 class NotificationFactory {
 	create(payload: INotification): ReactNode {
 		if (payload.type === "Friend Request") {
-			const props = payload as FriendRequestProps;
+			const props = payload as FriendRequestNotificationProps;
 			return <FriendRequestNotification {...props} />;
+		}
+		else if (payload.type === "New Friend") {
+			const props = payload as FriendNotificationProps;
+			return <FriendNotification {...props} />;
+		}
+		else if (payload.type === "Message Received") {
+			const props = payload as MessageNotificationProps;
+			return <MessageNotification {...props} />;
+		}
+		else if (payload.type === "Post Liked") {
+			const props = payload as PostLikedNotificationProps;
+			return <PostLikedNotification {...props} />;
 		}
 		return null;
 	}
-}
-
-// Extending the Notification interface for a Post Liked Notification
-interface PostLikedNotification extends INotification {
-	type: "Post Liked";
-	postId: string;
-	likedByUserId: string;
-	likedByUserName: string;
-	timestamp: Date;
 }
 
 // Extending the Notification interface for a Post Replied Notification
@@ -30,16 +36,6 @@ interface PostRepliedNotification extends INotification {
 	replyId: string;
 	repliedByUserId: string;
 	repliedByUserName: string;
-	timestamp: Date;
-}
-
-// Extending the Notification interface for a Message Received Notification
-interface MessageReceivedNotification extends INotification {
-	type: "Message Received";
-	messageId: string;
-	fromUserId: string;
-	fromUserName: string;
-	messagePreview: string;
 	timestamp: Date;
 }
 
@@ -55,8 +51,6 @@ interface GroupActivityNotification extends INotification {
 
 export type {
 	GroupActivityNotification,
-	MessageReceivedNotification,
-	PostLikedNotification,
 	PostRepliedNotification,
 };
 

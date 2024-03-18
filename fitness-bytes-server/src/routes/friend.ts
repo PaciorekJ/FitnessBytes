@@ -61,6 +61,8 @@ friendRouter.get('/', authMiddleware, async (req, res) => {
             }
         ]).exec();
 
+        
+
         return res.json({
             message: "",
             result: friendships
