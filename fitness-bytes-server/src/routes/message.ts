@@ -22,7 +22,7 @@ messageRouter.get('/:conversationId', authMiddleware, async (req, res) => {
         });
     }
     try {
-        const participants : string[] = (await ConversationModel.findById(_id).select('participants -_id'))?.participantUsernames || [];
+        const participants : string[] = (await ConversationModel.findById(_id).select('participantUsernames -_id'))?.participantUsernames || [];
         const isAMember = participants.some(p => p === username);
         if (!isAMember) {
             return res.status(403).json({

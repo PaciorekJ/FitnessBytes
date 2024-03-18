@@ -5,11 +5,12 @@ import { IconButton, Stack, Typography } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import NotificationServices, {
-	INotification,
+	INotification, NotificationTypes,
 } from "../services/NotificationServices";
 import ParseDateFromNow from "../utils/ParseDate";
 
 interface Props {
+	type: NotificationTypes;
 	icon: ReactNode;
 	content: ReactNode;
 	timestamp: Date;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 const Notification = ({
+	type,
 	icon,
 	content,
 	timestamp,
@@ -38,10 +40,16 @@ const Notification = ({
 
 		if (res) {
 			client.setQueryData<INotification[]>(["notifications"], (old) => {
-				console.log(old);
-				console.log(old?.filter((n) => n._id === _id));
 				return old?.filter((n) => n._id !== _id) || [];
 			});
+			client.setQueryData<number>(["NotificationCount"], (old) => {
+				return old ? old - 1: 0;
+			});
+			if (type === NotificationTypes.MessageReceived) {
+				client.setQueryData<number>(["NotificationMessageCount"], (old) => {
+					return old ? old - 1: 0;
+				});
+			}
 		}
 	};
 	return (

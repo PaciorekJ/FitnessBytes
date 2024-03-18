@@ -20,6 +20,8 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useNotificationCount from "../hooks/useNotificationCount";
+import useNotificationMessageCount from "../hooks/useNotificationMessageCount";
 import useThemeStore from "../hooks/useThemeStore";
 import useUserStore from "../hooks/useUserStore";
 import UserServices from "../services/UserServices";
@@ -31,6 +33,12 @@ const Nav = () => {
 	const { mode, toggleTheme } = useThemeStore();
 	const username = useUserStore((s) => s.username);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const { data: notificationCount, isLoading: isLoadingNotiCount } =
+		useNotificationCount();
+	const {
+		data: notificationMessageCount,
+		isLoading: isLoadingNotiMessageCount,
+	} = useNotificationMessageCount();
 	const navigator = useNavigate();
 
 	const open = Boolean(anchorEl);
@@ -80,14 +88,21 @@ const Nav = () => {
 						</Tooltip>
 						<Tooltip title="Notifications">
 							<IconButton href={"/auth/notifications/"}>
-								<Badge badgeContent={10} variant="dot" color="warning">
+								<Badge
+									badgeContent={isLoadingNotiCount ? 0 : notificationCount}
+									variant="standard"
+									color="warning">
 									<NotificationsNoneIcon color="primary" />
 								</Badge>
 							</IconButton>
 						</Tooltip>
 						<Tooltip title="Messages">
 							<IconButton href={`/auth/messages/`}>
-								<Badge badgeContent={10} color="warning">
+								<Badge
+									badgeContent={
+										isLoadingNotiMessageCount ? 0 : notificationMessageCount
+									}
+									color="warning">
 									<MailOutlinedIcon color="primary" />
 								</Badge>
 							</IconButton>

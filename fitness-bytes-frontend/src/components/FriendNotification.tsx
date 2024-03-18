@@ -8,12 +8,14 @@ interface FriendNotificationProps extends INotification {
 }
 
 const FriendNotification = ({
+	type,
 	_id,
 	requesterUsername,
 	timeCreated,
 }: FriendNotificationProps) => {
 	return (
 		<Notification
+			type={type}
 			_id={_id}
 			actions
 			icon={<Avatar>{requesterUsername.charAt(0)}</Avatar>}

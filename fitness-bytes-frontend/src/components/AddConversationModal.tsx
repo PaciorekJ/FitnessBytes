@@ -119,7 +119,7 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 						if (participantUsernames.length && participantIds.length) {
 							await ConversationServices.create({
 								participantUsernames,
-								participantIds
+								participantIds,
 							});
 							queryClient.invalidateQueries({ queryKey: ["conversations"] });
 						} else {
@@ -146,7 +146,10 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 								<ListItem>
 									<Typography>{u.username}</Typography>
 								</ListItem>
-								<Checkbox onClick={() => toggleParticipants(u)} />
+								<Checkbox
+									onClick={() => toggleParticipants(u)}
+									checked={participants.some((p) => p.username === u.username)}
+								/>
 								<Divider />
 							</Stack>
 						))}

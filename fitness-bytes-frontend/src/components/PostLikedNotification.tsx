@@ -4,21 +4,22 @@ import Notification from "./Notification";
 
 interface PostLikedNotificationProps extends INotification {
 	postId: string;
-    likerId: string;
+	likerId: string;
 	likerUsername: string;
 }
 
 const PostLikedNotification = ({
+	type,
 	_id,
-	likerId,
 	likerUsername,
 	timeCreated,
 }: PostLikedNotificationProps) => {
 	return (
 		<Notification
+			type={type}
 			_id={_id}
 			actions
-			icon={<Avatar>{likerId.charAt(0)}</Avatar>}
+			icon={<Avatar>{likerUsername.charAt(0)}</Avatar>}
 			content={
 				<>
 					<Typography component="b" fontWeight={600}>
