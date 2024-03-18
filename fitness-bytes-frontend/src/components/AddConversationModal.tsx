@@ -114,10 +114,12 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 						e.preventDefault();
 						setParticipants([]);
 
-						const participantsUsernames = participants.map((u) => u.username);
-						if (participantsUsernames.length) {
+						const participantUsernames = participants.map((u) => u.username);
+						const participantIds = participants.map((u) => u._id);
+						if (participantUsernames.length && participantIds.length) {
 							await ConversationServices.create({
-								participants: participantsUsernames,
+								participantUsernames,
+								participantIds
 							});
 							queryClient.invalidateQueries({ queryKey: ["conversations"] });
 						} else {

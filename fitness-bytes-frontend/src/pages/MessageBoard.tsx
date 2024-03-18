@@ -88,7 +88,9 @@ const MessageBoard = () => {
 					{(conversations &&
 						conversations.map((c, i) => {
 							const convoTitle =
-								c.title || c.participants.join(", ") || "Empty Conversation";
+								c.title ||
+								c.participantUsernames.join(", ") ||
+								"Empty Conversation";
 							return (
 								<React.Fragment key={"Contact__" + convoTitle + "-" + i}>
 									<Box
@@ -164,7 +166,11 @@ const MessageBoard = () => {
 				</Grid>
 				<Grid item xs={5}>
 					{(conversationId && (
-						<Stack minHeight={"78vh"} maxWidth={"800px"} marginX={"auto"} justifyContent={"end"}>
+						<Stack
+							minHeight={"78vh"}
+							maxWidth={"800px"}
+							marginX={"auto"}
+							justifyContent={"end"}>
 							{conversations && (
 								<Conversation conversationId={conversationId} />
 							)}

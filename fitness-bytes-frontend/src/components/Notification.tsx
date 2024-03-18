@@ -26,8 +26,8 @@ const Notification = ({
 	timestamp,
 	_id,
 	actions = false,
-	actionOnAccept = () => {},
-	actionOnReject = () => {},
+	actionOnAccept,
+	actionOnReject,
 	actionOnDelete = () => {},
 }: Props) => {
 	const client = useQueryClient();
@@ -70,7 +70,7 @@ const Notification = ({
 				gap={2}
 				flexDirection={"row"}>
 				<Stack sx={{ display: "inline" }}>
-					{actions && (
+					{actions && actionOnReject && actionOnAccept && (
 						<>
 							<IconButton
 								color="success"
@@ -86,7 +86,7 @@ const Notification = ({
 					)}
 				</Stack>
 				<Stack maxWidth={"50px"}>
-					<Typography variant="subtitle2" fontSize={"0.7rem"}>
+					<Typography variant="subtitle2" fontSize={"0.5rem"}>
 						{ParseDateFromNow(timestamp)}
 					</Typography>
 					<IconButton onClick={() => deleteNotification(actionOnDelete)}>
