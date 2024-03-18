@@ -7,6 +7,7 @@ import { ReactNode } from "react";
 import NotificationServices, {
 	INotification,
 } from "../services/NotificationServices";
+import ParseDateFromNow from "../utils/ParseDate";
 
 interface Props {
 	icon: ReactNode;
@@ -85,9 +86,9 @@ const Notification = ({
 					)}
 				</Stack>
 				<Stack maxWidth={"50px"}>
-					<Typography
-						variant="subtitle2"
-						fontSize={"0.7rem"}>{`${timestamp.getMinutes()}m ago`}</Typography>
+					<Typography variant="subtitle2" fontSize={"0.7rem"}>
+						{ParseDateFromNow(timestamp)}
+					</Typography>
 					<IconButton onClick={() => deleteNotification(actionOnDelete)}>
 						<DeleteIcon />
 					</IconButton>

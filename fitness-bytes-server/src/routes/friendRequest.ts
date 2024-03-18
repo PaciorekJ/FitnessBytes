@@ -3,8 +3,9 @@ import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware";
 import FriendModel from "../models/Friend";
 import FriendRequestModel from "../models/FriendRequest";
-import { FriendRequestNotificationModel } from "../models/Notification";
+import { NotificationTypes } from "../models/Notification";
 import { IUser } from "../models/User";
+import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
 
 const friendRequestRouter = Router();
 
@@ -55,11 +56,7 @@ friendRequestRouter.post('/', authMiddleware, async (req, res) => {
             requesterId
         })
 
-        await FriendRequestNotificationModel.create({
-            recipientId,
-            requesterId,
-            requesterUsername: (req.user as IUser).username
-        });
+        NotificationStrategyFactory.create(NotificationTypes.FriendRequest)(friendRequest, req);
 
         return res.status(201).json({
             message: "",
@@ -84,16 +81,17 @@ friendRequestRouter.post('/accept', authMiddleware, async (req, res) => {
     try {
         const requesterId = new mongoose.Types.ObjectId(req.body.requesterId);
 
-        const friendRequest = await FriendRequestModel.deleteOne({
+        const friendRequest = await FriendRequestModel.findOneAndDelete({
             recipientId,
             requesterId
         });
 
-        if (!friendRequest.deletedCount) {
+        if (!friendRequest) {
             return res.status(404).json({
                 message: "Action couldn't be carried out as the friend request doesn't exist"
             })
         }
+        NotificationStrategyFactory.create(NotificationTypes.NewFriend)(friendRequest, req);
 
         const friend = await FriendModel.create({
             userId1: recipientId,

@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware";
 import ConversationModel from "../models/Conversation";
 import MessageModel, { IMessage } from "../models/Message";
+import { NotificationTypes } from "../models/Notification";
 import { IUser } from "../models/User";
+import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
 
 const messageRouter = Router();
 
@@ -72,6 +74,10 @@ messageRouter.post('/', authMiddleware, async (req, res) => {
             senderUsername: username,
             content
         } as Partial<IMessage>);
+
+        const conversation = await ConversationModel.findById(_id);
+
+        NotificationStrategyFactory.create(NotificationTypes.MessageReceived)(conversation, req);
     
         res.status(201).json({
             message: "",
