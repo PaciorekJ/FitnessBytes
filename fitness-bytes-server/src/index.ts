@@ -6,9 +6,7 @@ import MongoStore from 'connect-mongo';
 import cors from 'cors';
 import express, { Express } from 'express';
 import session from 'express-session';
-import { createServer } from 'http';
 import passport from 'passport';
-import { Server } from 'socket.io';
 import ResponseResult from './interfaces/ResponseResult';
 import conversationRouter from './routes/conversation';
 import friendRouter from './routes/friend';
@@ -21,19 +19,14 @@ import reportRouter from './routes/report';
 import userRouter from './routes/user';
 import db from './services/db';
 import './services/passport';
+import Socket from './services/socket';
 
 const PORT = process.env.PORT || 3000;
 const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "86400000"); // Default: 1 Day
 
 const app: Express = express();
+Socket.init(app);
 db.connect();
-
-const server = createServer(app);
-const io = new Server(server, {
-    cors: {
-      origin: process.env.FRONTEND_URL,
-    }
-  });
 
 // *** Set up session Store and Session ***
 const sessionStore: MongoStore = MongoStore.create({
@@ -83,22 +76,6 @@ app.use((req, res, next) => {
     res.status(404).json(payload);
 })
 
-io.on('connection', (socket) => {
-    console.log("New Connection -", socket.id);
-    
-    socket.on("Join Conversation", (id) => {
-        socket.join(id);
-    })
-
-    socket.on('Leave Conversation', (id) => {
-        socket.leave(id);
-    });
-
-    socket.on("Message Sent", ({id, message}) => {
-        socket.to(id).emit("Message Recieved", message);
-    });
-});
-
-server.listen(PORT, () => {
+Socket.server.listen(PORT, () => {
     console.log(`Listening on Port ${PORT}...`);
 });

@@ -6,7 +6,7 @@ import { IPost } from "../models/Post";
 import { IUser } from "../models/User";
 import NotificationStrategy from "./NotificationStrategy";
 
-class NotificationStrategyPostLiked implements NotificationStrategy<IPost> {
+class NotificationStrategyPostLiked extends NotificationStrategy<IPost> {
 	async handle(data: IPost, req: Request): Promise<void> {
 		console.log("PostLike Processed");
         const id: mongoose.Types.ObjectId = (req.user as IUser)._id
