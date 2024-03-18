@@ -12,7 +12,7 @@ conversationRouter.get('/', authMiddleware, async (req, res) => {
     let conversations;
     try {
         conversations = await ConversationModel.find({
-            participants: username,
+            participantUsernames: username,
         });
     } catch {
         res.status(500).json({
@@ -74,20 +74,24 @@ conversationRouter.delete('/:conversationId', async (req, res) => {
 })
 conversationRouter.post('/', authMiddleware, async (req, res) => {
     const username = (req.user as IUser).username;
+    const id = (req.user as IUser)._id;
     
     try {
         let title = req.body.title || null;
-        const participants = (req.body.participants as string[]).filter((p) => p !== username);
+        const participantUsernames = (req.body.participantUsernames as string[]).filter((p) => p !== username);
+        const participantIds = (req.body.participantIds as string[]).filter((p) => p !== id);
         
-        if (!participants.length) {
+        if (!participantUsernames.length || !participantIds.length) {
             return res.status(400).json({
                 message: "A Conversation requires at least 1 participant besides the creator"
             })
         }
         
-        const updatedParticipants = [...participants, username]
+        const updatedUsernames = [...participantUsernames, username];
+        const updatedIds = [...participantIds, id];
         const conversation = await ConversationModel.create({
-            participants: updatedParticipants,
+            participantUsernames: updatedUsernames,
+            participantIds: updatedIds,
             title,
         } as Partial<IConversation>);
     

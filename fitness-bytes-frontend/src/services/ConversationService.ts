@@ -4,7 +4,8 @@ import EndpointFactory from "./HTTP-Services/EndpointFactory";
 
 interface IConversation {
     _id: string;
-    participants: string[];
+    participantUsernames: string[];
+    participantIds: string [];
     timeCreated?: Date;
     title?: string;
 }

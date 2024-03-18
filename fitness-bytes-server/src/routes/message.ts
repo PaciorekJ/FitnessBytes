@@ -17,29 +17,29 @@ messageRouter.get('/:conversationId', authMiddleware, async (req, res) => {
     try {
         _id = new mongoose.Types.ObjectId(_id);
     } catch {
-        res.status(400).json({
+        return res.status(400).json({
             message: "Invalid ID",
         });
-        return;
     }
     try {
-        const participants : string[] = (await ConversationModel.findById(_id).select('participants -_id'))?.participants || [];
+        const participants : string[] = (await ConversationModel.findById(_id).select('participants -_id'))?.participantUsernames || [];
         const isAMember = participants.some(p => p === username);
         if (!isAMember) {
-            res.status(403).json({
+            return res.status(403).json({
                 message: "Forbidden, You are not a member of this conversation",
             })
         }
 
         // *** Retrieve messages ***
         const messages = await MessageModel.find({conversation: _id});
-        res.json({
+
+        return res.json({
             message: "",
             result: messages
-        })
+        });
     }
     catch (e) {
-        res.status(500).json({
+        return res.status(500).json({
             message: "Internal Server Error",
         })
     }
@@ -54,17 +54,15 @@ messageRouter.post('/', authMiddleware, async (req, res) => {
     try {
         _id = new mongoose.Types.ObjectId(_id);
     } catch {
-        res.status(400).json({
+        return res.status(400).json({
             message: "Invalid ID",
         });
-        return;
     }
 
     if (!content) {
-        res.status(400).json({
+        return res.status(400).json({
             message: "Invalid content for message",
         });
-        return;
     }
 
     try {
@@ -79,13 +77,13 @@ messageRouter.post('/', authMiddleware, async (req, res) => {
 
         NotificationStrategyFactory.create(NotificationTypes.MessageReceived)(conversation, req);
     
-        res.status(201).json({
+        return res.status(201).json({
             message: "",
             result: message,
         })
     }
     catch (e) {
-        res.status(500).json({
+        return res.status(500).json({
             message: `${e}`
         })
     }
@@ -98,22 +96,21 @@ messageRouter.delete("/:messageId", authMiddleware, async (req, res) => {
     try {
         _id = new mongoose.Types.ObjectId(_id);
     } catch {
-        res.status(400).json({
+        return res.status(400).json({
             message: "Invalid ID",
         });
-        return;
     }
 
     try {
         const deletedMessage = await MessageModel.findOneAndDelete({_id, sender: userId});
 
-        res.json({
+        return res.json({
             message: "",
             result: deletedMessage,
         })
     }
     catch (e) {
-        res.status(500).json({
+        return res.status(500).json({
             message: `${e}`
         })
     }

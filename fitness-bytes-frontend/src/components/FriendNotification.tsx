@@ -1,4 +1,4 @@
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Link, Typography } from "@mui/material";
 import Notification from "../components/Notification";
 import { INotification } from "../services/NotificationServices";
 
@@ -21,9 +21,9 @@ const FriendNotification = ({
 				<>
 					You and{" "}
 					<Typography component="b" fontWeight={600}>
-						<a href={"/auth/account/" + requesterUsername}>
+						<Link href={"/auth/account/" + requesterUsername}>
 							{requesterUsername}
-						</a>
+						</Link>
 					</Typography>{" "}
 					are now{" "}
 					<Typography component="b" fontWeight={600}>

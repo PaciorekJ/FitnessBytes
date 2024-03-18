@@ -4,7 +4,7 @@ import Notification from "./Notification";
 
 interface MessageNotificationProps extends INotification {
 	converstionId: string;
-    senderId: string;
+	senderId: string;
 	senderUsername: string;
 }
 
@@ -23,7 +23,7 @@ const MessageNotification = ({
 					You have a{" "}
 					<Typography component="b" fontWeight={600}>
 						new message
-					</Typography>
+					</Typography>{" "}
 					from{" "}
 					<Typography component="b" fontWeight={600}>
 						{senderUsername}

@@ -1,22 +1,29 @@
 
 
 import { Request } from "express";
+import mongoose from "mongoose";
 import { IConversation } from "../models/Conversation";
-import { PostLikedNotificationModel } from "../models/Notification";
+import { MessageNotificationModel } from "../models/Notification";
 import { IUser } from "../models/User";
 import NotificationStrategy from "./NotificationStrategy";
 
 class NotificationStrategyMessage implements NotificationStrategy<IConversation> {
 	async handle(data: IConversation, req: Request): Promise<void> {
-		console.log("Message Processed");
-        data.participants.map(async (recipientId) => {
-            await PostLikedNotificationModel.create({
-                recipientId,
-                conversationId: data._id,
-                senderId: (req.user as IUser)._id,
-                senderUsername: (req.user as IUser).username,
-            });
-        })
+        try {
+            data.participantIds.map(async (participantId)=> {
+                const id = new mongoose.Types.ObjectId(participantId);
+                await MessageNotificationModel.create({
+                    recipientId: id,
+                    conversationId: data._id,
+                    senderId: (req.user as IUser)._id,
+                    senderUsername: (req.user as IUser).username,
+                });
+            })
+            console.log("Message Processed");
+        }
+        catch {
+            console.log("Failed to process message");
+        }
 	}
 }
 
