@@ -9,9 +9,12 @@ import NotificationStrategy from "./NotificationStrategy";
 
 class NotificationStrategyMessage implements NotificationStrategy<IConversation> {
 	async handle(data: IConversation, req: Request): Promise<void> {
+        const userId = (req.user as IUser)._id
         try {
             data.participantIds.map(async (participantId)=> {
                 const id = new mongoose.Types.ObjectId(participantId);
+                if (id.equals(userId)) return;
+                
                 await MessageNotificationModel.create({
                     recipientId: id,
                     conversationId: data._id,

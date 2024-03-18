@@ -9,6 +9,7 @@ interface FriendRequestProps extends INotification {
 }
 
 const FriendRequestNotification = ({
+	type,
 	_id,
 	requesterId,
 	requesterUsername,
@@ -42,6 +43,7 @@ const FriendRequestNotification = ({
 
 	return (
 		<Notification
+			type={type}
 			_id={_id}
 			actions
 			actionOnAccept={onAccept}

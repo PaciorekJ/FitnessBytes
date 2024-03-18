@@ -20,8 +20,12 @@ const LikeIcon = ({ likes, postId }: Props) => {
 		}
 	}, [data]);
 
-	
-	if (isLoading) return <CircularProgress />;
+	if (isLoading)
+		return (
+			<Stack paddingX={1.5} justifyContent={"center"} alignItems={"center"}>
+				<CircularProgress size={"1rem"} />
+			</Stack>
+		);
 
 	const handleToggleLike = async () => {
 		const result = await PostServices.like(postId);

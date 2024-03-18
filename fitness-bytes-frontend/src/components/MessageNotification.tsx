@@ -9,12 +9,14 @@ interface MessageNotificationProps extends INotification {
 }
 
 const MessageNotification = ({
+	type,
 	_id,
 	senderUsername,
 	timeCreated,
 }: MessageNotificationProps) => {
 	return (
 		<Notification
+			type={type}
 			_id={_id}
 			actions
 			icon={<Avatar>{senderUsername.charAt(0)}</Avatar>}
