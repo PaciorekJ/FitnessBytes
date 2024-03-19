@@ -6,6 +6,7 @@ import MessageModel, { IMessage } from "../models/Message";
 import { NotificationTypes } from "../models/Notification";
 import { IUser } from "../models/User";
 import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
+import socketMiddleware from "../middleware/socketMiddleware";
 
 const messageRouter = Router();
 
@@ -45,7 +46,7 @@ messageRouter.get('/:conversationId', authMiddleware, async (req, res) => {
     }
 })
 
-messageRouter.post('/', authMiddleware, async (req, res) => {
+messageRouter.post('/', socketMiddleware, authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id; 
     const username = (req.user as IUser).username;
     const content = req.body.content;

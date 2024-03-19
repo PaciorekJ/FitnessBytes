@@ -32,19 +32,23 @@ class NotificationStrategy<T> {
 }
 
 class NotificationStrategyMessage implements NotificationStrategy<IConversation> {
-	async handle(data: IConversation, req: Request): Promise<void> {
+	async handle(data: IConversation, req: Request & {io: any}): Promise<void> {
         const userId = (req.user as IUser)._id
+        const username = (req.user as IUser).username
+
         try {
             data.participantIds.map(async (participantId)=> {
                 const id = new mongoose.Types.ObjectId(participantId);
                 if (id.equals(userId)) return;
                 
-                await MessageNotificationModel.create({
+                const notification = await MessageNotificationModel.create({
                     recipientId: id,
                     conversationId: data._id,
                     senderId: (req.user as IUser)._id,
                     senderUsername: (req.user as IUser).username,
                 });
+                req.io.to("User:" + username).emit("Notification Recieved", notification);
+                console.log("Notification Emitted");
             })
             console.log("Message Processed");
         }

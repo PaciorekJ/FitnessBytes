@@ -1,6 +1,8 @@
+import Socket from "../services/socket";
 
 function authMiddleware(req: any, res: any, next: any) {
     if (req.isAuthenticated()){
+        Socket.io
         next();
     }
     else {
