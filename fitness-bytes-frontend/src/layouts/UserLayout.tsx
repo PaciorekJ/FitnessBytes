@@ -9,12 +9,14 @@ const UserLayout = () => {
 
 	useEffect(() => {
 		const authUser = async () => {
-			const res = await UserServices.isAuth();
-			if (!res) {
+			const username = await UserServices.isAuth();
+			if (!username) {
 				navigator("/");
+				return
 			}
 
-			SocketServices.setUp();
+			SocketServices.setUp(username);
+
 		};
 
 		authUser();

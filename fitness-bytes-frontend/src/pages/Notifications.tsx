@@ -1,13 +1,27 @@
 import { CircularProgress, Stack, Typography } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import useNotifications from "../hooks/useNotifications";
 import { NotificationFactory } from "../services/NotificationFactory";
+import { INotification } from "../services/NotificationServices";
+import SocketServices from "../services/SocketServices";
 
 const fact = new NotificationFactory();
 
 const Notifications = () => {
 	const { data, isLoading } = useNotifications();
+	const client = useQueryClient();
 	const notifications = data || [];
+
+	SocketServices.registerCallback(
+		"Notification Recieved",
+		(m) => {
+			client.setQueryData<INotification[]>(["notifications"], (old) => {
+				const oldNotifications = old || [];
+				return [...oldNotifications, m as INotification];
+			});
+		},
+	);
 
 	return (
 		<>
