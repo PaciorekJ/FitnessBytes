@@ -1,3 +1,4 @@
+import { QueryClient } from "@tanstack/react-query";
 import { Socket, io } from "socket.io-client";
 import { IMessage } from "./MessageServices";
 import { INotification } from "./NotificationServices";
@@ -9,6 +10,7 @@ type CallbackFnParams = IMessage | INotification;
 
 class SocketServices {
     private static socket: Socket | undefined;
+    private static client: QueryClient;
     private static roomId = "";
     private static callbacks: { [key: string]: CallbackFn<CallbackFnParams>; } = {
         "Message Recieved": () => {
@@ -19,13 +21,41 @@ class SocketServices {
         }
     };
 
-    static setUp = (username: string) => {
+    static setUp = (username: string, client: QueryClient) => {
         this.socket = io("http://localhost:5301/");
 
         this.socket?.emit("Join Personal Channel", username);
 
         this.socket.on("Message Recieved", this.messageRecieved);
         this.socket.on("Notification Recieved", this.notificationRecieved);
+
+        this.client = client;
+
+        SocketServices.registerCallback("Notification Recieved", (m) => {
+			// TODO: Swap these for production. Strict Mode results in 2 notifications
+			// But the performance gain from no refetch is worth the impurity
+
+			// this.client.setQueryData<INotification[]>(["notifications"], (old) => {
+			// 	const oldNotifications = old || [];
+			// 	return [...oldNotifications, m as INotification];
+			// });
+
+			// if ((m as INotification).type === NotificationTypes.MessageReceived) {
+			// 	this.client.setQueryData<number>(
+			// 		["NotificationMessageCount"],
+			// 		(old) => (old || 0) + 1,
+			// 	);
+			// }
+			// this.client.setQueryData<number>(
+			// 	["NotificationCount"],
+			// 	(old) => (old || 0) + 1,
+			// );
+			m;
+
+			this.client.invalidateQueries({queryKey: ["notifications"]});
+			this.client.invalidateQueries({queryKey: ["NotificationMessageCount"]});
+			this.client.invalidateQueries({queryKey: ["NotificationCount"]});
+		});
     }
 
     static registerCallback = (key: CallbackNames, fn: CallbackFn<CallbackFnParams>) => {
