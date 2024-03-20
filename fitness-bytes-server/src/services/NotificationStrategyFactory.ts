@@ -37,7 +37,7 @@ class NotificationStrategyMessage implements NotificationStrategy<IConversation>
         const username = (req.user as IUser).username
 
         try {
-            data.participantIds.map(async (participantId)=> {
+            data.participantIds.map(async (participantId, i)=> {
                 const id = new mongoose.Types.ObjectId(participantId);
                 if (id.equals(userId)) return;
                 
@@ -47,10 +47,13 @@ class NotificationStrategyMessage implements NotificationStrategy<IConversation>
                     senderId: (req.user as IUser)._id,
                     senderUsername: (req.user as IUser).username,
                 });
-                req.io.to("User:" + username).emit("Notification Recieved", notification);
-                console.log("Notification Emitted");
+
+                if (username !== data.participantUsernames[i]) {
+                    console.log("To: ", data.participantUsernames[i])
+                    req.io.to("User:" + data.participantUsernames[i]).emit("Notification Recieved", notification);
+                    console.log("Notification Emitted");
+                }
             })
-            console.log("Message Processed");
         }
         catch {
             console.log("Failed to process message");
