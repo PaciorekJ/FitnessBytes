@@ -8,7 +8,7 @@ import {
 import Stack from "@mui/material/Stack";
 import { FieldValues, useForm } from "react-hook-form";
 import MessageServices, { IMessage } from "../services/MessageServices";
-import SocketServices from "../services/SocketServices";
+import SocketServices, { CallbackFn } from "../services/SocketServices";
 
 interface Props {
 	conversationId: string;
@@ -18,7 +18,10 @@ interface Props {
 const Messenger = ({ conversationId, setNewMessage }: Props) => {
 	const { register, reset, handleSubmit } = useForm();
 
-	SocketServices.registerCallback("Message Recieved", setNewMessage);
+	SocketServices.registerCallback(
+		"Message Recieved",
+		setNewMessage as CallbackFn,
+	);
 
 	const handleUserMessage = async (data: FieldValues) => {
 		const newMessage =

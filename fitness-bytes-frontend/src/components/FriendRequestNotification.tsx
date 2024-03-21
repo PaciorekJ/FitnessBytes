@@ -1,4 +1,4 @@
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Link, Typography } from "@mui/material";
 import Notification from "../components/Notification";
 import FriendRequestServices from "../services/FriendRequestServices";
 import { INotification } from "../services/NotificationServices";
@@ -56,7 +56,7 @@ const FriendRequestNotification = ({
 						friend request
 					</Typography>{" "}
 					from{" "}
-					<a href={"/auth/account/" + requesterUsername}>{requesterUsername}</a>
+					<Link href={"/auth/account/" + requesterUsername}>{requesterUsername}</Link>
 				</>
 			}
 			timestamp={new Date(timeCreated)}

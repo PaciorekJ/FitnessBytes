@@ -2,11 +2,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Nav from "../components/Nav";
+import NotificationBanner from "../components/NotificationBanner";
+import useBannerStore from "../hooks/useBannerStore";
 import SocketServices from "../services/SocketServices";
 import UserServices from "../services/UserServices";
 
 const UserLayout = () => {
 	const navigator = useNavigate();
+	const setNotification = useBannerStore((s) => s.setNotification);
 	const client = useQueryClient();
 
 	useEffect(() => {
@@ -17,7 +20,11 @@ const UserLayout = () => {
 				return;
 			}
 
-			SocketServices.setUp(username, client);
+			SocketServices.setUp({
+				username, 
+				client, 
+				setNotification
+			});
 		};
 
 		authUser();
@@ -25,6 +32,7 @@ const UserLayout = () => {
 
 	return (
 		<div>
+			<NotificationBanner />
 			<Nav />
 			<Outlet />
 		</div>

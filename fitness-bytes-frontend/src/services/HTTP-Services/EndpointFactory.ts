@@ -23,7 +23,7 @@ class EndpointFactory<ParentResponse> {
     }
 
     delete<DeleteResponse>(path: string = "/", config: AxiosRequestConfig<unknown> = {}) {
-        return async (id: string): Promise<DeleteResponse | undefined> => {
+        return async (id: string = ""): Promise<DeleteResponse | undefined> => {
             this.client = new ClientService<ParentResponse>(`${this.endpoint}${path}${id}`);
     
             try {
