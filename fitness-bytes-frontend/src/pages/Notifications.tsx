@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
-import useBannerStore from "../hooks/useBannerStore";
 import useNotifications from "../hooks/useNotifications";
 import { NotificationFactory } from "../services/NotificationFactory";
 import NotificationServices from "../services/NotificationServices";
@@ -17,7 +16,6 @@ const fact = new NotificationFactory();
 const Notifications = () => {
 	const { data, isLoading } = useNotifications();
 	const queryClient = useQueryClient();
-	const { setOpen } = useBannerStore();
 	const notifications = data || [];
 
 	const clearNotifications = async () => {
@@ -25,8 +23,6 @@ const Notifications = () => {
 		queryClient.setQueryData(["notifications"], () => []);
 		queryClient.setQueryData(["NotificationMessageCount"], () => 0);
 		queryClient.setQueryData(["NotificationCount"], () => 0);
-
-		setOpen(true);
 	};
 
 	return (

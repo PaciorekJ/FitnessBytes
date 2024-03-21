@@ -21,9 +21,11 @@ class AlertNotificationFactory {
 								friend request
 							</Typography>{" "}
 							from{" "}
-							<Link href={"/auth/account/" + props.requesterUsername}>
-								{props.requesterUsername}
-							</Link>
+							<Typography component={"b"}>
+								<Link href={"/auth/account/" + props.requesterUsername}>
+									{props.requesterUsername}
+								</Link>
+							</Typography>
 						</>
 					}
 				/>
