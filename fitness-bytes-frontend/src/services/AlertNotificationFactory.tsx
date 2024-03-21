@@ -8,8 +8,12 @@ import { PostLikedNotificationProps } from "../components/PostLikedNotification"
 import { INotification, NotificationTypes } from "./NotificationServices";
 
 class AlertNotificationFactory {
-	create(payload: INotification): ReactNode {
-		if (payload.type === NotificationTypes.FriendRequest) {
+	create(payload: INotification | string): ReactNode {
+		if (typeof payload === "string") {
+			return (
+				<AlertContent icon={null} content={payload} />
+			);
+		} else if (payload.type === NotificationTypes.FriendRequest) {
 			const props = payload as FriendRequestNotificationProps;
 			return (
 				<AlertContent

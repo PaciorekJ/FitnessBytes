@@ -19,6 +19,7 @@ import { FieldValues, useForm } from "react-hook-form";
 
 import SearchIcon from "@mui/icons-material/Search";
 import { useQueryClient } from "@tanstack/react-query";
+import useBannerStore from "../hooks/useBannerStore";
 import ConversationServices from "../services/ConversationService";
 import FriendServices from "../services/FriendServices";
 import { IUser } from "../services/UserServices";
@@ -50,6 +51,8 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 	});
 
 	const queryClient = useQueryClient();
+
+	const setNotification = useBannerStore((s) => s.setNotification);
 
 	const [searchResults, setSearchResults] = useState<IUser[]>([]);
 	const [participants, setParticipants] = useState<IUser[]>([]);
@@ -123,7 +126,9 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 							});
 							queryClient.invalidateQueries({ queryKey: ["conversations"] });
 						} else {
-							alert("You must have 2 or more participant's in a conversation");
+							setNotification(
+								"You must have 2 or more participant's in a conversation",
+							);
 						}
 
 						setOpen(false);

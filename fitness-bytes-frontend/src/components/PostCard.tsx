@@ -21,6 +21,7 @@ import ReportIcon from "@mui/icons-material/Report";
 import ShareIcon from "@mui/icons-material/Share";
 
 import { useQueryClient } from "@tanstack/react-query";
+import useBannerStore from "../hooks/useBannerStore";
 import useUserStore from "../hooks/useUserStore";
 import PostServices, { IPost } from "../services/PostServices";
 import ReportServices from "../services/ReportServices";
@@ -35,6 +36,8 @@ const PostCard = memo(
 		const currentUserUsername = useUserStore((s) => s.username);
 		const [isOpen, setOpen] = useState(false);
 		const [error, setError] = useState("");
+
+		const setNotification = useBannerStore((s) => s.setNotification);
 
 		const time = ParseDateFromNow(new Date(timeCreated || ""));
 
@@ -62,17 +65,19 @@ const PostCard = memo(
 			});
 
 			if (!res) {
-				alert("Something went wrong while trying to report " + postUsername);
+				setNotification(
+					"Something went wrong while trying to report " + postUsername,
+				);
 				return;
 			}
 
-			alert(postUsername + "'s post has been reported!");
+			setNotification(postUsername + "'s post has been reported!");
 		};
 
 		const handleShare = async () => {
 			if (!navigator.share) {
 				navigator.clipboard.writeText(`http://localhost:5173/auth/post/${_id}`);
-				alert("URL copied to clipboard");
+				setNotification("URL copied to clipboard");
 			} else {
 				try {
 					await navigator.share({
@@ -81,7 +86,7 @@ const PostCard = memo(
 						url: `http://localhost:5173/auth/post/${_id}`, // URL or resource to share.
 					});
 				} catch (error) {
-					alert("Post sharing failed, Please Try again!");
+					setNotification("Post sharing failed, Please Try again!");
 				}
 			}
 		};
@@ -171,7 +176,11 @@ const PostCard = memo(
 							avatar={
 								<Avatar aria-label="User Icon">{postUsername.charAt(0)}</Avatar>
 							}
-							subheader={<Typography color={"text.disabled"} variant="body2">{time || ""}</Typography>}
+							subheader={
+								<Typography color={"text.disabled"} variant="body2">
+									{time || ""}
+								</Typography>
+							}
 						/>
 					</Link>
 					<Box paddingX={2}>
