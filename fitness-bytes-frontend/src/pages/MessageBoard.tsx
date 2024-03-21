@@ -29,6 +29,7 @@ import useConversations from "../hooks/useConversations";
 import ConversationServices from "../services/ConversationService";
 import { IMessage } from "../services/MessageServices";
 import SocketServices from "../services/SocketServices";
+import NotificationServices from "../services/NotificationServices";
 
 const MessageBoard = () => {
 	const { data: conversations } = useConversations();
@@ -60,6 +61,8 @@ const MessageBoard = () => {
 			setConversationId("");
 			SocketServices.leave(id);
 		}
+
+		await NotificationServices.deleteByConversation(id);
 		queryClient.invalidateQueries({ queryKey: ["conversations"] });
 	};
 

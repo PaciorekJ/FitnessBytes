@@ -17,6 +17,7 @@ interface INotification {
     _id: string;
 	type: NotificationTypes;
 	recipientId: string;
+	recipientUsername: string;
 	timeCreated: Date;
 }
 
@@ -26,7 +27,9 @@ class NotificationServices {
 	private static fact = new EndpointFactory<NotificationResponse>("/notifications");
 
     static getAll = () => this.fact.get<INotification[]>()();
-    static delete = this.fact.delete<boolean>();
+    static delete = (id: string) => this.fact.delete<boolean>("/one/")(id);
+    static deleteAll = () => this.fact.delete<number>("/all")();
+    static deleteByConversation = this.fact.delete<number>("/conversation/")
 
 	static getMessageCount = () => this.fact.get<number>("/message/count")();
 	static getCount = () => this.fact.get<number>("/count")();

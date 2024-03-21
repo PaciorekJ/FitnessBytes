@@ -1,11 +1,12 @@
 import { Router } from "express";
 import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware";
-import PostModel from "../models/Post";
+import socketMiddleware, { RequestWithSocket } from "../middleware/socketMiddleware";
+import { NotificationTypes } from "../models/Notification";
+import PostModel, { IPost } from "../models/Post";
 import PostLikeModel from "../models/PostLike";
 import { IUser } from "../models/User";
 import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
-import { NotificationTypes } from "../models/Notification";
 
 const postRouter = Router();
 
@@ -33,7 +34,7 @@ postRouter.get('/liked/:postId', authMiddleware, async (req, res) => {
 });
 
 
-postRouter.post("/like", authMiddleware, async (req, res) => {
+postRouter.post("/like", authMiddleware, socketMiddleware, async (req, res) => {
 
     const userId = (req.user as IUser)._id;
 
@@ -51,8 +52,10 @@ postRouter.post("/like", authMiddleware, async (req, res) => {
         
         if (!existingLike) {
             // *** Post is liked ***
-            const post = await PostModel.findById(postId);
-            NotificationStrategyFactory.create(NotificationTypes.PostLiked)(post, req);
+            const post = await PostModel.findById(postId) || {} as IPost;
+
+            NotificationStrategyFactory.create(NotificationTypes.PostLiked).handle(post, req as RequestWithSocket);
+            
             await PostLikeModel.create({ postID: postId, userID: userId });
             await PostModel.findByIdAndUpdate(postId, { $inc: { likes: 1 } });
             return res.status(200).json({

@@ -12,6 +12,7 @@ enum NotificationTypes {
 interface INotification extends Document {
     type: NotificationTypes;
     recipientId: mongoose.Types.ObjectId;
+    recipientUsername: string;
     timeCreated: Date;
 }
 
@@ -20,6 +21,7 @@ interface INotification extends Document {
 const NotificationSchema = new Schema<INotification>({
     type: { type: String, enum: Object.values(NotificationTypes), required: true },
     recipientId: { type: Schema.Types.ObjectId, required: true},
+    recipientUsername: { type: String, required: true },
     timeCreated: { type: Date, default: Date.now },
 }, { discriminatorKey: 'type', collection: 'Notifications' });
 const NotificationModel = model<INotification>('Notification', NotificationSchema);
@@ -71,4 +73,5 @@ const MessageNotificationSchema = new Schema({
 const MessageNotificationModel = NotificationModel.discriminator<IMessageNotification>('Message Received', MessageNotificationSchema);
 
 export { FriendNotificationModel, FriendRequestNotificationModel, MessageNotificationModel, NotificationModel, NotificationTypes, PostLikedNotificationModel };
+export type { INotification };
 

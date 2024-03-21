@@ -1,6 +1,7 @@
 import { Router } from "express";
 import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware";
+import socketMiddleware, { RequestWithSocket } from "../middleware/socketMiddleware";
 import FriendModel from "../models/Friend";
 import FriendRequestModel from "../models/FriendRequest";
 import { NotificationTypes } from "../models/Notification";
@@ -9,7 +10,7 @@ import NotificationStrategyFactory from "../services/NotificationStrategyFactory
 
 const friendRequestRouter = Router();
 
-friendRequestRouter.post('/', authMiddleware, async (req, res) => {
+friendRequestRouter.post('/', authMiddleware, socketMiddleware, async (req, res) => {
     const requesterId = (req.user as IUser)._id;
 
     if (!req.body.recipientId) {
@@ -56,7 +57,7 @@ friendRequestRouter.post('/', authMiddleware, async (req, res) => {
             requesterId
         })
 
-        NotificationStrategyFactory.create(NotificationTypes.FriendRequest)(friendRequest, req);
+        NotificationStrategyFactory.create(NotificationTypes.FriendRequest).handle(friendRequest, req as RequestWithSocket);
 
         return res.status(201).json({
             message: "",
@@ -70,7 +71,7 @@ friendRequestRouter.post('/', authMiddleware, async (req, res) => {
     }
 });
 
-friendRequestRouter.post('/accept', authMiddleware, async (req, res) => {
+friendRequestRouter.post('/accept', authMiddleware, socketMiddleware, async (req, res) => {
     const recipientId = new mongoose.Types.ObjectId((req.user as IUser)._id);
     
     if (!req.body.requesterId) {
@@ -91,7 +92,7 @@ friendRequestRouter.post('/accept', authMiddleware, async (req, res) => {
                 message: "Action couldn't be carried out as the friend request doesn't exist"
             })
         }
-        NotificationStrategyFactory.create(NotificationTypes.NewFriend)(friendRequest, req);
+        NotificationStrategyFactory.create(NotificationTypes.NewFriend).handle(friendRequest, req as RequestWithSocket);
 
         const friend = await FriendModel.create({
             userId1: recipientId,

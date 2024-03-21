@@ -1,7 +1,9 @@
 import { CircularProgress, Stack, Typography } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import useConversation from "../hooks/useConversation";
 import { IMessage } from "../services/MessageServices";
+import NotificationServices from "../services/NotificationServices";
 import Message from "./Message";
 
 interface Props {
@@ -11,6 +13,7 @@ interface Props {
 const Conversation = ({ conversationId }: Props) => {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const { data, isLoading } = useConversation(conversationId);
+	const queryClient = useQueryClient();
 	const conversation: IMessage[] = data || [];
 
 	useEffect(() => {
@@ -18,6 +21,18 @@ const Conversation = ({ conversationId }: Props) => {
 			behavior: "smooth",
 		});
 	}, [conversationId, data]);
+
+	useEffect(() => {
+		const clearConvoNotifications = async () => {
+			if (isLoading) return;
+			await NotificationServices.deleteByConversation(conversationId);
+		};
+
+		clearConvoNotifications();
+
+		queryClient.invalidateQueries({ queryKey: ["NotificationMessageCount"] });
+		queryClient.invalidateQueries({ queryKey: ["NotificationCount"] });
+	}, [isLoading, conversationId, queryClient]);
 
 	return (
 		<>
