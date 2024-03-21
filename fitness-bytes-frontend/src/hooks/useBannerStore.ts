@@ -3,17 +3,17 @@ import { INotification } from '../services/NotificationServices';
 
 interface State {
     isOpen: boolean;
-    notification: INotification | null;
+    notification: INotification | string;
 }
 
 interface Action {
     setOpen: (isOpen: boolean) => void;
-    setNotification: (isOpen: INotification) => void;
+    setNotification: (isOpen: INotification | string) => void;
 }
 
 const useBannerStore = create<State & Action>((set) => ({
     isOpen: false,
-    notification: null,
+    notification: "",
     setOpen: (isOpen) => set((s) => { return {
         ...s,
         isOpen,
