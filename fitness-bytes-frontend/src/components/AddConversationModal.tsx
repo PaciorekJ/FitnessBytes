@@ -52,7 +52,7 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 
 	const queryClient = useQueryClient();
 
-	const setNotification = useBannerStore((s) => s.setNotification);
+	const setBanner = useBannerStore((s) => s.setBanner);
 
 	const [searchResults, setSearchResults] = useState<IUser[]>([]);
 	const [participants, setParticipants] = useState<IUser[]>([]);
@@ -126,8 +126,9 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 							});
 							queryClient.invalidateQueries({ queryKey: ["conversations"] });
 						} else {
-							setNotification(
+							setBanner(
 								"You must have 2 or more participant's in a conversation",
+								true,
 							);
 						}
 

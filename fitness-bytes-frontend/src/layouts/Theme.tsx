@@ -4,10 +4,10 @@ import {
 	ThemeProvider,
 	createTheme,
 } from "@mui/material";
+import { ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import getTheme from "../Theme";
 import useThemeStore from "../hooks/useThemeStore";
-import { ReactNode } from "react";
 
 interface Props {
 	children: ReactNode;
@@ -20,15 +20,15 @@ const Theme = ({ children }: Props) => {
 
 	return (
 		<ThemeProvider theme={theme}>
+			<CssBaseline />
 			<GlobalStyles
-			styles={(theme) => ({
+				styles={(theme) => ({
 					body: {
 						backgroundColor: theme.palette.background.default,
 						color: theme.palette.text.primary,
 					},
 				})}
 			/>
-			<CssBaseline />
 			<Outlet />
 			{children}
 		</ThemeProvider>

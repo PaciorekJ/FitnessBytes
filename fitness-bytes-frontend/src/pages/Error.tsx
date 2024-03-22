@@ -7,19 +7,17 @@ import {
 	ListItem,
 	Stack,
 	Typography,
-	useTheme,
 } from "@mui/material";
 import { isRouteErrorResponse, useRouteError } from "react-router-dom";
 import LogoIcon from "../components/LogoIcon";
 
 const Error = () => {
 	const error = useRouteError();
-	const theme = useTheme();
 
 	if (isRouteErrorResponse(error)) {
 		return (
 			<Grid>
-				<LogoIcon size="6rem" center />
+				<LogoIcon size="6rem" />
 				<Grid
 					item
 					paddingTop={-1}

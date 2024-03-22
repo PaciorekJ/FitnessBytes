@@ -3,26 +3,36 @@ import { INotification } from '../services/NotificationServices';
 
 interface State {
     isOpen: boolean;
-    notification: INotification | string;
+    banner: {notification: INotification | string, error: boolean};
 }
 
 interface Action {
     setOpen: (isOpen: boolean) => void;
-    setNotification: (isOpen: INotification | string) => void;
+    setBanner: (notification: INotification | string, error?: boolean) => void;
 }
 
 const useBannerStore = create<State & Action>((set) => ({
     isOpen: false,
-    notification: "",
-    setOpen: (isOpen) => set((s) => { return {
-        ...s,
-        isOpen,
-    }}),
-    setNotification: (notification) => set((s) => { return {
-        ...s,
-        notification,
-        isOpen: true,
-    }})
+    banner: { 
+        notification: "", 
+        error: false 
+    },
+    setOpen: (isOpen) => set((s) => { 
+        return {
+            ...s,
+            isOpen,
+        }
+    }),
+    setBanner: (notification, error) => set((s) => { 
+        return {
+            ...s,
+            alert: {
+                notification,
+                error: error? true: false,
+            },
+            isOpen: true,
+        } 
+})
 }))
 
 export default useBannerStore;

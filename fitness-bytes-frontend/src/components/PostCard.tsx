@@ -37,7 +37,7 @@ const PostCard = memo(
 		const [isOpen, setOpen] = useState(false);
 		const [error, setError] = useState("");
 
-		const setNotification = useBannerStore((s) => s.setNotification);
+		const setBanner = useBannerStore((s) => s.setBanner);
 
 		const time = ParseDateFromNow(new Date(timeCreated || ""));
 
@@ -65,19 +65,20 @@ const PostCard = memo(
 			});
 
 			if (!res) {
-				setNotification(
+				setBanner(
 					"Something went wrong while trying to report " + postUsername,
+					true,
 				);
 				return;
 			}
 
-			setNotification(postUsername + "'s post has been reported!");
+			setBanner(postUsername + "'s post has been reported!");
 		};
 
 		const handleShare = async () => {
 			if (!navigator.share) {
 				navigator.clipboard.writeText(`http://localhost:5173/auth/post/${_id}`);
-				setNotification("URL copied to clipboard");
+				setBanner("URL copied to clipboard");
 			} else {
 				try {
 					await navigator.share({
@@ -86,7 +87,7 @@ const PostCard = memo(
 						url: `http://localhost:5173/auth/post/${_id}`, // URL or resource to share.
 					});
 				} catch (error) {
-					setNotification("Post sharing failed, Please Try again!");
+					setBanner("Post sharing failed, Please Try again!", true);
 				}
 			}
 		};
