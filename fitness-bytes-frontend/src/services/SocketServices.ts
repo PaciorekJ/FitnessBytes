@@ -13,7 +13,7 @@ type PostCallback = (p: IPost) => void;
 type SocketServiceConfig = {
     username: string, 
     client: QueryClient, 
-    setNotification: (m :INotification) => void
+    setBanner: (m :INotification, error?: boolean) => void
 };
 
 type CallbackFn = PostCallback &
@@ -37,7 +37,7 @@ class SocketServices {
     static setUp = ({
         username,
         client,
-        setNotification,
+        setBanner,
     }: SocketServiceConfig) => {
         this.socket = io("http://localhost:5301/");
 
@@ -68,7 +68,7 @@ class SocketServices {
 			// 	(old) => (old || 0) + 1,
 			// );
 
-            setNotification(m as INotification);
+            setBanner(m as INotification);
 
 			this.client.invalidateQueries({queryKey: ["notifications"]});
 			this.client.invalidateQueries({queryKey: ["NotificationMessageCount"]});

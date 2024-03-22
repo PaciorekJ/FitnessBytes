@@ -23,7 +23,7 @@ const Account = () => {
 		username || "",
 	);
 
-	const postCount = postCountData?.result || 0;
+	const postCount = postCountData || 0;
 
 	return (
 		<Container maxWidth="sm">

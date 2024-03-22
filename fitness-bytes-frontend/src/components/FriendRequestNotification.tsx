@@ -1,8 +1,8 @@
 import { Avatar, Link, Typography } from "@mui/material";
 import Notification from "../components/Notification";
+import useBannerStore from "../hooks/useBannerStore";
 import FriendRequestServices from "../services/FriendRequestServices";
 import { INotification } from "../services/NotificationServices";
-import useBannerStore from "../hooks/useBannerStore";
 
 interface FriendRequestProps extends INotification {
 	requesterId: string;
@@ -16,18 +16,18 @@ const FriendRequestNotification = ({
 	requesterUsername,
 	timeCreated,
 }: FriendRequestProps) => {
-
-	const setNotification = useBannerStore(s => s.setNotification);
+	const setBanner = useBannerStore((s) => s.setBanner);
 
 	const onAccept = async () => {
 		const newFriend = await FriendRequestServices.accept(requesterId);
 
 		if (newFriend) {
-			setNotification(`You and ${requesterUsername} are now friends!`);
+			setBanner(`You and ${requesterUsername} are now friends!`);
 			return;
 		}
-		setNotification(
+		setBanner(
 			`An Error occurred while attempting to accept ${requesterUsername}'s friend request.`,
+			true,
 		);
 	};
 
@@ -35,13 +35,14 @@ const FriendRequestNotification = ({
 		const success = await FriendRequestServices.decline(requesterId);
 
 		if (success) {
-			setNotification(
+			setBanner(
 				`You've Successfully declined ${requesterUsername}'s friend request!`,
 			);
 			return;
 		}
-		setNotification(
+		setBanner(
 			`An Error occurred while declining ${requesterUsername}'s friend request!`,
+			true,
 		);
 	};
 
@@ -60,7 +61,9 @@ const FriendRequestNotification = ({
 						friend request
 					</Typography>{" "}
 					from{" "}
-					<Link href={"/auth/account/" + requesterUsername}>{requesterUsername}</Link>
+					<Link href={"/auth/account/" + requesterUsername}>
+						{requesterUsername}
+					</Link>
 				</>
 			}
 			timestamp={new Date(timeCreated)}

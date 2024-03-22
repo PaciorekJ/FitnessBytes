@@ -1,5 +1,6 @@
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import {
+	useTheme,
 	Avatar,
 	Box,
 	Divider,
@@ -13,7 +14,6 @@ import {
 	Stack,
 	Tooltip,
 	Typography,
-	useTheme,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -26,7 +26,7 @@ import UserServices, { IUser } from "../services/UserServices";
 const AddFriend = () => {
 	const [isOpen, setOpen] = useState(false);
 	const [searchResults, setSearchResults] = useState<IUser[]>([]);
-	const setNotification = useBannerStore((s) => s.setNotification);
+	const setBanner = useBannerStore((s) => s.setBanner);
 	const theme = useTheme();
 
 	const { register, handleSubmit, setValue, reset } = useForm({
@@ -61,12 +61,13 @@ const AddFriend = () => {
 		const friendRequest = await FriendRequestServices.create(_id);
 
 		if (friendRequest) {
-			setNotification(
+			setBanner(
 				`Friend Request has been issued to ${friendRequest?.requesterId}`,
 			);
 		} else {
-			setNotification(
+			setBanner(
 				`Friend Request could not be send. A friend request is already pending or you guys are already friends`,
+				true
 			);
 		}
 	};

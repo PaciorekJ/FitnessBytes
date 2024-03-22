@@ -9,7 +9,7 @@ import UserServices from "../services/UserServices";
 
 const UserLayout = () => {
 	const navigator = useNavigate();
-	const setNotification = useBannerStore((s) => s.setNotification);
+	const setBanner = useBannerStore((s) => s.setBanner);
 	const client = useQueryClient();
 
 	useEffect(() => {
@@ -21,14 +21,14 @@ const UserLayout = () => {
 			}
 
 			SocketServices.setUp({
-				username, 
-				client, 
-				setNotification
+				username,
+				client,
+				setBanner,
 			});
 		};
 
 		authUser();
-	}, [navigator]);
+	}, [client, navigator, setBanner]);
 
 	return (
 		<div>
