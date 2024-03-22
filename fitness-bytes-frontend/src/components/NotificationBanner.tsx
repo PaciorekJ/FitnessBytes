@@ -5,14 +5,16 @@ import useThemeStore from "../hooks/useThemeStore";
 import { AlertNotificationFactory } from "../services/AlertNotificationFactory";
 
 const NotificationBanner = () => {
-	const { isOpen, setOpen, banner } = useBannerStore();
+	const banner = useBannerStore((s) => s.banner);
+	const isOpen = useBannerStore((s) => s.isOpen);
+	const setOpen = useBannerStore((s) => s.setOpen);
 	const mode = useThemeStore((s) => s.mode);
 
 	const styles: SxProps<Theme> = {
 		position: "absolute",
 		top: 0,
 		width: "100%",
-		zIndex: "1001",
+		zIndex: "2000",
 		overflow: "hidden",
 		backgroundColor:
 			mode === "dark" ? `rgba(255, 255, 255, 0.3)` : `rgba(0, 0, 0, 0.3)`, // Semi-transparent background

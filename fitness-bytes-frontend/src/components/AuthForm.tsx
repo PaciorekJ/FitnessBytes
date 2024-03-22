@@ -54,11 +54,7 @@ const AuthForm = ({
 	} = useForm<AuthData>(formOptions);
 
 	return (
-		<form
-			onSubmit={handleSubmit((data) => {
-				console.log(data);
-				formAction(data);
-			})}>
+		<form onSubmit={handleSubmit(formAction)}>
 			<Stack sx={{ flexDirection: "column", gap: "1.2rem" }}>
 				{formAlertState.state && (
 					<Alert severity="error">{formAlertState.message}</Alert>

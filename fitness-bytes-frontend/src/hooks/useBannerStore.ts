@@ -26,7 +26,7 @@ const useBannerStore = create<State & Action>((set) => ({
     setBanner: (notification, error) => set((s) => { 
         return {
             ...s,
-            alert: {
+            banner: {
                 notification,
                 error: error? true: false,
             },
