@@ -99,7 +99,7 @@ const getTheme = (mode: PaletteMode) => {
 		MuiSvgIcon: {
 			styleOverrides: {
 				root: {
-					color: mode === "light" ? "" : theme.palette.secondary.main,
+					color: mode === "light" ? theme.palette.primary.main : theme.palette.secondary.main,
 				},
 			},
 		},

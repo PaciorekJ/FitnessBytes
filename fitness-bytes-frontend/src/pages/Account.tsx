@@ -1,9 +1,12 @@
+import AddAPhotoTwoToneIcon from "@mui/icons-material/AddAPhotoTwoTone";
+import ModeEditOutlineTwoToneIcon from "@mui/icons-material/ModeEditOutlineTwoTone";
 import {
 	Avatar,
-	Box,
+	Badge,
 	CircularProgress,
-	Container,
 	Divider,
+	Grid,
+	IconButton,
 	Stack,
 	Typography,
 } from "@mui/material";
@@ -11,11 +14,20 @@ import { useParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import usePostCount from "../hooks/usePostCount";
 import usePosts from "../hooks/usePosts";
+import useUserStore from "../hooks/useUserStore";
 
 const Account = () => {
 	const { username } = useParams();
+	const activeUsername = useUserStore((s) => s.username);
+
+	const ownerPermissions = username === activeUsername;
+
+	const editBio = () => {};
 
 	const { data } = usePosts(username);
+
+	const bio =
+		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
 	const posts = data || [];
 
@@ -26,46 +38,79 @@ const Account = () => {
 	const postCount = postCountData || 0;
 
 	return (
-		<Container maxWidth="sm">
-			<Box
-				sx={{
-					my: 4,
-					display: "flex",
-					flexDirection: "column",
-					alignItems: "center",
-				}}>
-				<Avatar
-					sizes="xl"
-					alt="Avatar"
+		<Stack
+			sx={{
+				alignItems: "center",
+				paddingX: 2,
+			}}>
+			<Grid
+				container
+				spacing={2}
+				sx={{ alignItems: "center", justifyContent: "center" }}
+				maxWidth={"1300px"}
+				columns={{ xs: 2, md: 4 }}>
+				<Grid
+					item
 					sx={{
-						width: "20vw",
-						height: "20vw",
-						maxWidth: "200px",
-						maxHeight: "200px",
-					}}
-				/>
-				<Typography variant="h6" component="h1" gutterBottom>
-					{username}
-				</Typography>
-				<Stack flexDirection={"row"} gap={2}>
-					<Stack flexDirection={"row"} gap={"5px"}>
-						{postCountIsLoading ? (
-							<CircularProgress />
-						) : (
-							<Typography fontWeight={"700"}>{postCount}</Typography>
+						alignItems: "center",
+						justifyContent: "center",
+						gap: 1,
+					}}>
+					<Badge
+						overlap="circular"
+						anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+						badgeContent={
+							ownerPermissions && (
+								<IconButton color="secondary">
+									<AddAPhotoTwoToneIcon />
+								</IconButton>
+							)
+						}>
+						<Avatar
+							sizes="xl"
+							alt="Avatar"
+							sx={{
+								width: "20vw",
+								height: "20vw",
+								maxWidth: "200px",
+								maxHeight: "200px",
+							}}
+						/>
+					</Badge>
+				</Grid>
+				<Grid item maxWidth={"700px"}>
+					<Typography variant="h4" letterSpacing={".1rem"} component="h2">
+						{username}
+					</Typography>
+					<Divider />
+					<Typography variant="body2" lineHeight={"25px"}>
+						{bio}
+						{ownerPermissions && (
+							<IconButton onClick={editBio} color="secondary">
+								<ModeEditOutlineTwoToneIcon />
+							</IconButton>
 						)}
-						<Typography>Posts</Typography>
-					</Stack>
-					<Stack flexDirection={"row"} gap={"5px"}></Stack>
+					</Typography>
+				</Grid>
+			</Grid>
+			<Stack margin={1} flexDirection={"row"} gap={2}>
+				<Stack flexDirection={"row"} gap={"5px"}>
+					{postCountIsLoading ? (
+						<CircularProgress size={"1.25rem"} />
+					) : (
+						<Typography fontWeight={"700"}>{postCount}</Typography>
+					)}
+					<Typography>Posts</Typography>
 				</Stack>
-				<Divider orientation="horizontal" variant="fullWidth" />
-				<Stack>
-					{posts?.map((p) => (
-						<PostCard key={p._id} {...p} />
-					))}
-				</Stack>
-			</Box>
-		</Container>
+				<Stack flexDirection={"row"} gap={"5px"}></Stack>
+			</Stack>
+			<Divider orientation="horizontal" variant="fullWidth" />
+			<Stack width={"100%"} maxWidth={"700px"}>
+				{posts?.map((p) => (
+					<PostCard key={p._id} {...p} />
+				))}
+			</Stack>
+		</Stack>
 	);
 };
 

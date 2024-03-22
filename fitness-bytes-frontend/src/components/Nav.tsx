@@ -146,19 +146,21 @@ const Nav = () => {
 							}}>
 							<MenuItem
 								sx={{ gap: "10px" }}
-								href={`/auth/account/${username}#top`}
-								onClick={handleClose}>
+								onClick={() => {
+									handleClose();
+									navigator(`/auth/account/${username}#top`);
+								}}>
 								<ListItemIcon>
 									<Avatar />
 								</ListItemIcon>
-								Profile
+								{username}
 							</MenuItem>
 							<Divider />
 							<MenuItem onClick={handleClose}>
 								<ListItemIcon>
 									<Settings fontSize="small" />
 								</ListItemIcon>
-								Manage Account
+								Account Settings
 							</MenuItem>
 							<MenuItem onClick={handleLogout}>
 								<ListItemIcon>
