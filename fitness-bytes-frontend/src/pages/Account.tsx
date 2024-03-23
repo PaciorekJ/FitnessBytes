@@ -9,7 +9,9 @@ import {
 	IconButton,
 	Stack,
 	Typography,
+	styled,
 } from "@mui/material";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import usePostCount from "../hooks/usePostCount";
@@ -19,6 +21,7 @@ import useUserStore from "../hooks/useUserStore";
 const Account = () => {
 	const { username } = useParams();
 	const activeUsername = useUserStore((s) => s.username);
+	const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
 	const ownerPermissions = username === activeUsername;
 
@@ -36,6 +39,28 @@ const Account = () => {
 	);
 
 	const postCount = postCountData || 0;
+
+	const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (!e || !e.target || e?.target?.files) {
+			console.log("Nothing here");
+		}
+		const file = (e?.target?.files as FileList)[0];
+		const url = URL.createObjectURL(file);
+		setImagePreviewUrl(url);
+		console.log(e?.target?.files);
+	};
+
+	const VisuallyHiddenInput = styled("input")({
+		clip: "rect(0 0 0 0)",
+		clipPath: "inset(50%)",
+		height: 1,
+		overflow: "hidden",
+		position: "absolute",
+		bottom: 0,
+		left: 0,
+		whiteSpace: "nowrap",
+		width: 1,
+	});
 
 	return (
 		<Stack
@@ -61,7 +86,8 @@ const Account = () => {
 						anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
 						badgeContent={
 							ownerPermissions && (
-								<IconButton color="secondary">
+								<IconButton component="label" color="secondary">
+									<VisuallyHiddenInput type="file" onChange={handleAvatar} />
 									<AddAPhotoTwoToneIcon />
 								</IconButton>
 							)
@@ -69,6 +95,7 @@ const Account = () => {
 						<Avatar
 							sizes="xl"
 							alt="Avatar"
+							src={imagePreviewUrl || ""}
 							sx={{
 								width: "20vw",
 								height: "20vw",
