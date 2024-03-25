@@ -1,5 +1,4 @@
-import { useTheme } from "@mui/material";
-import Box from "@mui/material/Box";
+import { Box, useTheme } from "@mui/material";
 import logo from "../assets/Favi-FitnessBytes-v2-no-background.webp";
 
 interface Props {

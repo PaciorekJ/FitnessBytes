@@ -3,7 +3,7 @@ import PostServices from "../services/PostServices";
 
 const usePosts = (username: string = "") => {
     return useQuery({
-    queryKey: ['posts'],
+    queryKey: ['posts', username],
         queryFn: () => PostServices.getAll(username),
     });
 }

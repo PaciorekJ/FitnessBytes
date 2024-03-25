@@ -3,9 +3,30 @@ import bcrypt from 'bcrypt';
 import { Router } from "express";
 import passport from 'passport';
 import escapeRegExp from '../libs/RegExp';
+import { authMiddleware } from '../middleware/authMiddleware';
 import UserModel, { IUser } from "../models/User";
 
 const userRouter = Router();
+
+userRouter.get("/user/:username", authMiddleware, async (req, res) => {
+    const username = req.params.username;
+
+    try {
+        const user = await UserModel.findOne({username}).select("-password");
+
+        return res.json({
+            message: "",
+            result: user,
+        })
+    }
+    catch (e) {
+        return res.status(500).json({
+            message: "Username may not exist or a internal server error has occurred",
+        });
+    }
+
+
+})
 
 userRouter.get("/search", async (req, res) => {
     const { query } = req.query as {query: string};
@@ -99,6 +120,23 @@ userRouter.post("/login", passport.authenticate('local'), (req, res) => {
         result: (req.user as IUser).username,
     });
 });
+
+userRouter.patch("/bio", authMiddleware, async (req, res) => {
+    const bio = req.body.bio;
+    const _id = (req.user as IUser)._id;
+
+    if (!bio) return res.status(400).json({
+        message: "Bio is missing from request",
+        result: false,
+    });
+
+    UserModel.findByIdAndUpdate(_id, { bio }).select("-password");
+
+    return res.status(200).json({
+        message: "",
+        result: true,
+    });
+})
 
 userRouter.post("/logout", (req, res, next) => {
     req.logout((e) => {

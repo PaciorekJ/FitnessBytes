@@ -1,36 +1,50 @@
 import AddAPhotoTwoToneIcon from "@mui/icons-material/AddAPhotoTwoTone";
+import DoneTwoToneIcon from "@mui/icons-material/DoneTwoTone";
 import ModeEditOutlineTwoToneIcon from "@mui/icons-material/ModeEditOutlineTwoTone";
 import {
 	Avatar,
 	Badge,
+	Box,
 	CircularProgress,
 	Divider,
 	Grid,
 	IconButton,
 	Stack,
+	TextField,
 	Typography,
 	styled,
 } from "@mui/material";
-import { useState } from "react";
+import imageCompression from "browser-image-compression";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import PageSpinner from "../components/PageSpinner";
 import PostCard from "../components/PostCard";
+import useBannerStore from "../hooks/useBannerStore";
 import usePostCount from "../hooks/usePostCount";
 import usePosts from "../hooks/usePosts";
+import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
+import UserServices from "../services/UserServices";
 
 const Account = () => {
 	const { username } = useParams();
 	const activeUsername = useUserStore((s) => s.username);
+	const { data: user, isLoading: userIsLoading } = useUser(username || "");
 	const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+	const setBanner = useBannerStore((s) => s.setBanner);
+	const [editBioMode, setEditBioMode] = useState(false);
 
 	const ownerPermissions = username === activeUsername;
 
-	const editBio = () => {};
-
 	const { data } = usePosts(username);
 
-	const bio =
-		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+	const [editableBio, setEditableBio] = useState(user?.bio || "");
+
+	useEffect(() => {
+		if (userIsLoading || !user?.bio) return;
+
+		setEditableBio(user.bio);
+	}, [user?.bio, userIsLoading]);
 
 	const posts = data || [];
 
@@ -40,14 +54,42 @@ const Account = () => {
 
 	const postCount = postCountData || 0;
 
-	const handleAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!e || !e.target || e?.target?.files) {
-			console.log("Nothing here");
+	const saveBio = async () => {
+		const res = await UserServices.setBio(editableBio);
+		if (!res) {
+			setBanner(
+				"Error: Your Bio failed to be set at the moment. Please try again later",
+				true,
+			);
 		}
+
+		setEditBioMode(false); // Toggle back to view mode after saving
+	};
+
+	const handleProfilePicture = async (
+		e: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		if (!e || !e.target || !e?.target?.files) {
+			setBanner("Error: A invalid photo, or no photo was selected!", true);
+		}
+
 		const file = (e?.target?.files as FileList)[0];
-		const url = URL.createObjectURL(file);
-		setImagePreviewUrl(url);
-		console.log(e?.target?.files);
+
+		try {
+			const options = {
+				maxSizeMB: 1,
+				maxWidthOrHeight: 320,
+				useWebWorker: true,
+				alwaysKeepResolution: true,
+			};
+
+			const compressedFile = await imageCompression(file, options);
+
+			const url = URL.createObjectURL(compressedFile);
+			setImagePreviewUrl(url);
+		} catch {
+			setBanner("We failed to upload your photo!", true);
+		}
 	};
 
 	const VisuallyHiddenInput = styled("input")({
@@ -62,11 +104,13 @@ const Account = () => {
 		width: 1,
 	});
 
+	if (userIsLoading) return <PageSpinner />;
+
 	return (
 		<Stack
 			sx={{
 				alignItems: "center",
-				paddingX: 2,
+				padding: 2,
 			}}>
 			<Grid
 				container
@@ -87,7 +131,10 @@ const Account = () => {
 						badgeContent={
 							ownerPermissions && (
 								<IconButton component="label" color="secondary">
-									<VisuallyHiddenInput type="file" onChange={handleAvatar} />
+									<VisuallyHiddenInput
+										type="file"
+										onChange={handleProfilePicture}
+									/>
 									<AddAPhotoTwoToneIcon />
 								</IconButton>
 							)
@@ -97,10 +144,8 @@ const Account = () => {
 							alt="Avatar"
 							src={imagePreviewUrl || ""}
 							sx={{
-								width: "20vw",
-								height: "20vw",
-								maxWidth: "200px",
-								maxHeight: "200px",
+								width: "250px",
+								height: "250px",
 							}}
 						/>
 					</Badge>
@@ -109,15 +154,51 @@ const Account = () => {
 					<Typography variant="h4" letterSpacing={".1rem"} component="h2">
 						{username}
 					</Typography>
-					<Divider />
-					<Typography variant="body2" lineHeight={"25px"}>
-						{bio}
-						{ownerPermissions && (
-							<IconButton onClick={editBio} color="secondary">
-								<ModeEditOutlineTwoToneIcon />
-							</IconButton>
-						)}
-					</Typography>
+					<Divider sx={{ marginY: 1 }} />
+					{!editBioMode ? (
+						<Typography
+							component={"p"}
+							minWidth={{ xs: "90vw", lg: "700px" }}
+							color={editableBio ? "" : "text.disabled"}
+							variant="body2"
+							lineHeight={"25px"}
+							letterSpacing={0.75}
+							padding={1.3}>
+							{editableBio ? editableBio : `No Bio`}
+						</Typography>
+					) : (
+						<TextField
+							component={"p"}
+							autoFocus
+							fullWidth
+							sx={{
+								"minWidth": { xs: "90vw", lg: "700px" },
+								"display": "inline-block",
+								"letterSpacing": 0.75,
+								"lineHeight": "25px",
+								"border": "none",
+								"& .MuiInputBase-input": {
+									fontSize: ".9rem",
+								},
+							}}
+							value={editableBio}
+							onChange={(e) => setEditableBio(e.target.value)}
+							multiline
+						/>
+					)}
+					{ownerPermissions && (
+						<Box>
+							{editBioMode ? (
+								<IconButton onClick={saveBio}>
+									<DoneTwoToneIcon />
+								</IconButton>
+							) : (
+								<IconButton onClick={() => setEditBioMode(true)}>
+									<ModeEditOutlineTwoToneIcon />
+								</IconButton>
+							)}
+						</Box>
+					)}
 				</Grid>
 			</Grid>
 			<Stack margin={1} flexDirection={"row"} gap={2}>
