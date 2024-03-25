@@ -1,5 +1,5 @@
-import CircularProgress from "@mui/material/CircularProgress";
 import Stack from "@mui/material/Stack";
+import PageSpinner from "../components/PageSpinner";
 import PostCard from "../components/PostCard";
 import usePosts from "../hooks/usePosts";
 import { IPost } from "../services/PostServices";
@@ -9,10 +9,13 @@ const Feed = () => {
 
 	const posts: IPost[] = data || [];
 
+	if (isLoading) return <PageSpinner />;
+
 	return (
 		<Stack
 			boxSizing={"border-box"}
 			width={"100%"}
+			padding={2}
 			maxWidth={"700px"}
 			margin={"auto"}
 			paddingX={"5rem"}
@@ -21,13 +24,6 @@ const Feed = () => {
 			{posts.map((p) => (
 				<PostCard key={p._id} {...p} />
 			))}
-			{isLoading && (
-				<CircularProgress
-					sx={{ marginTop: "10%" }}
-					size={"5%"}
-					color="secondary"
-				/>
-			)}
 		</Stack>
 	);
 };

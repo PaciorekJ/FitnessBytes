@@ -86,8 +86,15 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 			aria-labelledby="Modal For Finding new friends"
 			aria-describedby="Modal that is used for finding new friends on the platform">
 			<Box sx={style}>
-				<Typography variant="h4" component={"h3"} paddingBottom={3}>
+				<Typography variant="h4" marginBottom={0} component={"h3"}>
 					Select the Conversation Member(s)
+				</Typography>
+				<Typography
+					variant="body2"
+					paddingBottom={3}
+					color={"error"}
+					component="p">
+					You can only start conversations with friends
 				</Typography>
 				<Stack
 					sx={{

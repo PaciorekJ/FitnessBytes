@@ -46,6 +46,7 @@ const PostCard = memo(
 
 			if (!res) {
 				setError("Error: Failed to delete post, please try again!");
+				setBanner("Error: Failed to delete post, please try again!", true);
 				return;
 			}
 
@@ -101,6 +102,7 @@ const PostCard = memo(
 
 				if (!res) {
 					setError("Error: Failed to update post, please try again!");
+					setBanner("Error: Failed to update post, please try again!", true);
 					return;
 				}
 
