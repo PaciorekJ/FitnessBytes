@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 interface State {
     username: string;
+    
 }
 
 interface Action {

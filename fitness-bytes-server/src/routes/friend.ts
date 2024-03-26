@@ -1,8 +1,8 @@
 import { Router } from "express";
+import escapeRegExp from "../libs/RegExp";
 import { authMiddleware } from "../middleware/authMiddleware";
 import FriendModel from "../models/Friend";
 import { IUser } from "../models/User";
-import escapeRegExp from "../libs/RegExp";
 
 const friendRouter = Router();
 
@@ -50,7 +50,9 @@ friendRouter.get('/', authMiddleware, async (req, res) => {
                     _id: 0,
                     friendDetails: {
                         _id: 1,
-                        username: 1
+                        username: 1,
+                        profilePicture: 1,
+                        profilePictureType: 1
                     }
                 }
             },

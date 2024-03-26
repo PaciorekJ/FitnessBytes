@@ -1,5 +1,4 @@
 import {
-	Avatar,
 	Box,
 	Button,
 	Checkbox,
@@ -23,6 +22,7 @@ import useBannerStore from "../hooks/useBannerStore";
 import ConversationServices from "../services/ConversationService";
 import FriendServices from "../services/FriendServices";
 import { IUser } from "../services/UserServices";
+import ProfilePicture from "./ProfilePicture";
 
 interface Props {
 	isOpen: boolean;
@@ -147,25 +147,40 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 						</Button>
 					</Stack>
 					<List>
-						{searchResults.map((u: IUser, i) => (
-							<Stack
-								sx={{
-									flexDirection: "row",
-								}}
-								key={"Search__Result-" + u.username + " " + i}>
-								<ListItemIcon>
-									<Avatar>{u.username.charAt(0)}</Avatar>
-								</ListItemIcon>
-								<ListItem>
-									<Typography>{u.username}</Typography>
-								</ListItem>
-								<Checkbox
-									onClick={() => toggleParticipants(u)}
-									checked={participants.some((p) => p.username === u.username)}
-								/>
-								<Divider />
-							</Stack>
-						))}
+						{searchResults.length ? (
+							searchResults.map((u: IUser, i) => (
+								<Stack
+									sx={{
+										flexDirection: "row",
+										padding: 1,
+									}}
+									key={"Search__Result-" + u.username + " " + i}>
+									<ListItemIcon>
+										<ProfilePicture
+											username={u.username}
+											base64Image={u.profilePicture}
+											pictureType={u.profilePictureType}
+										/>
+									</ListItemIcon>
+									<ListItem>
+										<Typography>{u.username}</Typography>
+									</ListItem>
+									<Checkbox
+										onClick={() => toggleParticipants(u)}
+										checked={participants.some(
+											(p) => p.username === u.username,
+										)}
+									/>
+									<Divider />
+								</Stack>
+							))
+						) : (
+							<ListItem sx={{ justifyContent: "center" }}>
+								<Typography component={"p"} color={"text.disabled"}>
+									No Results
+								</Typography>
+							</ListItem>
+						)}
 					</List>
 				</form>
 			</Box>

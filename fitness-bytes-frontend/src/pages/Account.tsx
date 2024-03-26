@@ -2,7 +2,6 @@ import AddAPhotoTwoToneIcon from "@mui/icons-material/AddAPhotoTwoTone";
 import DoneTwoToneIcon from "@mui/icons-material/DoneTwoTone";
 import ModeEditOutlineTwoToneIcon from "@mui/icons-material/ModeEditOutlineTwoTone";
 import {
-	Avatar,
 	Badge,
 	Box,
 	CircularProgress,
@@ -14,17 +13,22 @@ import {
 	Typography,
 	styled,
 } from "@mui/material";
-import imageCompression from "browser-image-compression";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PageSpinner from "../components/PageSpinner";
 import PostCard from "../components/PostCard";
+import ProfilePicture from "../components/ProfilePicture";
 import useBannerStore from "../hooks/useBannerStore";
 import usePostCount from "../hooks/usePostCount";
 import usePosts from "../hooks/usePosts";
 import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
 import UserServices from "../services/UserServices";
+import {
+	compressImage,
+	decodeImage,
+	encodeImage,
+} from "../utils/ImageProcessing";
 
 const Account = () => {
 	const { username } = useParams();
@@ -45,6 +49,22 @@ const Account = () => {
 
 		setEditableBio(user.bio);
 	}, [user?.bio, userIsLoading]);
+
+	useEffect(() => {
+		if (userIsLoading || !user?.profilePicture || !user?.profilePictureType)
+			return;
+
+		const setProfilePicture = async () => {
+			const imageBlob = await decodeImage(
+				user.profilePicture,
+				user.profilePictureType,
+			);
+			const url = URL.createObjectURL(imageBlob);
+			setImagePreviewUrl(url);
+		};
+
+		setProfilePicture();
+	}, [user?.profilePicture, user?.profilePictureType, userIsLoading]);
 
 	const posts = data || [];
 
@@ -76,16 +96,12 @@ const Account = () => {
 		const file = (e?.target?.files as FileList)[0];
 
 		try {
-			const options = {
-				maxSizeMB: 1,
-				maxWidthOrHeight: 320,
-				useWebWorker: true,
-				alwaysKeepResolution: true,
-			};
+			const compressedImage = await compressImage(file);
 
-			const compressedFile = await imageCompression(file, options);
+			const base64Array = await encodeImage(compressedImage);
+			await UserServices.setProfilePicture(base64Array, compressedImage.type);
 
-			const url = URL.createObjectURL(compressedFile);
+			const url = URL.createObjectURL(compressedImage);
 			setImagePreviewUrl(url);
 		} catch {
 			setBanner("We failed to upload your photo!", true);
@@ -139,13 +155,14 @@ const Account = () => {
 								</IconButton>
 							)
 						}>
-						<Avatar
-							sizes="xl"
-							alt="Avatar"
-							src={imagePreviewUrl || ""}
+						<ProfilePicture
+							username={username!}
+							base64Image={user?.profilePicture || ""}
+							pictureType={user?.profilePictureType || ""}
+							url={imagePreviewUrl || ""}
 							sx={{
-								width: "250px",
-								height: "250px",
+								width: "200px",
+								height: "200px",
 							}}
 						/>
 					</Badge>
@@ -163,12 +180,11 @@ const Account = () => {
 							variant="body2"
 							lineHeight={"25px"}
 							letterSpacing={0.75}
-							padding={1.3}>
+							padding={1.9}>
 							{editableBio ? editableBio : `No Bio`}
 						</Typography>
 					) : (
 						<TextField
-							component={"p"}
 							autoFocus
 							fullWidth
 							sx={{

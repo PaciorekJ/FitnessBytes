@@ -11,8 +11,8 @@ const PageSpinner = () => {
 			alignItems={"center"}>
 			<div id="top"></div>
 			<CircularProgress
-				sx={{ marginTop: "10%" }}
-				size={"10%"}
+				sx={{ marginTop: "20vh" }}
+				size={"50px"}
 				color="secondary"
 			/>
 		</Stack>

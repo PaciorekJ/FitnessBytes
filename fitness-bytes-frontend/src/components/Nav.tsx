@@ -6,7 +6,6 @@ import HomeIcon from "@mui/icons-material/Home";
 import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import {
-	Avatar,
 	Badge,
 	Box,
 	Divider,
@@ -23,11 +22,13 @@ import { useNavigate } from "react-router-dom";
 import useNotificationCount from "../hooks/useNotificationCount";
 import useNotificationMessageCount from "../hooks/useNotificationMessageCount";
 import useThemeStore from "../hooks/useThemeStore";
+import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
 import UserServices from "../services/UserServices";
 import AddFriend from "./AddFriend";
 import ComposePost from "./ComposePost";
 import LogoIcon from "./LogoIcon";
+import ProfilePicture from "./ProfilePicture";
 
 const Nav = () => {
 	const { mode, toggleTheme } = useThemeStore();
@@ -40,6 +41,7 @@ const Nav = () => {
 		isLoading: isLoadingNotiMessageCount,
 	} = useNotificationMessageCount();
 	const navigator = useNavigate();
+	const { data: user, isLoading: userIsLoading } = useUser(username);
 
 	const open = Boolean(anchorEl);
 
@@ -60,6 +62,8 @@ const Nav = () => {
 			navigator("/");
 		}
 	};
+
+	if (userIsLoading) return null;
 
 	//TODO: For smaller layout condense nav to a Triple Bar button
 	return (
@@ -123,7 +127,10 @@ const Nav = () => {
 							aria-controls={open ? "account-menu" : undefined}
 							aria-haspopup="true"
 							aria-expanded={open ? "true" : undefined}>
-							<Avatar
+							<ProfilePicture
+								username={username}
+								base64Image={user?.profilePicture || ""}
+								pictureType={user?.profilePictureType || ""}
 								sx={{
 									md: { width: "12px", height: "12px" },
 								}}
@@ -151,7 +158,11 @@ const Nav = () => {
 									navigator(`/auth/account/${username}#top`);
 								}}>
 								<ListItemIcon>
-									<Avatar />
+									<ProfilePicture
+										username={username}
+										base64Image={user?.profilePicture || ""}
+										pictureType={user?.profilePictureType || ""}
+									/>
 								</ListItemIcon>
 								{username}
 							</MenuItem>

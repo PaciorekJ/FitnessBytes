@@ -1,7 +1,5 @@
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import {
-	useTheme,
-	Avatar,
 	Box,
 	Divider,
 	IconButton,
@@ -14,6 +12,7 @@ import {
 	Stack,
 	Tooltip,
 	Typography,
+	useTheme,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -22,6 +21,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import useBannerStore from "../hooks/useBannerStore";
 import FriendRequestServices from "../services/FriendRequestServices";
 import UserServices, { IUser } from "../services/UserServices";
+import ProfilePicture from "./ProfilePicture";
 
 const AddFriend = () => {
 	const [isOpen, setOpen] = useState(false);
@@ -67,7 +67,7 @@ const AddFriend = () => {
 		} else {
 			setBanner(
 				`Friend Request could not be send. A friend request is already pending or you guys are already friends`,
-				true
+				true,
 			);
 		}
 	};
@@ -112,33 +112,43 @@ const AddFriend = () => {
 						</IconButton>
 					</Stack>
 					<List>
-						{searchResults.map((u: IUser, i) => (
-							<ListItem key={"Search__Result-" + u.username + " " + i}>
-								<ListItemButton href={"/auth/account/" + u.username}>
-									<Stack flexDirection={"row"}>
-										<ListItemIcon>
-											<Avatar>{u.username.charAt(0)}</Avatar>
+						{searchResults.length ? (
+							searchResults.map((u: IUser, i) => (
+								<ListItem key={"Search__Result-" + u.profilePicture + " " + i}>
+									<ListItemButton href={"/auth/account/" + u.username}>
+										<Stack flexDirection={"row"}>
+											<ProfilePicture
+												username={u.username}
+												base64Image={u.profilePicture || ""}
+												pictureType={u.profilePictureType || ""}
+											/>
+											<ListItem>
+												<Typography>{u.username}</Typography>
+											</ListItem>
+										</Stack>
+										<ListItemIcon sx={{ marginLeft: "auto" }}>
+											<IconButton
+												onClick={(e) => {
+													e.preventDefault();
+													closeModal();
+													setSearchResults([]);
+													reset();
+													handleAddFriend(u._id);
+												}}>
+												<PersonAddOutlinedIcon color="primary" />
+											</IconButton>
 										</ListItemIcon>
-										<ListItem>
-											<Typography>{u.username}</Typography>
-										</ListItem>
-									</Stack>
-									<ListItemIcon sx={{ marginLeft: "auto" }}>
-										<IconButton
-											onClick={(e) => {
-												e.preventDefault();
-												closeModal();
-												setSearchResults([]);
-												reset();
-												handleAddFriend(u._id);
-											}}>
-											<PersonAddOutlinedIcon color="primary" />
-										</IconButton>
-									</ListItemIcon>
-								</ListItemButton>
-								<Divider />
+									</ListItemButton>
+									<Divider />
+								</ListItem>
+							))
+						) : (
+							<ListItem sx={{ justifyContent: "center" }}>
+								<Typography component={"p"} color={"text.disabled"}>
+									No Results
+								</Typography>
 							</ListItem>
-						))}
+						)}
 					</List>
 				</Box>
 			</Modal>

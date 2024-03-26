@@ -7,6 +7,8 @@ interface IUser {
     _id: string;
     username: string;
 	bio: string;
+	profilePicture: string;
+	profilePictureType: string;
 }
 
 type UserResponse = ResponseResult<string | boolean | string | boolean>;
@@ -23,6 +25,10 @@ class UserServices {
 	static isAuth = () => UserServices.fact.get<string>("/auth")("");
 	static search = (query: string) => UserServices.fact.get<IUser[]>("/search", { params: { query } })("");
 	static setBio = (bio: string) => UserServices.fact.patch<boolean, IUser>("/bio")({ bio })
+	static setProfilePicture = (profilePicture: string, profilePictureType: string) => UserServices.fact.patch<boolean, IUser>("/profilePicture")({ 
+		profilePicture, 
+		profilePictureType
+	});
 }
 
 export type { IUser };
