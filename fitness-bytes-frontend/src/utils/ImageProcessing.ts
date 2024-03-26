@@ -38,8 +38,7 @@ async function encodeImage(file: File) {
     return base64Array;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function decodeImage(encodedFile: any, mimeType: string) {
+function decodeImage(encodedFile: string, mimeType: string) {
     const newBuffer = base64ToArrayBuffer(encodedFile);
     const imageBlob = new Blob([newBuffer], { type: mimeType });
     return imageBlob;
