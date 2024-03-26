@@ -1,5 +1,4 @@
 import {
-	Avatar,
 	Box,
 	CardActions,
 	CardContent,
@@ -29,9 +28,18 @@ import ParseDateFromNow from "../utils/ParseDate";
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 import PostModal from "./PostModal";
+import ProfilePicture from "./ProfilePicture";
 
 const PostCard = memo(
-	({ _id, content, username: postUsername, likes, timeCreated }: IPost) => {
+	({
+		_id,
+		content,
+		username: postUsername,
+		likes,
+		timeCreated,
+		ProfilePictureType,
+		profilePicture,
+	}: IPost) => {
 		const queryClient = useQueryClient();
 		const currentUserUsername = useUserStore((s) => s.username);
 		const [isOpen, setOpen] = useState(false);
@@ -57,7 +65,7 @@ const PostCard = memo(
 
 				return oldPosts?.filter((post) => post._id !== _id) || [];
 			});
-		}, [_id, postUsername, queryClient]);
+		}, [_id, postUsername, queryClient, setBanner]);
 
 		const handleReport = async () => {
 			const res = await ReportServices.create({
@@ -122,7 +130,7 @@ const PostCard = memo(
 
 				setOpen(false);
 			},
-			[_id, queryClient],
+			[_id, queryClient, setBanner],
 		);
 
 		const MoreOptionsMenuItems = [
@@ -177,7 +185,11 @@ const PostCard = memo(
 								</Typography>
 							}
 							avatar={
-								<Avatar aria-label="User Icon">{postUsername.charAt(0)}</Avatar>
+								<ProfilePicture
+									username={postUsername}
+									base64Image={profilePicture}
+									pictureType={ProfilePictureType}
+								/>
 							}
 							subheader={
 								<Typography color={"text.disabled"} variant="body2">

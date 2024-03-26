@@ -24,8 +24,6 @@ userRouter.get("/user/:username", authMiddleware, async (req, res) => {
             message: "Username may not exist or a internal server error has occurred",
         });
     }
-
-
 })
 
 userRouter.get("/search", async (req, res) => {
@@ -39,7 +37,7 @@ userRouter.get("/search", async (req, res) => {
               { username: regex },
               { email: regex }
             ]
-        }).select("_id username");
+        }).select("-password");
 
         res.json({
             message: "",
@@ -130,13 +128,38 @@ userRouter.patch("/bio", authMiddleware, async (req, res) => {
         result: false,
     });
 
-    UserModel.findByIdAndUpdate(_id, { bio }).select("-password");
+    await UserModel.findByIdAndUpdate(_id, { bio });
 
     return res.status(200).json({
         message: "",
         result: true,
     });
-})
+});
+
+userRouter.patch("/profilePicture", authMiddleware, async (req, res) => {
+    const profilePicture = req.body.profilePicture;
+    const profilePictureType = req.body.profilePictureType;
+    const _id = (req.user as IUser)._id;
+
+    console.log(`
+    Content: 
+    ${profilePicture.toString()}
+    
+    Type:
+    ${profilePictureType}`);
+
+    if (!profilePicture || !profilePictureType) return res.status(400).json({
+        message: "profilePicture or profilePictureType is missing from request",
+        result: false,
+    });
+
+    await UserModel.findByIdAndUpdate(_id, { profilePicture, profilePictureType });
+
+    return res.status(200).json({
+        message: "",
+        result: true,
+    });
+});
 
 userRouter.post("/logout", (req, res, next) => {
     req.logout((e) => {

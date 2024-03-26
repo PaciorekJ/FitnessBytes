@@ -11,6 +11,8 @@ const Feed = () => {
 
 	if (isLoading) return <PageSpinner />;
 
+	console.log(posts);
+
 	return (
 		<Stack
 			boxSizing={"border-box"}
