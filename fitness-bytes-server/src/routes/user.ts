@@ -5,8 +5,65 @@ import passport from 'passport';
 import escapeRegExp from '../libs/RegExp';
 import { authMiddleware } from '../middleware/authMiddleware';
 import UserModel, { IUser } from "../models/User";
+import UserConfigModel from '../models/UserConfig';
 
 const userRouter = Router();
+
+userRouter.delete("/", authMiddleware, async (req, res) => {
+    const _id = (req.user as IUser)._id;
+
+    try {
+        const { deletedCount } = await UserModel.deleteOne({_id});
+
+        return res.status(200).json({ 
+            message: "",
+            result: deletedCount,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }
+});
+
+userRouter.patch("/username", authMiddleware, async (req, res) => {
+    const _id = (req.user as IUser)._id;
+    const username: string = req.body.username;
+
+    if (!username) {
+        return res.status(400).json({
+            message: "New username field missing from request body"
+        });
+    }
+
+    const existingUser = await UserModel.findOne({ username: username });
+    if (existingUser) {
+        return res.status(400).json({
+            message: "Username is already taken"
+        });
+    }
+
+    try {
+        const updatedUser = await UserModel.findOneAndUpdate({_id}, {$set: {username: username}});
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        return res.json({
+            message: "",
+            result: updatedUser,
+        });
+    } catch (e) {
+        console.error(e); // It's good practice to log the error
+        return res.status(500).json({ 
+            message: "Error: Internal Server Error"
+        });
+    }
+});
 
 userRouter.get("/user/:username", authMiddleware, async (req, res) => {
     const username = req.params.username;
@@ -34,8 +91,7 @@ userRouter.get("/search", async (req, res) => {
 
         const users = await UserModel.find({
             $or: [
-              { username: regex },
-              { email: regex }
+              { username: regex }
             ]
         }).select("-password");
 
@@ -100,6 +156,10 @@ userRouter.post("/signup", async (req, res) => {
         }
 
         const user = await UserModel.create(newUser);
+
+        UserConfigModel.create({
+            username,
+        });
 
         return res.status(201).json({ 
             message: "", 

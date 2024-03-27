@@ -107,7 +107,7 @@ const PostModal = ({
 					border: "2px solid primary.light",
 					borderRadius: "25px",
 					boxShadow: "0px 0px 10vh " + theme.palette.primary.light,
-					p: 2,
+					p: { xs: 1, md: 2 },
 				}}
 				variant="outlined">
 				<form

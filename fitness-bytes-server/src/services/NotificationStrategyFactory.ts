@@ -7,6 +7,7 @@ import { IConversation } from "../models/Conversation";
 import { IFriendRequest } from "../models/FriendRequest";
 import { IPost } from "../models/Post";
 import UserModel, { IUser } from "../models/User";
+import UserConfigModel from "../models/UserConfig";
 
 type NotificationData = IPost | IFriendRequest | IConversation;
 
@@ -40,46 +41,59 @@ class NotificationStrategy<T> {
 class NotificationStrategyMessage implements NotificationStrategy<IConversation> {
     async handle(data: IConversation, req: Request): Promise<INotification[]> {
         const userId = (req.user as IUser)._id;
-        const notifications: Promise<INotification>[] = [];
+        const notificationPromises: Promise<INotification | null>[] = [];
+
+        data.participantIds.forEach((participantId, i) => {
+            const id = new mongoose.Types.ObjectId(participantId);
+            if (id.equals(userId)) return; // Skip if the participant is the sender
+
+            const promise = UserConfigModel.findOne({username: data.participantUsernames[i]})
+                .then(config => {
+                    if (config?.message) {
+                        return MessageNotificationModel.create({
+                            recipientId: id,
+                            recipientUsername: data.participantUsernames[i],
+                            conversationId: data._id,
+                            senderId: userId,
+                            senderUsername: (req.user as IUser).username,
+                        });
+                    }
+                    return null;
+                });
+            notificationPromises.push(promise);
+        });
 
         try {
-            data.participantIds.map((participantId, i) => {
-                const id = new mongoose.Types.ObjectId(participantId);
-                if (id.equals(userId)) return null;
-
-                notifications.push(MessageNotificationModel.create({
-                    recipientId: id,
-                    recipientUsername: data.participantUsernames[i],
-                    conversationId: data._id,
-                    senderId: userId,
-                    senderUsername: (req.user as IUser).username,
-                }));
-            });
-
-            return await Promise.all(notifications);
+            // Await all the notification creation promises
+            const notifications = await Promise.all(notificationPromises);
+            return notifications.filter(notif => notif !== null) as INotification[];
+        } catch (error) {
+            console.error("Failed to process message notifications", error);
+            return [];
         }
-        catch {
-            console.error("Failed to process message");
-        }
-        return [];
     }
 }
+
 
 class NotificationStrategyPostLiked implements NotificationStrategy<IPost> {
 	async handle(data: IPost, req: Request): Promise<INotification[]> {
         const id: mongoose.Types.ObjectId = (req.user as IUser)._id
         const notifications: Promise<INotification>[] = []; 
 
+        const config = await UserConfigModel.findOne({username: data.username});
+
         if (id.equals(data.userId)) return [];
 		
         try {
-            notifications.push(PostLikedNotificationModel.create({
-                    recipientId: data.userId,
-                    recipientUsername: data.username,
-                    postId: data._id,
-                    likerId: (req.user as IUser)._id,
-                    likerUsername: (req.user as IUser).username,
-                }));
+            if (config?.like) {
+                notifications.push(PostLikedNotificationModel.create({
+                        recipientId: data.userId,
+                        recipientUsername: data.username,
+                        postId: data._id,
+                        likerId: (req.user as IUser)._id,
+                        likerUsername: (req.user as IUser).username,
+                    }));
+            }
 
             return await Promise.all(notifications);
         }
@@ -95,12 +109,13 @@ class NotificationStrategyFriendRequest implements NotificationStrategy<IFriendR
         const notifications: Promise<INotification>[] = []; 
 
         const recipientUsername = (await UserModel.findById(data.recipientId).select("username") as IUser).username;
+
         if (!recipientUsername) return [];
 
         try {
             notifications.push(FriendRequestNotificationModel.create({
                 recipientId: data.recipientId,
-                recipientUsername,
+                recipientUsername: recipientUsername,
                 requesterId: data.requesterId,
                 requesterUsername: (req.user as IUser).username
             }));
@@ -119,23 +134,31 @@ class NotificationStrategyFriend implements NotificationStrategy<IFriendRequest>
 		const { username: requesterUsername } = await UserModel.findById(data.requesterId) as IUser;
 		
         const recipientUsername = (await UserModel.findById(data.recipientId).select("username") as IUser).username;
+        
+        const recipientConfig = await UserConfigModel.findOne({username: recipientUsername});
+        const requesterConfig = await UserConfigModel.findOne({username: requesterUsername});
+
         if (!recipientUsername) return [];
 
         const notifications: Promise<INotification>[] = [];
         try {
-            notifications.push(FriendNotificationModel.create({
-                recipientId: data.recipientId,
-                recipientUsername: recipientUsername,
-                requesterId: data.requesterId,
-                requesterUsername: requesterUsername
-            }));
+            if (recipientConfig?.friend) {
+                notifications.push(FriendNotificationModel.create({
+                    recipientId: data.recipientId,
+                    recipientUsername: recipientUsername,
+                    requesterId: data.requesterId,
+                    requesterUsername: requesterUsername
+                }));
+            }
         
-            notifications.push(FriendNotificationModel.create({
-                recipientId: data.requesterId,
-                recipientUsername: requesterUsername,
-                requesterId: data.recipientId,
-                requesterUsername: recipientUsername,
-            }));
+            if (requesterConfig?.friend) {
+                notifications.push(FriendNotificationModel.create({
+                    recipientId: data.requesterId,
+                    recipientUsername: requesterUsername,
+                    requesterId: data.recipientId,
+                    requesterUsername: recipientUsername,
+                }));
+            }
 
             return await Promise.all(notifications);
         }

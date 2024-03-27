@@ -2,6 +2,7 @@ import { Router } from "express";
 import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware";
 import socketMiddleware, { RequestWithSocket } from "../middleware/socketMiddleware";
+import userConfigMiddleware from "../middleware/userConfigMiddleware";
 import ConversationModel, { IConversation } from "../models/Conversation";
 import MessageModel, { IMessage } from "../models/Message";
 import { NotificationTypes } from "../models/Notification";
@@ -46,7 +47,7 @@ messageRouter.get('/:conversationId', authMiddleware, async (req, res) => {
     }
 })
 
-messageRouter.post('/', authMiddleware, socketMiddleware, async (req, res) => {
+messageRouter.post('/', authMiddleware, socketMiddleware, userConfigMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id; 
     const username = (req.user as IUser).username;
     const content = req.body.content;

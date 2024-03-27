@@ -92,6 +92,7 @@ friendRequestRouter.post('/accept', authMiddleware, socketMiddleware, async (req
                 message: "Action couldn't be carried out as the friend request doesn't exist"
             })
         }
+
         NotificationStrategyFactory.create(NotificationTypes.NewFriend).handle(friendRequest, req as RequestWithSocket);
 
         const friend = await FriendModel.create({

@@ -23,18 +23,18 @@ const Theme = ({ children }: Props) => {
 			<GlobalStyles
 				styles={(theme) => ({
 					"&::-webkit-scrollbar": {
-						"margin-block": "1em",
-						"border-radius": "100vw",
-						"backgroundColor": theme.palette.background.paper,
-						"width": "1em",
+						marginBlock: "1em",
+						borderRadius: "100vw",
+						backgroundColor: theme.palette.background.paper,
+						width: "1em",
 					},
 					"&::-webkit-scrollbar-thumb": {
-						"background-image":
+						backgroundImage:
 							mode === "dark"
 								? `linear-gradient(to left,  ${theme.palette.primary.contrastText}, ${theme.palette.secondary.main})`
 								: `linear-gradient(to left, ${theme.palette.secondary.contrastText}, ${theme.palette.primary.main})`,
-						"border-radius": "100vw",
-						"border-color": "black",
+						borderRadius: "100vw",
+						borderColor: "black",
 					},
 					"body": {
 						backgroundColor: theme.palette.background.default,

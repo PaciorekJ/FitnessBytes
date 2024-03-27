@@ -26,7 +26,7 @@ import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
 import UserServices from "../services/UserServices";
 import AddFriend from "./AddFriend";
-import ComposePost from "./ComposePost";
+import AddPost from "./AddPost";
 import LogoIcon from "./LogoIcon";
 import ProfilePicture from "./ProfilePicture";
 
@@ -79,7 +79,7 @@ const Nav = () => {
 					}}>
 					<LogoIcon size="2.5rem" />
 					<Box>
-						<ComposePost />
+						<AddPost />
 						<AddFriend />
 						<Tooltip title="Color Mode">
 							<IconButton onClick={toggleTheme}>

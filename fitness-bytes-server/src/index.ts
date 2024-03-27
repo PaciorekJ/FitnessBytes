@@ -20,6 +20,7 @@ import userRouter from './routes/user';
 import db from './services/db';
 import './services/passport';
 import Socket from './services/socket';
+import userConfigRouter from './routes/userConfig';
 
 const PORT = process.env.PORT || 3000;
 const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "86400000"); // Default: 1 Day
@@ -67,6 +68,7 @@ app.use('/message', messageRouter);
 app.use('/friendRequest', friendRequestRouter);
 app.use('/friend', friendRouter);
 app.use('/notifications', notificationRouter);
+app.use('/userConfig', userConfigRouter);
 
 // *** Catch Stray Routes ***
 app.use((req, res, next) => {

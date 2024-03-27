@@ -231,7 +231,7 @@ const Account = () => {
 			<Divider orientation="horizontal" variant="fullWidth" />
 			<Stack width={"100%"} maxWidth={"700px"}>
 				{posts?.map((p) => (
-					<PostCard key={p._id} {...p} />
+					<PostCard key={p._id} {...p} postQueryKey={username}/>
 				))}
 			</Stack>
 		</Stack>

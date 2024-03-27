@@ -41,7 +41,7 @@ const AddFriend = () => {
 		top: "50%",
 		left: "50%",
 		transform: "translate(-50%, -50%)",
-		width: "66%",
+		width: { xs: "98%", lg: "66%" },
 		height: "75%",
 		bgcolor: "background.default",
 		border: "2px solid #000",
@@ -57,13 +57,11 @@ const AddFriend = () => {
 		setSearchResults(users || []);
 	}
 
-	const handleAddFriend = async (_id: string) => {
+	const handleAddFriend = async (_id: string, toUsername: string) => {
 		const friendRequest = await FriendRequestServices.create(_id);
 
 		if (friendRequest) {
-			setBanner(
-				`Friend Request has been issued to ${friendRequest?.requesterId}`,
-			);
+			setBanner(`Friend Request has been sent to ${toUsername}`);
 		} else {
 			setBanner(
 				`Friend Request could not be send. A friend request is already pending or you guys are already friends`,
@@ -133,7 +131,7 @@ const AddFriend = () => {
 													closeModal();
 													setSearchResults([]);
 													reset();
-													handleAddFriend(u._id);
+													handleAddFriend(u._id, u.username);
 												}}>
 												<PersonAddOutlinedIcon color="primary" />
 											</IconButton>

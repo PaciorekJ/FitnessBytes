@@ -7,6 +7,7 @@ import PostModel, { IPost } from "../models/Post";
 import PostLikeModel from "../models/PostLike";
 import { IUser } from "../models/User";
 import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
+import userConfigMiddleware from "../middleware/userConfigMiddleware";
 
 const postRouter = Router();
 
@@ -34,7 +35,7 @@ postRouter.get('/liked/:postId', authMiddleware, async (req, res) => {
 });
 
 
-postRouter.post("/like", authMiddleware, socketMiddleware, async (req, res) => {
+postRouter.post("/like", authMiddleware, socketMiddleware, userConfigMiddleware, async (req, res) => {
 
     const userId = (req.user as IUser)._id;
 
@@ -54,6 +55,7 @@ postRouter.post("/like", authMiddleware, socketMiddleware, async (req, res) => {
             // *** Post is liked ***
             const post = await PostModel.findById(postId) || {} as IPost;
 
+            
             NotificationStrategyFactory.create(NotificationTypes.PostLiked).handle(post, req as RequestWithSocket);
             
             await PostLikeModel.create({ postID: postId, userID: userId });
@@ -152,11 +154,11 @@ postRouter.delete("/:postId", async (req, res) => {
         // *** Remove all Likes ***
         await PostLikeModel.deleteMany({ postID: postId });
 
-        const deletedPost = await PostModel.deleteOne({ _id: postId });
+        const { deletedCount } = await PostModel.deleteOne({ _id: postId });
 
         return res.status(200).json({
             message: "",
-            result: deletedPost
+            result: deletedCount
         });
     }
     catch (e) {
@@ -178,11 +180,11 @@ postRouter.patch("/", authMiddleware, async (req, res) => {
             });
         }
 
-        const result = await PostModel.updateOne({ _id }, { $set: { content } });
+        const { modifiedCount } = await PostModel.updateOne({ _id }, { $set: { content } });
 
         res.status(200).json({
             message: "",
-            result: result.modifiedCount
+            result: modifiedCount
         });
     }
     catch (e) {
