@@ -22,7 +22,6 @@ const FriendRequestNotification = ({
 		const newFriend = await FriendRequestServices.accept(requesterId);
 
 		if (newFriend) {
-			setBanner(`You and ${requesterUsername} are now friends!`);
 			return;
 		}
 		setBanner(

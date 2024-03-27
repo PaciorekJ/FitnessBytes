@@ -5,14 +5,15 @@ import Tooltip from "@mui/material/Tooltip";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
 import PostServices, { IPost } from "../services/PostServices";
 import { PostData } from "../services/Validators/PostValidatorService";
 import PostModal from "./PostModal";
 
-const ComposePost = () => {
+const AddPost = () => {
 	const username = useUserStore((s) => s.username);
-
+	const { data: user } = useUser(username);
 	const queryClient = useQueryClient();
 	const navigator = useNavigate();
 	const [isOpen, setOpen] = useState(false);
@@ -36,8 +37,12 @@ const ComposePost = () => {
 
 		navigator(`/auth/feed/`);
 
-		queryClient.setQueryData(["posts"], (oldPosts: IPost[] | undefined) => [
-			post,
+		queryClient.setQueryData(["posts", ""], (oldPosts: IPost[] | undefined) => [
+			{
+				...post,
+				profilePicture: user?.profilePicture,
+				profilePictureType: user?.profilePictureType,
+			},
 			...(oldPosts || []),
 		]);
 
@@ -68,4 +73,4 @@ const ComposePost = () => {
 	);
 };
 
-export default ComposePost;
+export default AddPost;

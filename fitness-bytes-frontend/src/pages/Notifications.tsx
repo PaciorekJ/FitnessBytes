@@ -37,16 +37,11 @@ const Notifications = () => {
 				<Typography variant="h3" color={"secondary"} component={"h2"}>
 					Notifications
 				</Typography>
-				<Stack
-					sx={{
-						alignItems: "end",
-					}}
-					width={"100%"}
-					alignItems={"end"}
-					justifyContent={"center"}>
+				<Stack width={"100%"} alignItems={"end"}>
 					<Button
 						color="secondary"
 						variant="outlined"
+						sx={{ fontSize: { xs: ".7rem", sm: ".9rem", md: "1rem" } }}
 						onClick={clearNotifications}>
 						Clear Notifications
 					</Button>

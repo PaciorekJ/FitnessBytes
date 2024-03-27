@@ -51,7 +51,39 @@ postsRouter.get('/:username', async (req, res) => {
     const username = req.params.username;
 
     try {
-        const posts = await PostModel.find({username: username}).sort({timeCreated: -1});
+        // const posts = await PostModel.find({username: username}).sort({timeCreated: -1});
+        const posts = await PostModel.aggregate([
+            {
+                $match: {
+                    username: username
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", // This should match the collection name MongoDB uses for your users
+                    localField: "username", // The field from the posts collection
+                    foreignField: "username", // The matching field from the users collection
+                    as: "userData" // The array to put the matched user data into (temporarily)
+                }
+            },
+            {
+                $unwind: "$userData" // Convert the userData array to an object
+            },
+            {
+                $addFields: {
+                    "profilePicture": "$userData.profilePicture", // Add the profilePicture field to the post
+                    "profilePictureType": "$userData.profilePictureType"
+                }
+            },
+            {
+                $project: {
+                    "userData": 0 // Optionally remove the userData object from the final output
+                }
+            },
+            {
+                $sort: { "timeCreated": -1 } // Sort the posts by creation time
+            }
+        ]);
 
         return res.status(200).json({
             message: "",

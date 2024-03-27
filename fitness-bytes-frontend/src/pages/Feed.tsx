@@ -11,8 +11,6 @@ const Feed = () => {
 
 	if (isLoading) return <PageSpinner />;
 
-	console.log(posts);
-
 	return (
 		<Stack
 			boxSizing={"border-box"}
@@ -20,7 +18,7 @@ const Feed = () => {
 			padding={2}
 			maxWidth={"700px"}
 			margin={"auto"}
-			paddingX={"5rem"}
+			paddingX={{ xs: 0, md: "5rem" }}
 			alignItems={"center"}>
 			<div id="top"></div>
 			{posts.map((p) => (

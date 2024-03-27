@@ -19,7 +19,6 @@
     - Can change darkMode
     - can delete account
     - can change username
-    - can change password
 
 * Make so notifications have access to user profile image.
 
