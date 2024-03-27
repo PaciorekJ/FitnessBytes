@@ -167,7 +167,11 @@ const Nav = () => {
 								{username}
 							</MenuItem>
 							<Divider />
-							<MenuItem onClick={handleClose}>
+							<MenuItem
+								onClick={() => {
+									handleClose();
+									navigator(`/auth/settings/`);
+								}}>
 								<ListItemIcon>
 									<Settings fontSize="small" />
 								</ListItemIcon>
