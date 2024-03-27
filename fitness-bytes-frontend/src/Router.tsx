@@ -12,6 +12,7 @@ import Notifications from "./pages/Notifications";
 import Post from "./pages/Post";
 import Signup from "./pages/Signup";
 import Welcome from "./pages/Welcome";
+import AccountSettings from "./pages/AccountSettings";
 
 const router = createBrowserRouter([
 	{
@@ -66,8 +67,12 @@ const router = createBrowserRouter([
 						element: <MessageBoard />,
 					},
 					{
-						path: "notifications/",
+						path: "notifications",
 						element: <Notifications />,
+					},
+					{
+						path: "settings",
+						element: <AccountSettings />,
 					},
 				],
 			},

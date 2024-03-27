@@ -71,7 +71,7 @@ const darkTheme = {
             root: {
 				"&.Mui-disabled": {
 				background: "#LLLLLL",
-				color: "#FFFFFF",
+				color: "#0000000",
 				},
             }
           }
