@@ -26,10 +26,12 @@ const Conversation = ({ conversationId }: Props) => {
 			banner.notification as MessageNotificationProps;
 		if (
 			typeof banner.notification !== "string" &&
+			notification &&
 			notification.converstionId &&
 			notification.converstionId === conversationId
 		) {
 			setBanner("");
+			NotificationServices.deleteByConversation(conversationId);
 		}
 	}, [banner, conversationId, setBanner]);
 

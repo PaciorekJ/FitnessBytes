@@ -14,14 +14,6 @@
 * Post should be able to have replies
     - Add Notification for replies
 
-# Chunk 3
-* Account Settings page should be added
-    - Can change darkMode
-    - can delete account
-    - can change username
-
-* Make so notifications have access to user profile image.
-
 # Chunk 4
 * Make so users, posts, notification, and messages are paginated and then use infinity query to fetch them.
 

@@ -10,9 +10,38 @@ notificationRouter.get("/", authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
 
     try {
-        const userNotifcations = await NotificationModel.find({
-            recipientId: userId,
-        }).sort({timeCreated: -1});
+        const userNotifcations = await NotificationModel.aggregate([
+            {
+                $match: {
+                    recipientId: userId,
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", // This should match the collection name MongoDB uses for your users
+                    localField: "dispatcherId", // The field from the posts collection
+                    foreignField: "_id", // The matching field from the users collection
+                    as: "userData" // The array to put the matched user data into (temporarily)
+                }
+            },
+            {
+                $unwind: "$userData"
+            },
+            {
+                $addFields: {
+                    "profilePicture": "$userData.profilePicture",
+                    "profilePictureType": "$userData.profilePictureType"
+                }
+            },
+            {
+                $project: {
+                    "userData": 0
+                }
+            },
+            {
+                $sort: { "timeCreated": -1 }
+            }
+        ]);
 
         return res.json({
             message: "",

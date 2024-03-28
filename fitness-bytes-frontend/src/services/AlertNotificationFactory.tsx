@@ -1,23 +1,29 @@
-import { Avatar, Link, Typography } from "@mui/material";
+import { Link, Typography } from "@mui/material";
 import { ReactNode } from "react";
 import AlertContent from "../components/AlertContent";
 import { FriendNotificationProps } from "../components/FriendNotification";
 import { FriendRequestProps as FriendRequestNotificationProps } from "../components/FriendRequestNotification";
 import { MessageNotificationProps } from "../components/MessageNotification";
 import { PostLikedNotificationProps } from "../components/PostLikedNotification";
+import ProfilePicture from "../components/ProfilePicture";
 import { INotification, NotificationTypes } from "./NotificationServices";
 
 class AlertNotificationFactory {
 	create(payload: INotification | string): ReactNode {
 		if (typeof payload === "string") {
-			return (
-				<AlertContent icon={null} content={payload} />
-			);
-		} else if (payload.type === NotificationTypes.FriendRequest) {
+			return <AlertContent icon={null} content={payload} />;
+		}
+		if (payload.type === NotificationTypes.FriendRequest) {
 			const props = payload as FriendRequestNotificationProps;
 			return (
 				<AlertContent
-					icon={<Avatar>{props.requesterUsername.charAt(0)}</Avatar>}
+					icon={
+						<ProfilePicture
+							username={props.dispatcherUsername}
+							base64Image={props.profilePicture}
+							pictureType={props.profilePictureType}
+						/>
+					}
 					content={
 						<>
 							You have a{" "}
@@ -26,8 +32,8 @@ class AlertNotificationFactory {
 							</Typography>{" "}
 							from{" "}
 							<Typography component={"b"}>
-								<Link href={"/auth/account/" + props.requesterUsername}>
-									{props.requesterUsername}
+								<Link href={"/auth/account/" + props.dispatcherUsername}>
+									{props.dispatcherUsername}
 								</Link>
 							</Typography>
 						</>
@@ -38,13 +44,19 @@ class AlertNotificationFactory {
 			const props = payload as FriendNotificationProps;
 			return (
 				<AlertContent
-					icon={<Avatar>{props.requesterUsername.charAt(0)}</Avatar>}
+					icon={
+						<ProfilePicture
+							username={props.dispatcherUsername}
+							base64Image={props.profilePicture}
+							pictureType={props.profilePictureType}
+						/>
+					}
 					content={
 						<>
 							You and{" "}
 							<Typography component="b" fontWeight={600}>
-								<Link href={"/auth/account/" + props.requesterUsername}>
-									{props.requesterUsername}
+								<Link href={"/auth/account/" + props.dispatcherUsername}>
+									{props.dispatcherUsername}
 								</Link>
 							</Typography>{" "}
 							are now{" "}
@@ -59,7 +71,13 @@ class AlertNotificationFactory {
 			const props = payload as MessageNotificationProps;
 			return (
 				<AlertContent
-					icon={<Avatar>{props.senderUsername.charAt(0)}</Avatar>}
+					icon={
+						<ProfilePicture
+							username={props.dispatcherUsername}
+							base64Image={props.profilePicture}
+							pictureType={props.profilePictureType}
+						/>
+					}
 					content={
 						<>
 							You have a{" "}
@@ -68,7 +86,7 @@ class AlertNotificationFactory {
 							</Typography>{" "}
 							from{" "}
 							<Typography component="b" fontWeight={600}>
-								{props.senderUsername}
+								{props.dispatcherUsername}
 							</Typography>
 						</>
 					}
@@ -78,11 +96,17 @@ class AlertNotificationFactory {
 			const props = payload as PostLikedNotificationProps;
 			return (
 				<AlertContent
-					icon={<Avatar>{props.likerUsername.charAt(0)}</Avatar>}
+					icon={
+						<ProfilePicture
+							username={props.dispatcherUsername}
+							base64Image={props.profilePicture}
+							pictureType={props.profilePictureType}
+						/>
+					}
 					content={
 						<>
 							<Typography component="b" fontWeight={600}>
-								{props.likerUsername}
+								{props.dispatcherUsername}
 							</Typography>{" "}
 							just liked one of your posts!
 						</>

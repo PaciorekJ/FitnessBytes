@@ -1,17 +1,18 @@
-import { Avatar, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { INotification } from "../services/NotificationServices";
 import Notification from "./Notification";
+import ProfilePicture from "./ProfilePicture";
 
 interface MessageNotificationProps extends INotification {
 	converstionId: string;
-	senderId: string;
-	senderUsername: string;
 }
 
 const MessageNotification = ({
 	type,
 	_id,
-	senderUsername,
+	dispatcherUsername,
+	profilePicture,
+	profilePictureType,
 	timeCreated,
 }: MessageNotificationProps) => {
 	return (
@@ -19,7 +20,13 @@ const MessageNotification = ({
 			type={type}
 			_id={_id}
 			actions
-			icon={<Avatar>{senderUsername.charAt(0)}</Avatar>}
+			icon={
+				<ProfilePicture
+					username={dispatcherUsername}
+					base64Image={profilePicture}
+					pictureType={profilePictureType}
+				/>
+			}
 			content={
 				<>
 					You have a{" "}
@@ -28,7 +35,7 @@ const MessageNotification = ({
 					</Typography>{" "}
 					from{" "}
 					<Typography component="b" fontWeight={600}>
-						{senderUsername}
+						{dispatcherUsername}
 					</Typography>
 				</>
 			}

@@ -1,16 +1,16 @@
-import { Avatar, Link, Typography } from "@mui/material";
+import { Link, Typography } from "@mui/material";
 import Notification from "../components/Notification";
 import { INotification } from "../services/NotificationServices";
+import ProfilePicture from "./ProfilePicture";
 
-interface FriendNotificationProps extends INotification {
-	requesterId: string;
-	requesterUsername: string;
-}
+interface FriendNotificationProps extends INotification {}
 
 const FriendNotification = ({
 	type,
 	_id,
-	requesterUsername,
+	dispatcherUsername,
+	profilePicture,
+	profilePictureType,
 	timeCreated,
 }: FriendNotificationProps) => {
 	return (
@@ -18,13 +18,19 @@ const FriendNotification = ({
 			type={type}
 			_id={_id}
 			actions
-			icon={<Avatar>{requesterUsername.charAt(0)}</Avatar>}
+			icon={
+				<ProfilePicture
+					username={dispatcherUsername}
+					base64Image={profilePicture}
+					pictureType={profilePictureType}
+				/>
+			}
 			content={
 				<>
 					You and{" "}
 					<Typography component="b" fontWeight={600}>
-						<Link href={"/auth/account/" + requesterUsername}>
-							{requesterUsername}
+						<Link href={"/auth/account/" + dispatcherUsername}>
+							{dispatcherUsername}
 						</Link>
 					</Typography>{" "}
 					are now{" "}
