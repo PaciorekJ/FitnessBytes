@@ -1,10 +1,12 @@
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
+import useBannerStore from "../hooks/useBannerStore";
 import useConversation from "../hooks/useConversation";
 import { IMessage } from "../services/MessageServices";
 import NotificationServices from "../services/NotificationServices";
 import Message from "./Message";
+import { MessageNotificationProps } from "./MessageNotification";
 
 interface Props {
 	conversationId: string; // User of the selected conversation
@@ -15,6 +17,21 @@ const Conversation = ({ conversationId }: Props) => {
 	const { data, isLoading } = useConversation(conversationId);
 	const queryClient = useQueryClient();
 	const conversation: IMessage[] = data || [];
+
+	const banner = useBannerStore((s) => s.banner);
+	const setBanner = useBannerStore((s) => s.setBanner);
+
+	useEffect(() => {
+		const notification: MessageNotificationProps =
+			banner.notification as MessageNotificationProps;
+		if (
+			typeof banner.notification !== "string" &&
+			notification.converstionId &&
+			notification.converstionId === conversationId
+		) {
+			setBanner("");
+		}
+	}, [banner, conversationId, setBanner]);
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({
