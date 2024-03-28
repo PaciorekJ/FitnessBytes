@@ -30,4 +30,13 @@ export const schema = z.object({
 		.min(MIN_PASSWORD_LENGTH, { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.` }),
 });
 
+export const usernameSchema = z.object({
+	username: z
+		.string()
+    .regex(noSpacesRegex, { message: "Username must not contain spaces" })
+		.min(MIN_USERNAME_LENGTH, { message: `Username must be at least ${MIN_USERNAME_LENGTH} characters long.` }),
+
+})
+
 export type AuthData = z.infer<typeof schema>;
+export type AuthUsername = z.infer<typeof usernameSchema>;

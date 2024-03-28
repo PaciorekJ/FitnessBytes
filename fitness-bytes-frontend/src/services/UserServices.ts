@@ -18,6 +18,11 @@ class UserServices {
 
 	static get = (username: string) => UserServices.fact.get<IUser>("/user/"
 	)(username);
+	static delete = () => UserServices.fact.delete<boolean>()();
+
+	static updateUsername = (username: string) => UserServices.fact.patch<boolean, IUser>("/username")({
+		username
+	});
 
 	static login = UserServices.fact.post<string, AuthData>("/login");
 	static signup = UserServices.fact.post<boolean, AuthData>("/signup");
@@ -29,6 +34,7 @@ class UserServices {
 		profilePicture, 
 		profilePictureType
 	});
+
 }
 
 export type { IUser };

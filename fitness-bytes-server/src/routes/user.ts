@@ -45,7 +45,7 @@ userRouter.patch("/username", authMiddleware, async (req, res) => {
     }
 
     try {
-        const updatedUser = await UserModel.findOneAndUpdate({_id}, {$set: {username: username}});
+        const updatedUser = await UserModel.findOneAndUpdate({_id}, {$set: {username: username}}, {new: true});
 
         if (!updatedUser) {
             return res.status(404).json({
