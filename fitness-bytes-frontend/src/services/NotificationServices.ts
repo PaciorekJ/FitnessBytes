@@ -18,6 +18,10 @@ interface INotification {
 	type: NotificationTypes;
 	recipientId: string;
 	recipientUsername: string;
+    dispatcherId: string;
+    dispatcherUsername: string;
+    profilePicture: string;
+    profilePictureType: string;
 	timeCreated: Date;
 }
 

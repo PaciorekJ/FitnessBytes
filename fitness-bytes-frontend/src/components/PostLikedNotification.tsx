@@ -1,17 +1,18 @@
-import { Avatar, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { INotification } from "../services/NotificationServices";
 import Notification from "./Notification";
+import ProfilePicture from "./ProfilePicture";
 
 interface PostLikedNotificationProps extends INotification {
 	postId: string;
-	likerId: string;
-	likerUsername: string;
 }
 
 const PostLikedNotification = ({
 	type,
 	_id,
-	likerUsername,
+	dispatcherUsername,
+	profilePicture,
+	profilePictureType,
 	timeCreated,
 }: PostLikedNotificationProps) => {
 	return (
@@ -19,11 +20,17 @@ const PostLikedNotification = ({
 			type={type}
 			_id={_id}
 			actions
-			icon={<Avatar>{likerUsername.charAt(0)}</Avatar>}
+			icon={
+				<ProfilePicture
+					username={dispatcherUsername}
+					base64Image={profilePicture}
+					pictureType={profilePictureType}
+				/>
+			}
 			content={
 				<>
 					<Typography component="b" fontWeight={600}>
-						{likerUsername}
+						{dispatcherUsername}
 					</Typography>{" "}
 					liked one of your posts
 				</>

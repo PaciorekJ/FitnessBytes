@@ -1,46 +1,46 @@
-import { Avatar, Link, Typography } from "@mui/material";
+import { Link, Typography } from "@mui/material";
 import Notification from "../components/Notification";
 import useBannerStore from "../hooks/useBannerStore";
 import FriendRequestServices from "../services/FriendRequestServices";
 import { INotification } from "../services/NotificationServices";
+import ProfilePicture from "./ProfilePicture";
 
-interface FriendRequestProps extends INotification {
-	requesterId: string;
-	requesterUsername: string;
-}
+interface FriendRequestProps extends INotification {}
 
 const FriendRequestNotification = ({
 	type,
 	_id,
-	requesterId,
-	requesterUsername,
+	dispatcherId,
+	dispatcherUsername,
+	profilePicture,
+	profilePictureType,
 	timeCreated,
 }: FriendRequestProps) => {
 	const setBanner = useBannerStore((s) => s.setBanner);
 
 	const onAccept = async () => {
-		const newFriend = await FriendRequestServices.accept(requesterId);
+		const newFriend = await FriendRequestServices.accept(dispatcherId);
 
 		if (newFriend) {
 			return;
 		}
 		setBanner(
-			`An Error occurred while attempting to accept ${requesterUsername}'s friend request.`,
+			`An Error occurred while attempting to accept ${dispatcherUsername}'s friend request.`,
 			true,
 		);
 	};
 
 	const onReject = async () => {
-		const success = await FriendRequestServices.decline(requesterId);
+		const success = await FriendRequestServices.decline(dispatcherId);
 
 		if (success) {
 			setBanner(
-				`You've Successfully declined ${requesterUsername}'s friend request!`,
+				`You've Successfully declined ${dispatcherUsername}'s friend request!`,
 			);
 			return;
 		}
 		setBanner(
-			`An Error occurred while declining ${requesterUsername}'s friend request!`,
+			`An Error occurred while declining ${dispatcherUsername}'s friend request!`,
 			true,
 		);
 	};
@@ -52,7 +52,13 @@ const FriendRequestNotification = ({
 			actions
 			actionOnAccept={onAccept}
 			actionOnReject={onReject}
-			icon={<Avatar>{requesterUsername.charAt(0)}</Avatar>}
+			icon={
+				<ProfilePicture
+					username={dispatcherUsername}
+					base64Image={profilePicture}
+					pictureType={profilePictureType}
+				/>
+			}
 			content={
 				<>
 					You have a{" "}
@@ -60,8 +66,8 @@ const FriendRequestNotification = ({
 						friend request
 					</Typography>{" "}
 					from{" "}
-					<Link href={"/auth/account/" + requesterUsername}>
-						{requesterUsername}
+					<Link href={"/auth/account/" + dispatcherUsername}>
+						{dispatcherUsername}
 					</Link>
 				</>
 			}

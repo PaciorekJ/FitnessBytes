@@ -48,7 +48,7 @@ const AccountSettings = () => {
 	// 	resolver: zodResolver(usernameSchema),
 	// 	mode: "onSubmit",
 	// });
-    
+
 	const [isOpenDeleteAccount, setOpenDeleteAccount] = useState(false);
 
 	const { data: userConfig, isLoading: userConfigIsLoading } = useUserConfig();
@@ -370,12 +370,12 @@ const AccountSettings = () => {
 				<ButtonGroup
 					orientation="vertical"
 					sx={{ gap: 2, maxWidth: "550px", width: "80%" }}>
-					<Button
+					{/* <Button
 						variant="contained"
 						color={"primary"}
 						onClick={() => setOpenChangeUsername(true)}>
 						Change Username
-					</Button>
+					</Button> */}
 					<Button
 						color="warning"
 						variant="contained"

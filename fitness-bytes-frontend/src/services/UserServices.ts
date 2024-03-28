@@ -34,6 +34,7 @@ class UserServices {
 		profilePicture, 
 		profilePictureType
 	});
+	static getProfilePicture = (username: string) => UserServices.fact.get<IUser>("/profilePicture/")(username);
 
 }
 

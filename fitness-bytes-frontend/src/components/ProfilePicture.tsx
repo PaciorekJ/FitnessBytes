@@ -25,7 +25,7 @@ const ProfilePicture = ({
 				return;
 			}
 			try {
-				const imageBlob = decodeImage(base64Image, pictureType || "");
+				const imageBlob = decodeImage(base64Image || "", pictureType || "");
 				const url = URL.createObjectURL(imageBlob);
 				setImageUrl(url);
 			} catch {

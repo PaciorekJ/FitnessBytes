@@ -51,11 +51,11 @@ class NotificationStrategyMessage implements NotificationStrategy<IConversation>
                 .then(config => {
                     if (config?.message) {
                         return MessageNotificationModel.create({
+                            conversationId: data._id,
                             recipientId: id,
                             recipientUsername: data.participantUsernames[i],
-                            conversationId: data._id,
-                            senderId: userId,
-                            senderUsername: (req.user as IUser).username,
+                            dispatcherId: userId,
+                            dispatcherUsername: (req.user as IUser).username,
                         });
                     }
                     return null;
@@ -87,11 +87,11 @@ class NotificationStrategyPostLiked implements NotificationStrategy<IPost> {
         try {
             if (config?.like) {
                 notifications.push(PostLikedNotificationModel.create({
+                        postId: data._id,
                         recipientId: data.userId,
                         recipientUsername: data.username,
-                        postId: data._id,
-                        likerId: (req.user as IUser)._id,
-                        likerUsername: (req.user as IUser).username,
+                        dispatcherId: (req.user as IUser)._id,
+                        dispatcherUsername: (req.user as IUser).username,
                     }));
             }
 
@@ -116,8 +116,8 @@ class NotificationStrategyFriendRequest implements NotificationStrategy<IFriendR
             notifications.push(FriendRequestNotificationModel.create({
                 recipientId: data.recipientId,
                 recipientUsername: recipientUsername,
-                requesterId: data.requesterId,
-                requesterUsername: (req.user as IUser).username
+                dispatcherId: data.requesterId,
+                dispatcherUsername: (req.user as IUser).username
             }));
 
             return await Promise.all(notifications);
@@ -146,8 +146,8 @@ class NotificationStrategyFriend implements NotificationStrategy<IFriendRequest>
                 notifications.push(FriendNotificationModel.create({
                     recipientId: data.recipientId,
                     recipientUsername: recipientUsername,
-                    requesterId: data.requesterId,
-                    requesterUsername: requesterUsername
+                    dispatcherId: data.requesterId,
+                    dispatcherUsername: requesterUsername
                 }));
             }
         
@@ -155,8 +155,8 @@ class NotificationStrategyFriend implements NotificationStrategy<IFriendRequest>
                 notifications.push(FriendNotificationModel.create({
                     recipientId: data.requesterId,
                     recipientUsername: requesterUsername,
-                    requesterId: data.recipientId,
-                    requesterUsername: recipientUsername,
+                    dispatcherId: data.recipientId,
+                    dispatcherUsername: recipientUsername,
                 }));
             }
 
@@ -180,8 +180,26 @@ class NotificationEmitterDecorator<T> implements NotificationStrategy<T> {
 
         if (!req.io) throw new Error("IO SOCKET HAS NOT BEEN ATTACHED TO REQUEST");
 
-        notifications.map((notification) => {
-            req.io.to("User:" + notification.recipientUsername).emit("Notification Recieved", notification);
+        notifications.map(async (notification) => {
+
+            const res: Partial<IUser> | null = await UserModel.findOne({_id: notification.dispatcherId}).select("profilePicture profilePictureType");
+            
+            if (!res) {
+                console.log("No user");
+                req.io.to("User:" + notification.recipientUsername).emit("Notification Recieved", notification);
+            }
+
+            const {profilePicture, profilePictureType} = res; 
+            console.log({
+                ...notification.toObject(),
+                profilePicture: profilePicture, 
+                profilePictureType: profilePictureType
+            });
+            req.io.to("User:" + notification.recipientUsername).emit("Notification Recieved", {
+                ...notification.toObject(),
+                profilePicture: profilePicture, 
+                profilePictureType: profilePictureType
+            });
         })
     }
 

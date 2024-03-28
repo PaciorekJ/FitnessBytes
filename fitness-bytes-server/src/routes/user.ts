@@ -9,6 +9,30 @@ import UserConfigModel from '../models/UserConfig';
 
 const userRouter = Router();
 
+userRouter.get("/profilePicture/:username", async (req, res) => {
+    const username = req.params.username;
+
+    try {
+        const profilePicture = UserModel.findOne({username: username}).select("profilePicture profilePictureType");
+        
+        if (!profilePicture) {
+            return res.status(400).json({ 
+                message: "Username is not associated with a user",
+            });
+        }
+        
+        return res.json({ 
+            message: "",
+            result: profilePicture
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }
+})
+
 userRouter.delete("/", authMiddleware, async (req, res) => {
     const _id = (req.user as IUser)._id;
 
