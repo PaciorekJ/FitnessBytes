@@ -107,15 +107,17 @@ userRouter.get("/user/:username", authMiddleware, async (req, res) => {
     }
 })
 
-userRouter.get("/search", async (req, res) => {
+userRouter.get("/search", authMiddleware, async (req, res) => {
+    const { username } = req.user as IUser;
     const { query } = req.query as {query: string};
 
     try {
         const regex = new RegExp(escapeRegExp(query || ".*"), 'i');
 
         const users = await UserModel.find({
-            $or: [
-              { username: regex }
+            $and: [
+                { $or: [{ username: regex }] },
+                { username: {$ne: username }}
             ]
         }).select("-password");
 
