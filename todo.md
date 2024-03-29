@@ -1,13 +1,3 @@
-
-# Chunk 1
-* AddFriend should not display people who your already friends with nor yourself.
-
-* AddConversationModal should not display yourself
-
-* Conversation should remove the active user from the conversation when deleted.
-
-* Conversation should be officially deleted once all participants are removed
-
 # Chunk 2
 * Post should be able to have 1 image
 
@@ -19,3 +9,19 @@
 
 # Chunk 5
 * Revamp home page to include a call to action and a section about Fitness Bytes, and a hero section.
+
+# Chunk 6
+* Add Title input for Conversations
+* Add Button to add participants to conversations
+
+# Things to Consider
+* Refactor username in favor of _id so username can be changed simply
+* Add Change password for account management and for login page
+* Add My Groups Functionality
+ - Create Groups
+ - Edit Groups
+ - Group privacy (public, private, secret)
+ - Join groups
+ - Leave Groups
+ - Groups have -> Names, participants, events
+ - This is a large feature and may be added in the future if the website gains traction and users want it.

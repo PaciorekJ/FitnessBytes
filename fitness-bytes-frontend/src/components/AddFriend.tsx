@@ -52,7 +52,7 @@ const AddFriend = () => {
 	};
 
 	async function handleSearch(data: FieldValues) {
-		const users = await UserServices.search(data.searchContent);
+		const users = await UserServices.search(data.searchContent, true);
 
 		setSearchResults(users || []);
 	}
