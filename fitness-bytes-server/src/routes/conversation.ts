@@ -56,21 +56,41 @@ conversationRouter.get('/:conversationId', async (req, res) => {
     })
 });
 
-conversationRouter.delete('/:conversationId', async (req, res) => {
-    let _id: string | mongoose.Types.ObjectId = req.params.conversationId;
+conversationRouter.delete('/:conversationId', authMiddleware, async (req, res) => {
+    const {username, _id: userId} = req.user as IUser;
 
     try {
-        _id = new mongoose.Types.ObjectId(_id);
-    } catch {
-        res.status(400).json({
-            message: "Invalid ID",
+        const _id = new mongoose.Types.ObjectId(req.params.conversationId);
+        
+        const updatedConversation = await ConversationModel.findByIdAndUpdate(_id, {
+            $pull: {
+                participantIds: userId,
+                participantUsernames: username,
+            }
+        }, { new: true });
+
+        if (updatedConversation && 
+            !updatedConversation.participantIds.length ||
+            !updatedConversation?.participantUsernames.length) {
+                // *** Remove conversation since all participants have left
+                const { deletedCount } = await ConversationModel.deleteOne({_id});
+
+                return res.json({
+                    message: "",
+                    result: deletedCount
+                });
+        }
+
+        return res.json({
+            message: "",
+            result: updatedConversation ? true: false
         });
+    } catch (e) {
+        return res.status(500).json({
+            message: `${e}`,
+        })
     }
 
-    res.json({
-        message: "",
-        result: (await ConversationModel.deleteOne({_id})).deletedCount
-    })
 })
 conversationRouter.post('/', authMiddleware, async (req, res) => {
     const username = (req.user as IUser).username;
