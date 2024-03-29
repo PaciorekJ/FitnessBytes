@@ -4,6 +4,7 @@ import { Router } from "express";
 import passport from 'passport';
 import escapeRegExp from '../libs/RegExp';
 import { authMiddleware } from '../middleware/authMiddleware';
+import FriendModel from '../models/Friend';
 import UserModel, { IUser } from "../models/User";
 import UserConfigModel from '../models/UserConfig';
 
@@ -108,11 +109,36 @@ userRouter.get("/user/:username", authMiddleware, async (req, res) => {
 })
 
 userRouter.get("/search", authMiddleware, async (req, res) => {
-    const { username } = req.user as IUser;
-    const { query } = req.query as {query: string};
+    const { username, _id } = req.user as IUser;
+    const { query, excludeFriends } = req.query as {query: string, excludeFriends: string};
 
     try {
         const regex = new RegExp(escapeRegExp(query || ".*"), 'i');
+        
+        if (excludeFriends) {
+
+            const friends = await FriendModel.find({
+                $or: [
+                    {userId1: _id },
+                    {userId2: _id }
+                ]
+            });
+
+            const friendIds = friends.map((f) => f.userId1 === _id ? f.userId2 : f.userId1);
+
+            const users = await UserModel.find({
+                $and: [
+                    { $or: [{ username: regex }] },
+                    { username: {$ne: username }},
+                    { _id: { $nin: friendIds } }
+                ]
+            }).select("-password");
+    
+            return res.json({
+                message: "",
+                result: users
+            })
+        }
 
         const users = await UserModel.find({
             $and: [
@@ -121,7 +147,7 @@ userRouter.get("/search", authMiddleware, async (req, res) => {
             ]
         }).select("-password");
 
-        res.json({
+        return res.json({
             message: "",
             result: users
         })
