@@ -5,6 +5,7 @@ import {
 	Badge,
 	Box,
 	CircularProgress,
+	Container,
 	Divider,
 	Grid,
 	IconButton,
@@ -13,6 +14,7 @@ import {
 	Typography,
 	styled,
 } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PageSpinner from "../components/PageSpinner";
@@ -23,25 +25,22 @@ import usePostCount from "../hooks/usePostCount";
 import usePosts from "../hooks/usePosts";
 import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
-import UserServices from "../services/UserServices";
-import {
-	compressImage,
-	decodeImage,
-	encodeImage,
-} from "../utils/ImageProcessing";
+import UserServices, { IUser } from "../services/UserServices";
+import { compressImage, encodeImage } from "../utils/ImageProcessing";
 
 const Account = () => {
 	const { username } = useParams();
 	const activeUsername = useUserStore((s) => s.username);
 	const { data: user, isLoading: userIsLoading } = useUser(username || "");
-	const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 	const setBanner = useBannerStore((s) => s.setBanner);
-	const [editBioMode, setEditBioMode] = useState(false);
+
+	const queryClient = useQueryClient();
 
 	const ownerPermissions = username === activeUsername;
 
 	const { data } = usePosts(username);
 
+	const [editBioMode, setEditBioMode] = useState(false);
 	const [editableBio, setEditableBio] = useState(user?.bio || "");
 
 	useEffect(() => {
@@ -49,22 +48,6 @@ const Account = () => {
 
 		setEditableBio(user.bio);
 	}, [user?.bio, userIsLoading]);
-
-	useEffect(() => {
-		if (userIsLoading || !user?.profilePicture || !user?.profilePictureType)
-			return;
-
-		const setProfilePicture = async () => {
-			const imageBlob = await decodeImage(
-				user.profilePicture,
-				user.profilePictureType,
-			);
-			const url = URL.createObjectURL(imageBlob);
-			setImagePreviewUrl(url);
-		};
-
-		setProfilePicture();
-	}, [user?.profilePicture, user?.profilePictureType, userIsLoading]);
 
 	const posts = data || [];
 
@@ -83,28 +66,43 @@ const Account = () => {
 			);
 		}
 
-		setEditBioMode(false); // Toggle back to view mode after saving
+		setEditBioMode(false);
 	};
 
 	const handleProfilePicture = async (
 		e: React.ChangeEvent<HTMLInputElement>,
 	) => {
-		if (!e || !e.target || !e?.target?.files) {
+		if (!e.target.files || e.target.files.length === 0) {
 			setBanner("Error: A invalid photo, or no photo was selected!", true);
+			return;
 		}
 
-		const file = (e?.target?.files as FileList)[0];
+		const file = e.target.files[0];
 
 		try {
 			const compressedImage = await compressImage(file);
-
 			const base64Array = await encodeImage(compressedImage);
-			await UserServices.setProfilePicture(base64Array, compressedImage.type);
+			const res = await UserServices.setProfilePicture(
+				base64Array,
+				compressedImage.type,
+			);
+			if (!res)
+				throw new Error("Image may be too large, or not a supported type");
 
-			const url = URL.createObjectURL(compressedImage);
-			setImagePreviewUrl(url);
-		} catch {
-			setBanner("We failed to upload your photo!", true);
+			queryClient.setQueryData<IUser>(
+				[`users-${activeUsername}`, activeUsername], // Ensure this query key matches what you used to fetch user data
+				(oldData) => {
+					return {
+						...oldData!,
+						profilePicture: base64Array,
+						profilePictureType: compressedImage.type,
+					};
+				},
+			);
+
+			setBanner("Successfully set Profile Picture");
+		} catch (error) {
+			setBanner(`${error}`, true);
 		}
 	};
 
@@ -121,6 +119,15 @@ const Account = () => {
 	});
 
 	if (userIsLoading) return <PageSpinner />;
+
+	if (!user)
+		return (
+			<Container>
+				<Typography textAlign={"center"} variant="h3" padding={4}>
+					Error: User doesn't Exist
+				</Typography>
+			</Container>
+		);
 
 	return (
 		<Stack
@@ -157,9 +164,6 @@ const Account = () => {
 						}>
 						<ProfilePicture
 							username={username!}
-							base64Image={user?.profilePicture || ""}
-							pictureType={user?.profilePictureType || ""}
-							url={imagePreviewUrl || ""}
 							sx={{
 								width: "200px",
 								height: "200px",
@@ -231,8 +235,8 @@ const Account = () => {
 			<Divider orientation="horizontal" variant="fullWidth" />
 			<Stack width={"100%"} maxWidth={"700px"}>
 				{posts?.map((p) => (
-					<PostCard key={p._id} {...p} postQueryKey={username}/>
-				))}
+					<PostCard key={p._id} {...p} postQueryKey={username} />
+				)) || <PageSpinner />}
 			</Stack>
 		</Stack>
 	);

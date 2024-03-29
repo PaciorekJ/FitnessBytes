@@ -11,8 +11,6 @@ const PostLikedNotification = ({
 	type,
 	_id,
 	dispatcherUsername,
-	profilePicture,
-	profilePictureType,
 	timeCreated,
 }: PostLikedNotificationProps) => {
 	return (
@@ -20,13 +18,7 @@ const PostLikedNotification = ({
 			type={type}
 			_id={_id}
 			actions
-			icon={
-				<ProfilePicture
-					username={dispatcherUsername}
-					base64Image={profilePicture}
-					pictureType={profilePictureType}
-				/>
-			}
+			icon={<ProfilePicture username={dispatcherUsername} />}
 			content={
 				<>
 					<Typography component="b" fontWeight={600}>

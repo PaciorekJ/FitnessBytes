@@ -40,8 +40,6 @@ const PostCard = ({
 	username: postUsername,
 	likes,
 	timeCreated,
-	ProfilePictureType,
-	profilePicture,
 	postQueryKey = "",
 }: PostCardProps) => {
 	const queryClient = useQueryClient();
@@ -69,7 +67,7 @@ const PostCard = ({
 
 			return oldPosts?.filter((post) => post._id !== _id) || [];
 		});
-	}, [_id, postUsername, queryClient, setBanner]);
+	}, [_id, postQueryKey, postUsername, queryClient, setBanner]);
 
 	const handleReport = async () => {
 		const res = await ReportServices.create({
@@ -118,23 +116,26 @@ const PostCard = ({
 				return;
 			}
 
-			queryClient.setQueryData(["posts", postQueryKey], (oldPosts: IPost[] | undefined) => {
-				return (
-					oldPosts?.map((p) => {
-						if (p._id === _id) {
-							return {
-								...p,
-								content: data.content,
-							};
-						}
-						return p;
-					}) || []
-				);
-			});
+			queryClient.setQueryData(
+				["posts", postQueryKey],
+				(oldPosts: IPost[] | undefined) => {
+					return (
+						oldPosts?.map((p) => {
+							if (p._id === _id) {
+								return {
+									...p,
+									content: data.content,
+								};
+							}
+							return p;
+						}) || []
+					);
+				},
+			);
 
 			setOpen(false);
 		},
-		[_id, queryClient, setBanner],
+		[_id, postQueryKey, queryClient, setBanner],
 	);
 
 	const MoreOptionsMenuItems = [
@@ -188,13 +189,7 @@ const PostCard = ({
 								{postUsername}
 							</Typography>
 						}
-						avatar={
-							<ProfilePicture
-								username={postUsername}
-								base64Image={profilePicture}
-								pictureType={ProfilePictureType}
-							/>
-						}
+						avatar={<ProfilePicture username={postUsername} />}
 						subheader={
 							<Typography color={"text.disabled"} variant="body2">
 								{time || ""}

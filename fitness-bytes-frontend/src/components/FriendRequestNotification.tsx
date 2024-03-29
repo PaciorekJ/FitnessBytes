@@ -12,8 +12,6 @@ const FriendRequestNotification = ({
 	_id,
 	dispatcherId,
 	dispatcherUsername,
-	profilePicture,
-	profilePictureType,
 	timeCreated,
 }: FriendRequestProps) => {
 	const setBanner = useBannerStore((s) => s.setBanner);
@@ -52,13 +50,7 @@ const FriendRequestNotification = ({
 			actions
 			actionOnAccept={onAccept}
 			actionOnReject={onReject}
-			icon={
-				<ProfilePicture
-					username={dispatcherUsername}
-					base64Image={profilePicture}
-					pictureType={profilePictureType}
-				/>
-			}
+			icon={<ProfilePicture username={dispatcherUsername} />}
 			content={
 				<>
 					You have a{" "}
