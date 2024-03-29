@@ -2,7 +2,7 @@ import { CircularProgress, Stack, Typography } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import useBannerStore from "../hooks/useBannerStore";
-import useConversation from "../hooks/useConversation";
+import useMessages from "../hooks/useMessages";
 import { IMessage } from "../services/MessageServices";
 import NotificationServices from "../services/NotificationServices";
 import Message from "./Message";
@@ -14,7 +14,7 @@ interface Props {
 
 const Conversation = ({ conversationId }: Props) => {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
-	const { data, isLoading } = useConversation(conversationId);
+	const { data, isLoading } = useMessages(conversationId);
 	const queryClient = useQueryClient();
 	const conversation: IMessage[] = data || [];
 

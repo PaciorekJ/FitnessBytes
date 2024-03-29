@@ -1,3 +1,4 @@
+import GroupAddTwoToneIcon from "@mui/icons-material/GroupAddTwoTone";
 import SendIcon from "@mui/icons-material/Send";
 import {
 	Divider,
@@ -6,9 +7,11 @@ import {
 	OutlinedInput,
 } from "@mui/material";
 import Stack from "@mui/material/Stack";
+import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import MessageServices, { IMessage } from "../services/MessageServices";
 import SocketServices, { CallbackFn } from "../services/SocketServices";
+import AddParticipantsModal from "./AddParticipantsModal";
 
 interface Props {
 	conversationId: string;
@@ -17,6 +20,7 @@ interface Props {
 
 const Messenger = ({ conversationId, setNewMessage }: Props) => {
 	const { register, reset, handleSubmit } = useForm();
+	const [isOpen, setOpen] = useState(false);
 
 	SocketServices.registerCallback(
 		"Message Recieved",
@@ -37,6 +41,11 @@ const Messenger = ({ conversationId, setNewMessage }: Props) => {
 
 	return (
 		<Stack marginY={2} minWidth={"100%"}>
+			<AddParticipantsModal
+				conversationId={conversationId}
+				setOpen={setOpen}
+				isOpen={isOpen}
+			/>
 			<form onSubmit={handleSubmit(handleUserMessage)}>
 				<OutlinedInput
 					id="message"
@@ -44,10 +53,27 @@ const Messenger = ({ conversationId, setNewMessage }: Props) => {
 					sx={{
 						borderEndEndRadius: "30px",
 						borderStartEndRadius: "30px",
-						border: "1px solid",
+						border: "2px solid",
 					}}
 					fullWidth
 					{...register("message")}
+					startAdornment={
+						<IconButton
+							onClick={() => setOpen(true)}
+							aria-label="Open modal to add Participants"
+							type="button"
+							sx={{
+								"height": "0px",
+								":hover": {
+									background: "0",
+									color: "primary.main",
+								},
+							}}
+							size={"large"}
+							edge="start">
+							<GroupAddTwoToneIcon />
+						</IconButton>
+					}
 					endAdornment={
 						<InputAdornment position="end">
 							<IconButton
