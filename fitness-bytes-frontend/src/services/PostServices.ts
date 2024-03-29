@@ -8,8 +8,6 @@ interface IPost {
     content: string;
     likes?: number;
     timeCreated?: Date;
-    profilePicture?: string;
-    ProfilePictureType?: string;
 }
 
 type PostResponse = ResponseResult<boolean | IPost | IPost[]>;

@@ -83,8 +83,15 @@ const AddFriend = () => {
 				aria-labelledby="Modal For Finding new friends"
 				aria-describedby="Modal that is used for finding new friends on the platform">
 				<Box sx={style}>
-					<Typography variant="h4" component="h3" paddingBottom={3}>
-						Find A Friend
+					<Typography variant="h4" marginBottom={0} component={"h3"}>
+						Search for a Friend
+					</Typography>
+					<Typography
+						variant="body2"
+						paddingBottom={3}
+						color={"secondary.light"}
+						component="p">
+						Please enter their username
 					</Typography>
 					<Stack
 						sx={{
@@ -112,14 +119,10 @@ const AddFriend = () => {
 					<List>
 						{searchResults.length ? (
 							searchResults.map((u: IUser, i) => (
-								<ListItem key={"Search__Result-" + u.profilePicture + " " + i}>
+								<ListItem key={"Search__Result- " + i}>
 									<ListItemButton href={"/auth/account/" + u.username}>
 										<Stack flexDirection={"row"}>
-											<ProfilePicture
-												username={u.username}
-												base64Image={u.profilePicture || ""}
-												pictureType={u.profilePictureType || ""}
-											/>
+											<ProfilePicture username={u.username} />
 											<ListItem>
 												<Typography>{u.username}</Typography>
 											</ListItem>

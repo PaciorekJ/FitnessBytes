@@ -4,7 +4,7 @@ dotenv.config();
 
 import MongoStore from 'connect-mongo';
 import cors from 'cors';
-import express, { Express } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 import session from 'express-session';
 import passport from 'passport';
 import ResponseResult from './interfaces/ResponseResult';
@@ -17,10 +17,10 @@ import postRouter from './routes/post';
 import postsRouter from './routes/posts';
 import reportRouter from './routes/report';
 import userRouter from './routes/user';
+import userConfigRouter from './routes/userConfig';
 import db from './services/db';
 import './services/passport';
 import Socket from './services/socket';
-import userConfigRouter from './routes/userConfig';
 
 const PORT = process.env.PORT || 3000;
 const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "86400000"); // Default: 1 Day
@@ -57,7 +57,7 @@ app.use(cors({
 // *** Initialize passport middleware ***
 app.use(passport.initialize());
 app.use(passport.session());
-//65ce6af7e17b4a23a81c81cd
+
 // *** Initialize Routes ***
 app.use('/report', reportRouter);
 app.use('/user', userRouter);
@@ -69,6 +69,14 @@ app.use('/friendRequest', friendRequestRouter);
 app.use('/friend', friendRouter);
 app.use('/notifications', notificationRouter);
 app.use('/userConfig', userConfigRouter);
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    if (err.name === 'PayloadTooLargeError') {
+      return res.status(413).send({ status: 413, message: 'Payload too large!' });
+    }
+    // Other error handling or call next(err) if not handled
+    next(err);
+});
 
 // *** Catch Stray Routes ***
 app.use((req, res, next) => {

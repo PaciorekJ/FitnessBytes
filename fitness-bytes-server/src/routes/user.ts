@@ -14,7 +14,7 @@ userRouter.get("/profilePicture/:username", async (req, res) => {
     const username = req.params.username;
 
     try {
-        const profilePicture = UserModel.findOne({username: username}).select("profilePicture profilePictureType");
+        const profilePicture = await UserModel.findOne({username: username}).select("profilePicture profilePictureType");
         
         if (!profilePicture) {
             return res.status(400).json({ 
@@ -253,24 +253,23 @@ userRouter.patch("/profilePicture", authMiddleware, async (req, res) => {
     const profilePictureType = req.body.profilePictureType;
     const _id = (req.user as IUser)._id;
 
-    console.log(`
-    Content: 
-    ${profilePicture.toString()}
-    
-    Type:
-    ${profilePictureType}`);
-
     if (!profilePicture || !profilePictureType) return res.status(400).json({
         message: "profilePicture or profilePictureType is missing from request",
         result: false,
     });
 
-    await UserModel.findByIdAndUpdate(_id, { profilePicture, profilePictureType });
-
-    return res.status(200).json({
-        message: "",
-        result: true,
-    });
+    try {
+        const profile = await UserModel.findByIdAndUpdate(_id, { profilePicture, profilePictureType });
+    
+        return res.status(200).json({
+            message: "",
+            result: profile ? true: false,
+        });
+    } catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }
 });
 
 userRouter.post("/logout", (req, res, next) => {

@@ -11,8 +11,6 @@ const MessageNotification = ({
 	type,
 	_id,
 	dispatcherUsername,
-	profilePicture,
-	profilePictureType,
 	timeCreated,
 }: MessageNotificationProps) => {
 	return (
@@ -20,13 +18,7 @@ const MessageNotification = ({
 			type={type}
 			_id={_id}
 			actions
-			icon={
-				<ProfilePicture
-					username={dispatcherUsername}
-					base64Image={profilePicture}
-					pictureType={profilePictureType}
-				/>
-			}
+			icon={<ProfilePicture username={dispatcherUsername} />}
 			content={
 				<>
 					You have a{" "}

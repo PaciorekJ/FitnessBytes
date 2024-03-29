@@ -4,7 +4,7 @@ import UserServices from "../services/UserServices";
 const useUser = (username: string) => {
     return useQuery({
         queryKey: [`users-${username}`, username],
-        queryFn: () => UserServices.get(username)
+        queryFn: () => UserServices.get(username),
     });
 }
 

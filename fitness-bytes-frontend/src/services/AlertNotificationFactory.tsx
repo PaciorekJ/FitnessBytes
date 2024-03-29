@@ -17,13 +17,7 @@ class AlertNotificationFactory {
 			const props = payload as FriendRequestNotificationProps;
 			return (
 				<AlertContent
-					icon={
-						<ProfilePicture
-							username={props.dispatcherUsername}
-							base64Image={props.profilePicture}
-							pictureType={props.profilePictureType}
-						/>
-					}
+					icon={<ProfilePicture username={props.dispatcherUsername} />}
 					content={
 						<>
 							You have a{" "}
@@ -44,13 +38,7 @@ class AlertNotificationFactory {
 			const props = payload as FriendNotificationProps;
 			return (
 				<AlertContent
-					icon={
-						<ProfilePicture
-							username={props.dispatcherUsername}
-							base64Image={props.profilePicture}
-							pictureType={props.profilePictureType}
-						/>
-					}
+					icon={<ProfilePicture username={props.dispatcherUsername} />}
 					content={
 						<>
 							You and{" "}
@@ -71,13 +59,7 @@ class AlertNotificationFactory {
 			const props = payload as MessageNotificationProps;
 			return (
 				<AlertContent
-					icon={
-						<ProfilePicture
-							username={props.dispatcherUsername}
-							base64Image={props.profilePicture}
-							pictureType={props.profilePictureType}
-						/>
-					}
+					icon={<ProfilePicture username={props.dispatcherUsername} />}
 					content={
 						<>
 							You have a{" "}
@@ -96,13 +78,7 @@ class AlertNotificationFactory {
 			const props = payload as PostLikedNotificationProps;
 			return (
 				<AlertContent
-					icon={
-						<ProfilePicture
-							username={props.dispatcherUsername}
-							base64Image={props.profilePicture}
-							pictureType={props.profilePictureType}
-						/>
-					}
+					icon={<ProfilePicture username={props.dispatcherUsername} />}
 					content={
 						<>
 							<Typography component="b" fontWeight={600}>

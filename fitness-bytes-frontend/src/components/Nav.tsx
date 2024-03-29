@@ -22,7 +22,6 @@ import { useNavigate } from "react-router-dom";
 import useNotificationCount from "../hooks/useNotificationCount";
 import useNotificationMessageCount from "../hooks/useNotificationMessageCount";
 import useThemeStore from "../hooks/useThemeStore";
-import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
 import UserServices from "../services/UserServices";
 import AddFriend from "./AddFriend";
@@ -41,7 +40,6 @@ const Nav = () => {
 		isLoading: isLoadingNotiMessageCount,
 	} = useNotificationMessageCount();
 	const navigator = useNavigate();
-	const { data: user, isLoading: userIsLoading } = useUser(username);
 
 	const open = Boolean(anchorEl);
 
@@ -62,8 +60,6 @@ const Nav = () => {
 			navigator("/");
 		}
 	};
-
-	if (userIsLoading) return null;
 
 	//TODO: For smaller layout condense nav to a Triple Bar button
 	return (
@@ -124,17 +120,8 @@ const Nav = () => {
 						<IconButton
 							onClick={handleClick}
 							size="small"
-							aria-controls={open ? "account-menu" : undefined}
-							aria-haspopup="true"
 							aria-expanded={open ? "true" : undefined}>
-							<ProfilePicture
-								username={username}
-								base64Image={user?.profilePicture || ""}
-								pictureType={user?.profilePictureType || ""}
-								sx={{
-									md: { width: "12px", height: "12px" },
-								}}
-							/>
+							<ProfilePicture username={username} />
 						</IconButton>
 						<Menu
 							sx={{
@@ -158,11 +145,7 @@ const Nav = () => {
 									navigator(`/auth/account/${username}#top`);
 								}}>
 								<ListItemIcon>
-									<ProfilePicture
-										username={username}
-										base64Image={user?.profilePicture || ""}
-										pictureType={user?.profilePictureType || ""}
-									/>
+									<ProfilePicture username={username} />
 								</ListItemIcon>
 								{username}
 							</MenuItem>

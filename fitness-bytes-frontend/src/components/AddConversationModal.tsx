@@ -29,21 +29,6 @@ interface Props {
 	setOpen: (status: boolean) => void;
 }
 
-const style = {
-	position: "absolute",
-	top: "50%",
-	left: "50%",
-	transform: "translate(-50%, -50%)",
-	width: "66%",
-	height: "75%",
-	bgcolor: "background.default",
-	border: "2px solid #000",
-	borderRadius: "10px",
-	boxShadow: 24,
-	p: 6,
-	overflowY: "scroll",
-};
-
 const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 	const theme = useTheme();
 	const { register, handleSubmit, setValue } = useForm({
@@ -53,6 +38,20 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 	const queryClient = useQueryClient();
 
 	const setBanner = useBannerStore((s) => s.setBanner);
+	const style = {
+		position: "absolute",
+		top: "50%",
+		left: "50%",
+		transform: "translate(-50%, -50%)",
+		width: { xs: "98%", lg: "66%" },
+		height: "75%",
+		bgcolor: "background.default",
+		border: "2px solid #000",
+		borderRadius: "25px",
+		boxShadow: "0px 0px 10vh " + theme.palette.primary.light,
+		p: 3,
+		overflowY: "scroll",
+	};
 
 	const [searchResults, setSearchResults] = useState<IUser[]>([]);
 	const [participants, setParticipants] = useState<IUser[]>([]);
@@ -156,11 +155,7 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 									}}
 									key={"Search__Result-" + u.username + " " + i}>
 									<ListItemIcon>
-										<ProfilePicture
-											username={u.username}
-											base64Image={u.profilePicture}
-											pictureType={u.profilePictureType}
-										/>
+										<ProfilePicture username={u.username} />
 									</ListItemIcon>
 									<ListItem>
 										<Typography>{u.username}</Typography>

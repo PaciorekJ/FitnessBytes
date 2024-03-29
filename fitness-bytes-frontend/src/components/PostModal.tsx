@@ -21,13 +21,11 @@ import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
-import useUser from "../hooks/useUser";
 import {
 	MAX_CHAR,
 	PostData,
 	schema,
 } from "../services/Validators/PostValidatorService";
-import PageSpinner from "./PageSpinner";
 import ProfilePicture from "./ProfilePicture";
 
 interface ModalProps {
@@ -69,7 +67,6 @@ const PostModal = ({
 	} = useForm<PostData>({ resolver: zodResolver(schema), mode: "all" });
 
 	const [value, setValue] = useState(textValue);
-	const { data: user, isLoading } = useUser(username);
 	const theme = useTheme();
 
 	const handleChange = (e: {
@@ -83,8 +80,6 @@ const PostModal = ({
 	const closeModal = () => setOpen(false);
 
 	const content = watch("content", "");
-
-	if (isLoading) return <PageSpinner />;
 
 	return (
 		<Modal
@@ -131,13 +126,7 @@ const PostModal = ({
 						}}>
 						<CardHeader
 							title={username}
-							avatar={
-								<ProfilePicture
-									username={username}
-									base64Image={user?.profilePicture}
-									pictureType={user?.profilePictureType}
-								/>
-							}
+							avatar={<ProfilePicture username={username} />}
 						/>
 						<IconButton type="reset">
 							<CloseIcon />
