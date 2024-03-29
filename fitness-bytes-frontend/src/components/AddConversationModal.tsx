@@ -1,15 +1,17 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
+	Alert,
 	Box,
 	Button,
 	Checkbox,
 	Divider,
 	IconButton,
-	InputBase,
 	List,
 	ListItem,
 	ListItemIcon,
 	Modal,
 	Stack,
+	TextField,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -31,7 +33,12 @@ interface Props {
 
 const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 	const theme = useTheme();
-	const { register, handleSubmit, setValue } = useForm({
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		formState: { errors },
+	} = useForm({
 		mode: "onChange",
 	});
 
@@ -78,6 +85,30 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 		setSearchResults(users || []);
 	}
 
+	async function handleCreateConversation(data: FieldValues) {
+		setParticipants([]);
+
+		const participantUsernames = participants.map((u) => u.username);
+		const participantIds = participants.map((u) => u._id);
+		const title = data.title;
+
+		if (participantUsernames.length && participantIds.length) {
+			await ConversationServices.create({
+				participantUsernames,
+				participantIds,
+				title,
+			});
+			queryClient.invalidateQueries({ queryKey: ["conversations"] });
+		} else {
+			setBanner(
+				"You must have 2 or more participant's in a conversation",
+				true,
+			);
+		}
+
+		setOpen(false);
+	}
+
 	return (
 		<Modal
 			open={isOpen}
@@ -85,61 +116,72 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 			aria-labelledby="Modal For Finding new friends"
 			aria-describedby="Modal that is used for finding new friends on the platform">
 			<Box sx={style}>
-				<Typography variant="h4" marginBottom={0} component={"h3"}>
-					Select the Conversation Member(s)
-				</Typography>
-				<Typography
-					variant="body2"
-					paddingBottom={3}
-					color={"error"}
-					component="p">
-					You can only start conversations with friends
-				</Typography>
-				<Stack
-					sx={{
-						flexDirection: "row",
-						border: `2px double  ${theme.palette.text.primary}`,
-						borderRadius: "25px",
-						padding: 1,
-					}}>
-					<InputBase
-						sx={{ marginLeft: 1, flex: 1, border: 0 }}
+				<Stack marginBottom={1}>
+					<Typography variant="h4" marginBottom={0} component={"h3"}>
+						Create A New Conversation
+					</Typography>
+					<Typography variant="body2" color={"error"} component="p">
+						You can only start conversations with friends
+					</Typography>
+					<Typography
+						variant="body2"
+						paddingBottom={3}
+						color={"secondary"}
+						component="p">
+						Conversation titles are optional
+					</Typography>
+				</Stack>
+				<Stack gap={2}>
+					{errors && errors.title && (
+						<Alert icon={<CloseIcon />} color="warning">
+							{errors.title.message?.toString()}
+						</Alert>
+					)}
+					<TextField
+						sx={{ width: "100%" }}
+						id="title"
+						focused
+						label={"Conversation Title"}
+						color={"secondary"}
+						type="input"
+						{...register("title", {
+							maxLength: {
+								value: 20,
+								message: "Max Length for a Title is 20 characters",
+							},
+						})}
+						placeholder="Conversation Title..."
+						inputProps={{
+							"aria-label": "Conversation Title",
+						}}
+					/>
+					<TextField
+						sx={{ width: "100%" }}
+						label={"Search for Participants"}
+						color={"secondary"}
+						focused
+						type="input"
 						id="searchContent"
-						type="search"
 						{...register("searchContent")}
 						onChange={(e) => {
 							setValue("searchContent", e.target.value);
 							handleSubmit(handleSearch)();
 						}}
-						placeholder="Search For a Friend..."
-						inputProps={{ "aria-label": "Search For a Friend!" }}
+						placeholder="Search for Participants..."
+						InputProps={{
+							"aria-label": "Search For a Friend!",
+							"endAdornment": (
+								<IconButton
+									type="button"
+									sx={{ p: "10px" }}
+									aria-label="search">
+									<SearchIcon />
+								</IconButton>
+							),
+						}}
 					/>
-					<IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-						<SearchIcon />
-					</IconButton>
 				</Stack>
-				<form
-					onSubmit={async (e) => {
-						e.preventDefault();
-						setParticipants([]);
-
-						const participantUsernames = participants.map((u) => u.username);
-						const participantIds = participants.map((u) => u._id);
-						if (participantUsernames.length && participantIds.length) {
-							await ConversationServices.create({
-								participantUsernames,
-								participantIds,
-							});
-							queryClient.invalidateQueries({ queryKey: ["conversations"] });
-						} else {
-							setBanner(
-								"You must have 2 or more participant's in a conversation",
-								true,
-							);
-						}
-
-						setOpen(false);
-					}}>
+				<form onSubmit={handleSubmit(handleCreateConversation)}>
 					<Stack margin={2}>
 						<Button type="submit" color="secondary" variant="contained">
 							Create Conversation

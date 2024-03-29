@@ -11,7 +11,6 @@
 * Revamp home page to include a call to action and a section about Fitness Bytes, and a hero section.
 
 # Chunk 6
-* Add Title input for Conversations
 * Add Button to add participants to conversations
 
 # Things to Consider

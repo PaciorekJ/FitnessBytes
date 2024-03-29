@@ -10,10 +10,10 @@ import {
 	FormGroup,
 	Modal,
 	Stack,
-	Switch,
 	Typography,
 	useTheme,
 } from "@mui/material";
+import SwitchBase from "@mui/material/internal/SwitchBase";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -212,7 +212,7 @@ const AccountSettings = () => {
 								control={
 									<Checkbox
 										id="friend"
-										defaultChecked={userConfig?.friend}
+										checked={userConfig?.friend ? true : false}
 										onClick={() => {
 											notificationChanged();
 											queryClient.setQueryData<userConfig>(
@@ -242,7 +242,7 @@ const AccountSettings = () => {
 								control={
 									<Checkbox
 										id="message"
-										defaultChecked={userConfig?.message}
+										checked={userConfig?.message}
 										onClick={() => {
 											notificationChanged();
 
@@ -273,7 +273,7 @@ const AccountSettings = () => {
 								control={
 									<Checkbox
 										id="like"
-										defaultChecked={userConfig?.like}
+										checked={userConfig?.like}
 										onClick={() => {
 											notificationChanged();
 											queryClient.setQueryData<userConfig>(
@@ -303,7 +303,7 @@ const AccountSettings = () => {
 								control={
 									<Checkbox
 										id="reply"
-										defaultChecked={userConfig?.reply}
+										checked={userConfig?.reply}
 										onClick={() => {
 											notificationChanged();
 											queryClient.setQueryData<userConfig>(
@@ -335,32 +335,16 @@ const AccountSettings = () => {
 						</FormGroup>
 					</form>
 				</Stack>
-				<FormGroup sx={{ padding: 2 }}>
-					<FormControlLabel
-						control={
-							<Switch
-								onChange={toggleTheme}
-								color="secondary"
-								defaultChecked={mode === "dark"}
-							/>
-						}
-						label={
-							<Stack flexDirection={"row"} gap={1}>
-								<Typography fontWeight={"600"}>Dark Mode</Typography>
-								{mode === "light" ? (
-									<DarkModeIcon color="primary" />
-								) : (
-									<DarkModeOutlinedIcon color="primary" />
-								)}
-							</Stack>
-						}
-						slotProps={{
-							typography: {
-								fontWeight: "600",
-							},
-						}}
-						sx={{ width: "max-content" }}
+				<FormGroup
+					onClick={toggleTheme}
+					sx={{ padding: 2, flexDirection: "row", alignItems: "center" }}>
+					<SwitchBase
+						color="secondary"
+						checked={mode === "dark"}
+						checkedIcon={<DarkModeIcon color="primary" />}
+						icon={<DarkModeOutlinedIcon color="primary" />}
 					/>
+					<Typography>Dark Mode</Typography>
 				</FormGroup>
 			</Stack>
 			<Typography variant="h6" component="h3">
