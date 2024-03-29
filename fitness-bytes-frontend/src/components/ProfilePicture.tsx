@@ -30,7 +30,7 @@ const ProfilePicture = ({ username, sx }: ProfilePictureProps) => {
 		};
 
 		createAndSetImageUrl();
-	}, [imageUrl, user?.profilePicture, user?.profilePictureType, isLoading]);
+	}, [user?.profilePicture, user?.profilePictureType, isLoading]);
 
 	return (
 		<Avatar

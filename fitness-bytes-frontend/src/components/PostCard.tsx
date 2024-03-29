@@ -181,22 +181,24 @@ const PostCard = ({
 	return (
 		<Box padding={1} minWidth={"100%"}>
 			<Paper variant="outlined">
-				<Link href={"/auth/account/" + postUsername} underline="none">
-					<CardHeader
-						titleTypographyProps={{ fontSize: "1.2rem" }}
-						title={
-							<Typography variant="body1" color={"text.secondary"}>
-								{postUsername}
-							</Typography>
-						}
-						avatar={<ProfilePicture username={postUsername} />}
-						subheader={
-							<Typography color={"text.disabled"} variant="body2">
-								{time || ""}
-							</Typography>
-						}
-					/>
-				</Link>
+				<Stack flexDirection={"row"} justifyContent={"space-between"}>
+					<Link href={"/auth/account/" + postUsername} underline="none">
+						<CardHeader
+							titleTypographyProps={{ fontSize: "1.2rem" }}
+							title={
+								<Typography variant="body1" color={"text.secondary"}>
+									{postUsername}
+								</Typography>
+							}
+							avatar={<ProfilePicture username={postUsername} />}
+							subheader={
+								<Typography color={"text.disabled"} variant="body2">
+									{time || ""}
+								</Typography>
+							}
+						/>
+					</Link>
+				</Stack>
 				<Box paddingX={2}>
 					<Divider />
 				</Box>

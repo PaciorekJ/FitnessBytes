@@ -56,7 +56,7 @@ const AddFriend = () => {
 
 		setSearchResults(users || []);
 	}
-
+	
 	const handleAddFriend = async (_id: string, toUsername: string) => {
 		const friendRequest = await FriendRequestServices.create(_id);
 
