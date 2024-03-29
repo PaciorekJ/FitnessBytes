@@ -10,13 +10,25 @@ friendRouter.get('/', authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
     const { query } = req.query as {query: string};
 
-    const regex = new RegExp(escapeRegExp(query || ".*"), 'i');
+    const regex = new RegExp(escapeRegExp(query || "*"), 'i');
 
     try {
         const friendships = await FriendModel.aggregate([
             {
                 $match: {
-                    $or: [{ userId1: userId }, { userId2: userId }],
+                    $expr: {
+                        $and: [
+                            {
+                                $or: [
+                                    { $eq: ["$userId1", userId] },
+                                    { $eq: ["$userId2", userId] }
+                                ]
+                            },
+                            {
+                                $not: { $eq: ["$userId1", "$userId2"] }
+                            }
+                        ]
+                    }
                 }
             },
             {
@@ -63,8 +75,6 @@ friendRouter.get('/', authMiddleware, async (req, res) => {
                 $replaceRoot: { newRoot: "$friendDetails" }
             }
         ]).exec();
-
-        
 
         return res.json({
             message: "",
