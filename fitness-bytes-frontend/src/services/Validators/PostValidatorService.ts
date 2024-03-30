@@ -9,6 +9,10 @@ export const schema = z.object({
 		.string()
 		.min(1, { message: "Post must be at least 1 characters long." })
         .max(MAX_CHAR, { message: `Posts can only be up to ${MAX_CHAR} characters long`}),
-});
+	image: z
+		.string(),
+	imageType: z
+		.string()
+	});
 
 export type PostData = z.infer<typeof schema>;
