@@ -2,12 +2,13 @@ import { Router } from "express";
 import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware";
 import socketMiddleware, { RequestWithSocket } from "../middleware/socketMiddleware";
+import userConfigMiddleware from "../middleware/userConfigMiddleware";
 import { NotificationTypes } from "../models/Notification";
 import PostModel, { IPost } from "../models/Post";
 import PostLikeModel from "../models/PostLike";
 import { IUser } from "../models/User";
 import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
-import userConfigMiddleware from "../middleware/userConfigMiddleware";
+import PostImageModel, { IPostImage } from "../models/PostImages";
 
 const postRouter = Router();
 
@@ -112,6 +113,42 @@ postRouter.post("/", authMiddleware, async (req, res) => {
         });
     }
 });
+
+postRouter.post("/uploadImage", authMiddleware, async (req, res) => {
+    const post: Partial<IPost> & IPostImage = req.body;
+
+    if (!post._id || !post.image || !post.imageType) {
+        return res.status(400).json({
+            message: "No postId or Image Provided",
+        });
+    }
+
+
+    try {
+        const postId = new mongoose.Types.ObjectId(post._id);
+        const image = post.image;
+        const imageType = post.imageType;
+
+        const imageDocument = await PostImageModel.create({
+            image,
+            imageType
+        });
+    
+        PostModel.findByIdAndUpdate(postId, {
+            imageId: imageDocument._id
+        });
+
+        return res.status(201).json({
+            message: "",
+            result: imageDocument,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }    
+})
 
 postRouter.get("/:postId", async (req, res) => {
 

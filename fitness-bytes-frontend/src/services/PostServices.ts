@@ -1,13 +1,20 @@
 import { ResponseResult } from "./HTTP-Services/ClientService";
 import EndpointFactory from "./HTTP-Services/EndpointFactory";
 
-
 interface IPost {
     _id: string;
+    userId: string;
     username: string;
     content: string;
+    imageId?: string;
     likes?: number;
     timeCreated?: Date;
+}
+
+interface IPostImage {
+    _id: string;
+    image: string, 
+    imageType: string;
 }
 
 type PostResponse = ResponseResult<boolean | IPost | IPost[]>;
@@ -18,6 +25,10 @@ class PostServices {
 
     static create = PostServices.factPost.post<IPost, IPost>();
     static update = PostServices.factPost.patch<boolean, IPost>();
+    static addImage = (image: string, imageType: string) => PostServices.factPost.post<IPostImage, IPost & IPostImage>("/uploadImage/")({
+        image,
+        imageType,
+    })
     static delete = PostServices.factPost.delete<boolean>();
     static getAll = (username: string = "") => PostServices.factPosts.get<IPost[]>()(username);
     static getOne = PostServices.factPost.get<IPost>();
