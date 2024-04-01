@@ -8,6 +8,7 @@ import {
 	Divider,
 	TextField,
 	Typography,
+	styled,
 	useTheme,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -21,15 +22,24 @@ import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
+import useBannerStore from "../hooks/useBannerStore";
 import {
 	MAX_CHAR,
 	PostData,
 	schema,
 } from "../services/Validators/PostValidatorService";
+import {
+	compressImage,
+	decodeImage,
+	encodeImage,
+} from "../utils/ImageProcessing";
+import { IImage } from "./AddPost";
 import ProfilePicture from "./ProfilePicture";
 
 interface ModalProps {
 	onSubmit: (data: PostData) => void;
+	setImage: Dispatch<SetStateAction<IImage>>;
+	image: IImage | null;
 	onClose?: () => void;
 	isOpen: boolean;
 	setOpen: (state: boolean) => void;
@@ -48,6 +58,8 @@ interface Props extends ModalProps {
 const PostModal = ({
 	onSubmit,
 	onClose,
+	image,
+	setImage,
 	setOpen,
 	isOpen,
 	username,
@@ -63,10 +75,43 @@ const PostModal = ({
 		handleSubmit,
 		watch,
 		reset,
-		formState: { isValid },
+		setValue,
+		formState: { errors },
 	} = useForm<PostData>({ resolver: zodResolver(schema), mode: "all" });
+	const setBanner = useBannerStore((s) => s.setBanner);
 
-	const [value, setValue] = useState(textValue);
+	const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (!e.target.files || e.target.files.length === 0) {
+			setBanner("Error: A invalid image, or no image was selected!", true);
+			return;
+		}
+
+		const file = e.target.files[0];
+
+		try {
+			const compressedImage = await compressImage(file);
+			const base64Array = await encodeImage(compressedImage);
+
+			const imageBlob = decodeImage(base64Array, compressedImage.type);
+
+			const url = URL.createObjectURL(imageBlob);
+
+			setImage({
+				base64Array: base64Array,
+				type: compressedImage.type,
+				imageUrl: url,
+			});
+
+			const files = e.target?.files || null;
+			if (files) {
+				setValue("image", files[0], { shouldValidate: true });
+			}
+		} catch (error) {
+			setBanner(`${error}`, true);
+		}
+	};
+
+	const [text, setText] = useState(textValue);
 	const theme = useTheme();
 
 	const handleChange = (e: {
@@ -74,12 +119,24 @@ const PostModal = ({
 		target: { value: SetStateAction<string> };
 	}) => {
 		e.preventDefault();
-		setValue(e.target.value);
+		setText(e.target.value);
 	};
 
 	const closeModal = () => setOpen(false);
 
 	const content = watch("content", "");
+
+	const VisuallyHiddenInput = styled("input")({
+		clip: "rect(0 0 0 0)",
+		clipPath: "inset(50%)",
+		height: 1,
+		overflow: "hidden",
+		position: "absolute",
+		bottom: 0,
+		left: 0,
+		whiteSpace: "nowrap",
+		width: 1,
+	});
 
 	return (
 		<Modal
@@ -87,6 +144,9 @@ const PostModal = ({
 			onClose={() => {
 				closeModal();
 				if (onClose) onClose();
+				reset();
+				setText("");
+				setImage(null);
 			}}
 			aria-labelledby={ariaLabelledby}
 			aria-describedby={ariaDescribedby}>
@@ -98,6 +158,8 @@ const PostModal = ({
 					transform: "translate(-50%, -50%)",
 					width: "98%",
 					maxWidth: "600px",
+					maxHeight: "98vh",
+					overflowY: "auto",
 					bgcolor: "background.default",
 					border: "2px solid primary.light",
 					borderRadius: "25px",
@@ -108,7 +170,7 @@ const PostModal = ({
 				<form
 					onSubmit={handleSubmit((data) => {
 						if (resetOnSubmit) {
-							setValue("");
+							setText("");
 						}
 						reset();
 						onSubmit(data);
@@ -135,7 +197,22 @@ const PostModal = ({
 					<Box paddingX={2}>
 						<Divider />
 					</Box>
-					{error && <Alert color="error">{error}</Alert>}
+					{image && image.imageUrl && (
+						<Stack padding={2} width={"100%"} alignItems={"center"}>
+							<img
+								src={image.imageUrl}
+								width={"50%"}
+								alt={`${username} - post's image`}
+							/>
+						</Stack>
+					)}
+					{(error && <Alert color="error">{error}</Alert>) ||
+						(errors.content && content.length !== 0 && (
+							<Alert color="error">{errors.content?.message}</Alert>
+						)) ||
+						(errors.image && (
+							<Alert color="error">{errors.image?.message}</Alert>
+						))}
 					<Box padding={2}>
 						<TextField
 							sx={{ border: "1px solid" }}
@@ -148,13 +225,11 @@ const PostModal = ({
 								onChange: handleChange,
 							})}
 							placeholder="Share A Fitness Byte..."
-							value={value}
+							value={text}
 							multiline
 						/>
 					</Box>
-					{isValid && (
-						<Typography>{MAX_CHAR - content.length} characters left</Typography>
-					)}
+					{<Typography>{MAX_CHAR - content.length} characters left</Typography>}
 					<Divider />
 					<CardActions>
 						<Stack
@@ -164,7 +239,14 @@ const PostModal = ({
 								width: "100%",
 							}}>
 							<Stack flexDirection={"row"}>
-								<IconButton>
+								<IconButton component="label" color="secondary">
+									<VisuallyHiddenInput
+										{...(register("image"),
+										{
+											onChange: handleImage,
+										})}
+										type="file"
+									/>
 									<ImageOutlinedIcon />
 								</IconButton>
 								<IconButton>

@@ -8,11 +8,15 @@ import { useNavigate } from "react-router-dom";
 import useBannerStore from "../hooks/useBannerStore";
 import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
-import PostServices, { IPost } from "../services/PostServices";
-import { IUser } from "../services/UserServices";
+import PostServices, { IPost, IPostImage } from "../services/PostServices";
 import { PostData } from "../services/Validators/PostValidatorService";
-import { compressImage, encodeImage } from "../utils/ImageProcessing";
 import PostModal from "./PostModal";
+
+export interface IImage {
+	base64Array: string;
+	type: string;
+	imageUrl: string;
+}
 
 const AddPost = () => {
 	const username = useUserStore((s) => s.username);
@@ -21,34 +25,11 @@ const AddPost = () => {
 	const navigator = useNavigate();
 	const [isOpen, setOpen] = useState(false);
 	const [error, setError] = useState("");
+	const [image, setImage] = useState<IImage>({} as IImage);
 	const setBanner = useBannerStore((s) => s.setBanner);
 
 	const openModal = () => setOpen(true);
 	const closeModal = () => setOpen(false);
-
-	const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!e.target.files || e.target.files.length === 0) {
-			setBanner("Error: A invalid image, or no image was selected!", true);
-			return;
-		}
-
-		const file = e.target.files[0];
-
-		try {
-			const compressedImage = await compressImage(file);
-			const base64Array = await encodeImage(compressedImage);
-			const res = await PostServices.addImage(
-				base64Array,
-				compressedImage.type,
-			);
-			if (!res)
-				throw new Error("Image may be too large, or not a supported type");
-
-			setBanner("Successfully set Profile Picture");
-		} catch (error) {
-			setBanner(`${error}`, true);
-		}
-	};
 
 	const submitPost = async (data: PostData) => {
 		const post = await PostServices.create({
@@ -63,20 +44,38 @@ const AddPost = () => {
 			return;
 		}
 
-		navigator(`/auth/feed/`);
+		let res: IPostImage | undefined;
+
+		if (image && image.base64Array && image.type) {
+			res = await PostServices.addImage(
+				post._id,
+				image.base64Array,
+				image.type,
+			);
+
+			console.log(res);
+
+			if (!res) {
+				setBanner("Image may be too large, or not a supported type", true);
+			}
+		}
 
 		queryClient.setQueryData(["posts", ""], (oldPosts: IPost[] | undefined) => [
 			{
 				...post,
 				profilePicture: user?.profilePicture,
 				profilePictureType: user?.profilePictureType,
-				imageId: "",
+				imageId: res?._id,
 			},
 			...(oldPosts || []),
 		]);
 
 		closeModal();
 		setError("");
+
+		setImage({} as IImage);
+
+		navigator(`/auth/feed/`);
 	};
 
 	return (
@@ -88,6 +87,8 @@ const AddPost = () => {
 			</Tooltip>
 			<PostModal
 				onSubmit={submitPost}
+				image={image}
+				setImage={setImage}
 				username={username}
 				buttonContent="Post"
 				ariaDescribedby="Modal that is used for posting on the platform"

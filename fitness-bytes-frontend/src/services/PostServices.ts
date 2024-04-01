@@ -25,10 +25,12 @@ class PostServices {
 
     static create = PostServices.factPost.post<IPost, IPost>();
     static update = PostServices.factPost.patch<boolean, IPost>();
-    static addImage = (image: string, imageType: string) => PostServices.factPost.post<IPostImage, IPost & IPostImage>("/uploadImage/")({
+    static addImage = (_id: string, image: string, imageType: string) => PostServices.factPost.post<IPostImage, IPost & IPostImage>("/uploadImage/")({
+        _id,
         image,
         imageType,
     })
+    static getImage = PostServices.factPost.get<IPostImage>("/image/")
     static delete = PostServices.factPost.delete<boolean>();
     static getAll = (username: string = "") => PostServices.factPosts.get<IPost[]>()(username);
     static getOne = PostServices.factPost.get<IPost>();
@@ -38,5 +40,5 @@ class PostServices {
     static getCount = (username: string) => PostServices.factPosts.get<number>("/count/")(username);
 }
 
-export type { IPost };
+export type { IPost, IPostImage };
 export default PostServices;
