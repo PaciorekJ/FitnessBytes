@@ -1,5 +1,4 @@
 # Chunk 2
-* Post should be able to have 1 image
 
 * Post should be able to have replies
     - Add Notification for replies

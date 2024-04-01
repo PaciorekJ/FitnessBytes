@@ -160,13 +160,46 @@ postRouter.post("/uploadImage", authMiddleware, async (req, res) => {
             imageType
         });
     
-        const newPost = await PostModel.findByIdAndUpdate(postId, {
+        await PostModel.findByIdAndUpdate(postId, {
             imageId: imageDocument._id
         });
 
         return res.status(201).json({
             message: "",
             result: imageDocument,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }    
+})
+
+
+postRouter.patch("/uploadImage", authMiddleware, async (req, res) => {
+    const imagePayload: IPostImage = req.body;
+
+    if (!imagePayload || !imagePayload._id || !imagePayload.image || !imagePayload.imageType) {
+        return res.status(400).json({
+            message: "No imageId or Image Provided",
+        });
+    }
+
+    try {
+        const {_id, image, imageType} = imagePayload;
+        const imageId = new mongoose.Types.ObjectId(_id);
+        
+        const newImage = await PostImageModel.findByIdAndUpdate(imageId, {
+            $set: {
+                image,
+                imageType
+            }
+        }, {new: true});
+
+        return res.status(200).json({
+            message: "",
+            result: newImage,
         });
     }
     catch (e) {

@@ -30,6 +30,11 @@ class PostServices {
         image,
         imageType,
     })
+    static updateImage = (_id: string, image: string, imageType: string) => PostServices.factPost.patch<IPostImage, IPost & IPostImage>("/uploadImage/")({
+        _id,
+        image,
+        imageType,
+    })
     static getImage = PostServices.factPost.get<IPostImage>("/image/")
     static delete = PostServices.factPost.delete<boolean>();
     static getAll = (username: string = "") => PostServices.factPosts.get<IPost[]>()(username);

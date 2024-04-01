@@ -24,8 +24,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import useBannerStore from "../hooks/useBannerStore";
 import usePostImage from "../hooks/usePostImage";
 import useUserStore from "../hooks/useUserStore";
-import PostServices, { IPost } from "../services/PostServices";
+import PostServices, { IPost, IPostImage } from "../services/PostServices";
 import ReportServices from "../services/ReportServices";
+import { PostData } from "../services/Validators/PostValidatorService";
 import { decodeImage } from "../utils/ImageProcessing";
 import ParseDateFromNow from "../utils/ParseDate";
 import { IImage } from "./AddPost";
@@ -44,7 +45,7 @@ const PostCard = ({
 	username: postUsername,
 	likes,
 	timeCreated,
-	imageId,
+	imageId = "",
 	postQueryKey = "",
 }: PostCardProps) => {
 	const queryClient = useQueryClient();
@@ -55,7 +56,7 @@ const PostCard = ({
 		imageId || "",
 	);
 	const [imageUrl, setImageUrl] = useState("");
-	const [imageForEdit, imageForEditSet] = useState<IImage | null>(null);
+	const [imageForEdit, imageForEditSet] = useState<IImage>({} as IImage);
 
 	useEffect(() => {
 		if (!imageId || !image?.image || !image?.imageType || imageIsLoading)
@@ -132,16 +133,41 @@ const PostCard = ({
 	};
 
 	const submitPostUpdate = useCallback(
-		async (data: { content: string }) => {
-			const res = await PostServices.update({
+		async (data: PostData) => {
+			let CurrentImageId = imageId;
+			await PostServices.update({
 				_id,
 				content: data.content,
 			});
 
-			if (!res) {
-				setError("Error: Failed to update post, please try again!");
-				setBanner("Error: Failed to update post, please try again!", true);
-				return;
+			if (imageForEdit) {
+				let res: true | IPostImage | undefined = true;
+				if (imageId) {
+					res = await PostServices.updateImage(
+						imageId,
+						imageForEdit.base64Array,
+						imageForEdit.type,
+					);
+
+					queryClient.setQueryData(
+						[`postImage-${imageId}`, imageId],
+						(oldImage: IPostImage | undefined) => {
+							return {
+								...oldImage,
+								image: imageForEdit.base64Array,
+								imageType: imageForEdit.type,
+							};
+						},
+					);
+				} else {
+					res = await PostServices.addImage(_id, imageForEdit.base64Array, imageForEdit.type);
+					CurrentImageId = res?._id || "";
+				}
+
+				if (!res) {
+					setBanner("Failed to update Post Image", true);
+					return;
+				}
 			}
 
 			queryClient.setQueryData(
@@ -153,6 +179,7 @@ const PostCard = ({
 								return {
 									...p,
 									content: data.content,
+									imageId: CurrentImageId,
 								};
 							}
 							return p;
@@ -163,7 +190,7 @@ const PostCard = ({
 
 			setOpen(false);
 		},
-		[_id, postQueryKey, queryClient, setBanner],
+		[_id, imageForEdit, imageId, postQueryKey, queryClient, setBanner],
 	);
 
 	const MoreOptionsMenuItems = [

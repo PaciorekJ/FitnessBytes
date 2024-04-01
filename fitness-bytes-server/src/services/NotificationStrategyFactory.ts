@@ -185,16 +185,10 @@ class NotificationEmitterDecorator<T> implements NotificationStrategy<T> {
             const res: Partial<IUser> | null = await UserModel.findOne({_id: notification.dispatcherId}).select("profilePicture profilePictureType");
             
             if (!res) {
-                console.log("No user");
                 req.io.to("User:" + notification.recipientUsername).emit("Notification Recieved", notification);
             }
 
             const {profilePicture, profilePictureType} = res; 
-            console.log({
-                ...notification.toObject(),
-                profilePicture: profilePicture, 
-                profilePictureType: profilePictureType
-            });
             req.io.to("User:" + notification.recipientUsername).emit("Notification Recieved", {
                 ...notification.toObject(),
                 profilePicture: profilePicture, 

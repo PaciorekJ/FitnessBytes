@@ -13,10 +13,7 @@ export const schema = z.object({
         .max(MAX_CHAR, { message: `Posts can only be up to ${MAX_CHAR} characters long`}),
 	image: z
 		.instanceof(File)
-		.refine((file) => {
-			console.log(file)
-			return file.size <= MAX_FILE_SIZE
-		}, `Max image size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`)
+		.refine((file) => file.size <= MAX_FILE_SIZE, `Max image size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`)
 		.optional()
 	});
 
