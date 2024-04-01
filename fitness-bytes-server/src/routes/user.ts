@@ -232,13 +232,8 @@ userRouter.post("/login", passport.authenticate('local'), (req, res) => {
 });
 
 userRouter.patch("/bio", authMiddleware, async (req, res) => {
-    const bio = req.body.bio;
+    const bio = req.body.bio || "";
     const _id = (req.user as IUser)._id;
-
-    if (!bio) return res.status(400).json({
-        message: "Bio is missing from request",
-        result: false,
-    });
 
     await UserModel.findByIdAndUpdate(_id, { bio });
 
