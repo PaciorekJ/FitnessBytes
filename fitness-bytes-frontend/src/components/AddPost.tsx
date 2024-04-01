@@ -53,8 +53,6 @@ const AddPost = () => {
 				image.type,
 			);
 
-			console.log(res);
-
 			if (!res) {
 				setBanner("Image may be too large, or not a supported type", true);
 			}

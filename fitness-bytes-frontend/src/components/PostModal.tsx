@@ -20,7 +20,7 @@ import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import useBannerStore from "../hooks/useBannerStore";
 import {
@@ -35,6 +35,7 @@ import {
 } from "../utils/ImageProcessing";
 import { IImage } from "./AddPost";
 import ProfilePicture from "./ProfilePicture";
+import _ from "lodash";
 
 interface ModalProps {
 	onSubmit: (data: PostData) => void;
@@ -146,7 +147,7 @@ const PostModal = ({
 				if (onClose) onClose();
 				reset();
 				setText("");
-				setImage(null);
+				setImage({} as IImage);
 			}}
 			aria-labelledby={ariaLabelledby}
 			aria-describedby={ariaDescribedby}>
@@ -197,7 +198,7 @@ const PostModal = ({
 					<Box paddingX={2}>
 						<Divider />
 					</Box>
-					{image && image.imageUrl && (
+					{!_.isEmpty(image) && image.imageUrl && (
 						<Stack padding={2} width={"100%"} alignItems={"center"}>
 							<img
 								src={image.imageUrl}
