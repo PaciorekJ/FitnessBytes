@@ -17,9 +17,9 @@ import Stack from "@mui/material/Stack";
 
 import CloseIcon from "@mui/icons-material/Close";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
-import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import _ from "lodash";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import useBannerStore from "../hooks/useBannerStore";
@@ -35,7 +35,6 @@ import {
 } from "../utils/ImageProcessing";
 import { IImage } from "./AddPost";
 import ProfilePicture from "./ProfilePicture";
-import _ from "lodash";
 
 interface ModalProps {
 	onSubmit: (data: PostData) => void;
@@ -249,9 +248,6 @@ const PostModal = ({
 										type="file"
 									/>
 									<ImageOutlinedIcon />
-								</IconButton>
-								<IconButton>
-									<LinkOutlinedIcon />
 								</IconButton>
 							</Stack>
 							<Button variant="contained" color="secondary" type="submit">
