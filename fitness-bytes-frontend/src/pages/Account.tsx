@@ -31,7 +31,7 @@ import { compressImage, encodeImage } from "../utils/ImageProcessing";
 const Account = () => {
 	const { username } = useParams();
 	const activeUsername = useUserStore((s) => s.username);
-	const { data: user, isLoading: userIsLoading } = useUser(username || "");
+	const { data: user, isLoading: userIsLoading } = useUser(username!);
 	const setBanner = useBannerStore((s) => s.setBanner);
 
 	const queryClient = useQueryClient();
@@ -58,7 +58,7 @@ const Account = () => {
 	const postCount = postCountData || 0;
 
 	const saveBio = async () => {
-		const res = await UserServices.setBio(editableBio);
+		const res = await UserServices.setBio(editableBio || "");
 		if (!res) {
 			setBanner(
 				"Error: Your Bio failed to be set at the moment. Please try again later",

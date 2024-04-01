@@ -1,6 +1,4 @@
 import { Logout, Settings } from "@mui/icons-material";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 // import Diversity3Icon from "@mui/icons-material/Diversity3";
 import HomeIcon from "@mui/icons-material/Home";
 import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
@@ -21,7 +19,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useNotificationCount from "../hooks/useNotificationCount";
 import useNotificationMessageCount from "../hooks/useNotificationMessageCount";
-import useThemeStore from "../hooks/useThemeStore";
 import useUserStore from "../hooks/useUserStore";
 import UserServices from "../services/UserServices";
 import AddFriend from "./AddFriend";
@@ -30,7 +27,6 @@ import LogoIcon from "./LogoIcon";
 import ProfilePicture from "./ProfilePicture";
 
 const Nav = () => {
-	const { mode, toggleTheme } = useThemeStore();
 	const username = useUserStore((s) => s.username);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const { data: notificationCount, isLoading: isLoadingNotiCount } =
@@ -77,15 +73,6 @@ const Nav = () => {
 					<Box>
 						<AddPost />
 						<AddFriend />
-						<Tooltip title="Color Mode">
-							<IconButton onClick={toggleTheme}>
-								{mode === "light" ? (
-									<DarkModeIcon color="primary" />
-								) : (
-									<DarkModeOutlinedIcon color="primary" />
-								)}
-							</IconButton>
-						</Tooltip>
 						<Tooltip title="Notifications">
 							<IconButton href={"/auth/notifications/"}>
 								<Badge
