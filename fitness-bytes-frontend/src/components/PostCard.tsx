@@ -3,6 +3,7 @@ import {
 	CardActions,
 	CardContent,
 	CardHeader,
+	CircularProgress,
 	Divider,
 	IconButton,
 	Link,
@@ -11,7 +12,7 @@ import {
 	Typography,
 } from "@mui/material";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -21,10 +22,13 @@ import ShareIcon from "@mui/icons-material/Share";
 
 import { useQueryClient } from "@tanstack/react-query";
 import useBannerStore from "../hooks/useBannerStore";
+import usePostImage from "../hooks/usePostImage";
 import useUserStore from "../hooks/useUserStore";
 import PostServices, { IPost } from "../services/PostServices";
 import ReportServices from "../services/ReportServices";
+import { decodeImage } from "../utils/ImageProcessing";
 import ParseDateFromNow from "../utils/ParseDate";
+import { IImage } from "./AddPost";
 import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 import PostModal from "./PostModal";
@@ -40,12 +44,36 @@ const PostCard = ({
 	username: postUsername,
 	likes,
 	timeCreated,
+	imageId,
 	postQueryKey = "",
 }: PostCardProps) => {
 	const queryClient = useQueryClient();
 	const currentUserUsername = useUserStore((s) => s.username);
 	const [isOpen, setOpen] = useState(false);
 	const [error, setError] = useState("");
+	const { data: image, isLoading: imageIsLoading } = usePostImage(
+		imageId || "",
+	);
+	const [imageUrl, setImageUrl] = useState("");
+	const [imageForEdit, imageForEditSet] = useState<IImage | null>(null);
+
+	useEffect(() => {
+		if (!imageId || !image?.image || !image?.imageType || imageIsLoading)
+			return;
+
+		const setImage = async () => {
+			const blob = decodeImage(image.image, image.imageType);
+			const url = URL.createObjectURL(blob);
+			imageForEditSet({
+				base64Array: image.image,
+				type: image.imageType,
+				imageUrl: url,
+			});
+			setImageUrl(url);
+		};
+
+		setImage();
+	}, [imageId, image, imageIsLoading, imageForEditSet]);
 
 	const setBanner = useBannerStore((s) => s.setBanner);
 
@@ -158,6 +186,8 @@ const PostCard = ({
 					setOpen={setOpen}
 					error={error}
 					textValue={content}
+					setImage={imageForEditSet}
+					image={imageForEdit}
 				/>
 			),
 			text: "Edit",
@@ -204,6 +234,11 @@ const PostCard = ({
 				</Box>
 				<Box padding={2}>
 					<CardContent>
+						<Stack alignItems={"center"} marginBlockEnd={2}>
+							{imageId &&
+								((imageUrl && <img src={imageUrl} alt="" />) ||
+									(imageIsLoading && <CircularProgress />))}
+						</Stack>
 						<Typography variant="body2" color="text.secondary">
 							{content}
 						</Typography>

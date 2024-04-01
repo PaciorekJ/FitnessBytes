@@ -5,12 +5,38 @@ import socketMiddleware, { RequestWithSocket } from "../middleware/socketMiddlew
 import userConfigMiddleware from "../middleware/userConfigMiddleware";
 import { NotificationTypes } from "../models/Notification";
 import PostModel, { IPost } from "../models/Post";
+import PostImageModel, { IPostImage } from "../models/PostImages";
 import PostLikeModel from "../models/PostLike";
 import { IUser } from "../models/User";
 import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
-import PostImageModel, { IPostImage } from "../models/PostImages";
 
 const postRouter = Router();
+
+postRouter.get('/image/:imageId', async (req, res) => {
+    try {
+        const imageIdString = req.params.imageId;
+
+        if (!imageIdString) return res.status(400).json({
+            message: "",
+            result: false
+        })
+
+        const imageId = new mongoose.Types.ObjectId(req.params.imageId);
+
+        const image = await PostImageModel.findById(imageId);
+
+        return res.json({
+            message: "",
+            result: image
+        })
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}`, 
+            result: 0,
+        });
+    }
+})
 
 postRouter.get('/liked/:postId', authMiddleware, async (req, res) => {
 
@@ -134,7 +160,7 @@ postRouter.post("/uploadImage", authMiddleware, async (req, res) => {
             imageType
         });
     
-        PostModel.findByIdAndUpdate(postId, {
+        const newPost = await PostModel.findByIdAndUpdate(postId, {
             imageId: imageDocument._id
         });
 
