@@ -1,11 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import NotificationServices from "../services/NotificationServices";
+
+const PAGE_LENGTH = 10;
 
 const useNotifications = () => {
 
-    return useQuery({
+    return useInfiniteQuery({
         queryKey: ["notifications"],
-        queryFn: NotificationServices.getAll,
+        queryFn: ({pageParam = 0}) => NotificationServices.getAll(pageParam, PAGE_LENGTH),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages) => {
+			return lastPage?.length !== 0 ? allPages.length + 1 : undefined
+		},
     })
 }
 

@@ -1,26 +1,31 @@
-import {
-	Button,
-	CircularProgress,
-	Divider,
-	Stack,
-	Typography,
-} from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
+import { Button, Divider, Stack, Typography } from "@mui/material";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import React from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import PageSpinner from "../components/PageSpinner";
 import useNotifications from "../hooks/useNotifications";
 import { NotificationFactory } from "../services/NotificationFactory";
-import NotificationServices from "../services/NotificationServices";
+import NotificationServices, {
+	INotification,
+} from "../services/NotificationServices";
 
 const fact = new NotificationFactory();
 
 const Notifications = () => {
-	const { data, isLoading } = useNotifications();
+	const { data, fetchNextPage, hasNextPage } = useNotifications();
 	const queryClient = useQueryClient();
-	const notifications = data || [];
+
+	const notificationPages = data?.pages || [];
 
 	const clearNotifications = async () => {
 		await NotificationServices.deleteAll();
-		queryClient.setQueryData(["notifications"], () => []);
+		queryClient.setQueryData<
+			InfiniteData<INotification[] | undefined, unknown> | undefined
+		>(["notifications"], () => ({
+			pageParams: [],
+			pages: [],
+		}));
+
 		queryClient.setQueryData(["NotificationMessageCount"], () => 0);
 		queryClient.setQueryData(["NotificationCount"], () => 0);
 	};
@@ -50,21 +55,25 @@ const Notifications = () => {
 			<Divider
 				sx={{ marginBottom: 3, marginTop: 1 }}
 				variant="middle"></Divider>
-			{isLoading && (
-				<Stack padding={15} alignItems={"center"} width={"100vw"}>
-					<CircularProgress size={"5%"} color="secondary" />
-				</Stack>
-			)}
-			{!notifications.length && !isLoading && (
+			{(notificationPages?.length && notificationPages[0]?.length && (
+				<InfiniteScroll
+					hasMore={hasNextPage}
+					loader={<PageSpinner />}
+					next={fetchNextPage}
+					dataLength={notificationPages?.length || 0}>
+					{notificationPages.map((notifications) => (
+						<Stack gap={2}>
+							{notifications?.map((n) => (
+								<React.Fragment key={n._id}>{fact.create(n)}</React.Fragment>
+							))}
+						</Stack>
+					))}
+				</InfiniteScroll>
+			)) || (
 				<Stack padding={15} alignItems={"center"} width={"100vw"}>
 					<Typography color={"text.disabled"}> No Notifications</Typography>
 				</Stack>
 			)}
-			<Stack gap={2}>
-				{notifications.map((n) => (
-					<React.Fragment key={n._id}>{fact.create(n)}</React.Fragment>
-				))}
-			</Stack>
 		</>
 	);
 };
