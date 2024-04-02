@@ -37,7 +37,7 @@ class PostServices {
     })
     static getImage = PostServices.factPost.get<IPostImage>("/image/")
     static delete = PostServices.factPost.delete<boolean>();
-    static getAll = (username: string = "", pageNumber: number, pageLength: number ) => PostServices.factPosts.get<IPost[]>("", {
+    static getAll = (username: string = "", pageNumber: number, pageLength: number ) => PostServices.factPosts.get<IPost[]>("/", {
         params: {pageNumber, pageLength}
     })(username);
     static getOne = PostServices.factPost.get<IPost>();

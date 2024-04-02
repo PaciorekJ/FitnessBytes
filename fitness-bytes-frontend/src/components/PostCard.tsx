@@ -20,7 +20,7 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import ReportIcon from "@mui/icons-material/Report";
 import ShareIcon from "@mui/icons-material/Share";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import useBannerStore from "../hooks/useBannerStore";
 import usePostImage from "../hooks/usePostImage";
 import useUserStore from "../hooks/useUserStore";
@@ -89,14 +89,26 @@ const PostCard = ({
 			return;
 		}
 
-		queryClient.setQueryData<IPost[]>(["posts", postQueryKey], (oldPosts) => {
-			queryClient.invalidateQueries({
-				queryKey: [`userPostCount-${postUsername}`],
-			});
+		queryClient.setQueryData<
+			InfiniteData<IPost[] | undefined, unknown> | undefined
+		>(["posts", postQueryKey], (oldPosts) => {
+			if (!oldPosts) {
+				return {
+					pageParams: [],
+					pages: [],
+				};
+			}
 
-			return oldPosts?.filter((post) => post._id !== _id) || [];
+			const updatedPages = oldPosts.pages.map(
+				(page) => page?.filter((post) => post._id !== _id) || [],
+			);
+
+			return {
+				...oldPosts,
+				pages: updatedPages,
+			};
 		});
-	}, [_id, postQueryKey, postUsername, queryClient, setBanner]);
+	}, [_id, postQueryKey, queryClient, setBanner]);
 
 	const handleReport = async () => {
 		const res = await ReportServices.create({
@@ -132,66 +144,72 @@ const PostCard = ({
 		}
 	};
 
-	const submitPostUpdate = useCallback(
-		async (data: PostData) => {
-			let CurrentImageId = imageId;
-			await PostServices.update({
-				_id,
-				content: data.content,
-			});
+	const submitPostUpdate = async (data: PostData) => {
+		let CurrentImageId = imageId;
+		await PostServices.update({
+			_id,
+			content: data.content,
+		});
 
-			if (imageForEdit) {
-				let res: true | IPostImage | undefined = true;
-				if (imageId) {
-					res = await PostServices.updateImage(
-						imageId,
-						imageForEdit.base64Array,
-						imageForEdit.type,
-					);
+		if (imageForEdit) {
+			let res: true | IPostImage | undefined = true;
+			if (imageId) {
+				res = await PostServices.updateImage(
+					imageId,
+					imageForEdit.base64Array,
+					imageForEdit.type,
+				);
 
-					queryClient.setQueryData(
-						[`postImage-${imageId}`, imageId],
-						(oldImage: IPostImage | undefined) => {
-							return {
-								...oldImage,
-								image: imageForEdit.base64Array,
-								imageType: imageForEdit.type,
-							};
-						},
-					);
-				} else {
-					res = await PostServices.addImage(_id, imageForEdit.base64Array, imageForEdit.type);
-					CurrentImageId = res?._id || "";
-				}
-
-				if (!res) {
-					setBanner("Failed to update Post Image", true);
-					return;
-				}
+				queryClient.setQueryData(
+					[`postImage-${imageId}`, imageId],
+					(oldImage: IPostImage | undefined) => {
+						return {
+							...oldImage,
+							image: imageForEdit.base64Array,
+							imageType: imageForEdit.type,
+						};
+					},
+				);
+			} else {
+				res = await PostServices.addImage(
+					_id,
+					imageForEdit.base64Array,
+					imageForEdit.type,
+				);
+				CurrentImageId = res?._id || "";
 			}
 
-			queryClient.setQueryData(
-				["posts", postQueryKey],
-				(oldPosts: IPost[] | undefined) => {
-					return (
-						oldPosts?.map((p) => {
-							if (p._id === _id) {
-								return {
-									...p,
-									content: data.content,
-									imageId: CurrentImageId,
-								};
-							}
-							return p;
-						}) || []
-					);
-				},
-			);
+			if (!res) {
+				setBanner("Failed to update Post Image", true);
+				return;
+			}
+		}
 
-			setOpen(false);
-		},
-		[_id, imageForEdit, imageId, postQueryKey, queryClient, setBanner],
-	);
+		queryClient.setQueryData<
+			InfiniteData<IPost[] | undefined, unknown> | undefined
+		>(["posts", postQueryKey], (oldPosts) => {
+			const updatedPages = oldPosts?.pages.map(
+				(page) =>
+					page?.map((post) => {
+						if (post._id === _id) {
+							return {
+								...post,
+								content: data.content,
+								imageId: CurrentImageId,
+							};
+						}
+						return post;
+					}) || [],
+			) || [[]];
+
+			return {
+				...oldPosts!,
+				pages: updatedPages,
+			};
+		});
+
+		setOpen(false);
+	};
 
 	const MoreOptionsMenuItems = [
 		{

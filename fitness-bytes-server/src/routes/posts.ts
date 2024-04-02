@@ -4,6 +4,10 @@ import PostModel from "../models/Post";
 const postsRouter = Router();
 
 postsRouter.get('/', async (req, res) => {
+    const {pageLength: pageLengthRaw, pageNumber: pageNumberRaw} = req.query as {pageLength: string, pageNumber: string};
+
+    const pageLength = parseInt(pageLengthRaw) || 5;
+    const pageNumber = parseInt(pageNumberRaw) || 0;
 
     try {
         const posts = await PostModel.aggregate([
@@ -31,7 +35,13 @@ postsRouter.get('/', async (req, res) => {
             },
             {
                 $sort: { "timeCreated": -1 } // Sort the posts by creation time
-            }
+            },
+            {
+                $skip: pageLength * pageNumber,
+            },
+            {
+                $limit: pageLength
+            },
         ]);
         
         return res.json({
@@ -49,9 +59,12 @@ postsRouter.get('/', async (req, res) => {
 postsRouter.get('/:username', async (req, res) => {
 
     const username = req.params.username;
+    const {pageLength: pageLengthRaw, pageNumber: pageNumberRaw} = req.query as {pageLength: string, pageNumber: string};
+
+    const pageLength = parseInt(pageLengthRaw) || 5;
+    const pageNumber = parseInt(pageNumberRaw) || 0;
 
     try {
-        // const posts = await PostModel.find({username: username}).sort({timeCreated: -1});
         const posts = await PostModel.aggregate([
             {
                 $match: {
@@ -82,7 +95,13 @@ postsRouter.get('/:username', async (req, res) => {
             },
             {
                 $sort: { "timeCreated": -1 } // Sort the posts by creation time
-            }
+            },
+            {
+                $skip: pageLength * pageNumber,
+            },
+            {
+                $limit: pageLength
+            },
         ]);
 
         return res.status(200).json({

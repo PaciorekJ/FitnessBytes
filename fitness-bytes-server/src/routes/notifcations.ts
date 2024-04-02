@@ -9,6 +9,10 @@ const notificationRouter = Router();
 notificationRouter.get("/", authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
 
+    const {pageLength: pageLengthRaw, pageNumber: pageNumberRaw} = req.query as {pageLength: string, pageNumber: string};
+    const pageLength = parseInt(pageLengthRaw) || 10;
+    const pageNumber = parseInt(pageNumberRaw) || 0;
+
     try {
         const userNotifcations = await NotificationModel.aggregate([
             {
@@ -40,7 +44,13 @@ notificationRouter.get("/", authMiddleware, async (req, res) => {
             },
             {
                 $sort: { "timeCreated": -1 }
-            }
+            },
+            {
+                $skip: pageLength * pageNumber,
+            },
+            {
+                $limit: pageLength
+            },
         ]);
 
         return res.json({

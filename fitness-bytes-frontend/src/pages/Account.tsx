@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams } from "react-router-dom";
 import PageSpinner from "../components/PageSpinner";
 import PostCard from "../components/PostCard";
@@ -38,7 +39,7 @@ const Account = () => {
 
 	const ownerPermissions = username === activeUsername;
 
-	const { data } = usePosts(username);
+	const { data, fetchNextPage, hasNextPage } = usePosts(username);
 
 	const [editBioMode, setEditBioMode] = useState(false);
 	const [editableBio, setEditableBio] = useState(user?.bio || "");
@@ -49,7 +50,7 @@ const Account = () => {
 		setEditableBio(user.bio);
 	}, [user?.bio, userIsLoading]);
 
-	const posts = data || [];
+	const postsPages = data?.pages || [];
 
 	const { data: postCountData, isLoading: postCountIsLoading } = usePostCount(
 		username || "",
@@ -234,9 +235,15 @@ const Account = () => {
 			</Stack>
 			<Divider orientation="horizontal" variant="fullWidth" />
 			<Stack width={"100%"} maxWidth={"700px"}>
-				{posts?.map((p) => (
-					<PostCard key={p._id} {...p} postQueryKey={username} />
-				)) || <PageSpinner />}
+				<InfiniteScroll
+					hasMore={hasNextPage}
+					loader={<PageSpinner />}
+					next={fetchNextPage}
+					dataLength={postsPages?.length || 0}>
+					{postsPages.map((postsPage) =>
+						postsPage?.map((p) => <PostCard key={p._id} {...p} />),
+					)}
+				</InfiniteScroll>
 			</Stack>
 		</Stack>
 	);

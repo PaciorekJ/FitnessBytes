@@ -30,7 +30,9 @@ type NotificationResponse = ResponseResult<INotification[]>;
 class NotificationServices {
 	private static fact = new EndpointFactory<NotificationResponse>("/notifications");
 
-    static getAll = () => this.fact.get<INotification[]>()();
+    static getAll = (pageNumber: number, pageLength: number) => this.fact.get<INotification[]>("/", {
+        params: {pageNumber, pageLength}
+    })();
     static delete = (id: string) => this.fact.delete<boolean>("/one/")(id);
     static deleteAll = () => this.fact.delete<number>("/all")();
     static deleteByConversation = this.fact.delete<number>("/conversation/")
