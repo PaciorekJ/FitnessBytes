@@ -1,13 +1,13 @@
 import Stack from "@mui/material/Stack";
+import InfiniteScroll from "react-infinite-scroll-component";
 import PageSpinner from "../components/PageSpinner";
 import PostCard from "../components/PostCard";
 import usePosts from "../hooks/usePosts";
-import { IPost } from "../services/PostServices";
 
 const Feed = () => {
-	const { data, isLoading } = usePosts();
+	const { data, isLoading, fetchNextPage, hasNextPage } = usePosts();
 
-	const posts: IPost[] = data || [];
+	const postsPages = data?.pages || [];
 
 	if (isLoading) return <PageSpinner />;
 
@@ -21,9 +21,15 @@ const Feed = () => {
 			paddingX={{ xs: 0, md: "5rem" }}
 			alignItems={"center"}>
 			<div id="top"></div>
-			{posts.map((p) => (
-				<PostCard key={p._id} {...p} />
-			))}
+			<InfiniteScroll
+				hasMore={hasNextPage}
+				loader={<PageSpinner />}
+				next={fetchNextPage}
+				dataLength={postsPages?.length || 0}>
+				{postsPages.map((postsPage) =>
+					postsPage?.map((p) => <PostCard key={p._id} {...p} />),
+				)}
+			</InfiniteScroll>
 		</Stack>
 	);
 };
