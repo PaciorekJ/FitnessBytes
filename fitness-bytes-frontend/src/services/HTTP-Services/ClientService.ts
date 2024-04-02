@@ -8,6 +8,7 @@ const axiosInstance = axios.create({
 export interface ResponseResult<T> {
     message: string;
     result?: T; 
+    next?: boolean;
 }
 
 class ClientService<T> {
