@@ -10,6 +10,7 @@ import { MessageNotificationProps } from "./MessageNotification";
 
 interface Props {
 	conversationId: string; // User of the selected conversation
+	
 }
 
 const Conversation = ({ conversationId }: Props) => {
