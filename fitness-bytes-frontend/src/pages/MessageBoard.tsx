@@ -11,6 +11,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
+import _ from "lodash";
 import { useEffect, useState } from "react";
 import AddConversationModal from "../components/AddConversationModal";
 import Conversation from "../components/Conversation";
@@ -31,10 +32,10 @@ const MessageBoard = () => {
 	useEffect(() => {
 		queryClient.setQueryData(
 			[`messages-${conversationId}`, conversationId],
-			(conversation: IMessage[] | undefined) => [
-				...(conversation || []),
-				newMessage,
-			],
+			(conversation: IMessage[] | undefined) => {
+				if (_.isEmpty(newMessage)) return conversation;
+				return [...(conversation || []), newMessage];
+			},
 		);
 	}, [conversationId, newMessage, queryClient]);
 
