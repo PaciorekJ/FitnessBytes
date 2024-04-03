@@ -1,9 +1,10 @@
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton, Stack, Typography } from "@mui/material";
+import { CircularProgress, IconButton, Stack, Typography } from "@mui/material";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import useBannerStore from "../hooks/useBannerStore";
 import NotificationServices, {
 	INotification,
 	NotificationTypes,
@@ -33,43 +34,54 @@ const Notification = ({
 	actionOnReject,
 	actionOnDelete = () => {},
 }: Props) => {
+	const [processingDelete, setProcessingDelete] = useState(false);
+	const setBanner = useBannerStore((s) => s.setBanner);
 	const client = useQueryClient();
 
 	const deleteNotification = async (fn: () => void = () => {}) => {
-		fn();
-		const res = await NotificationServices.delete(_id);
+		setProcessingDelete(true);
 
-		if (res) {
-			client.setQueryData<
-				InfiniteData<INotification[] | undefined, unknown> | undefined
-			>(["notifications"], (oldPages) => {
-				if (!oldPages) {
-					return {
-						pageParams: [],
-						pages: [],
-					};
-				}
+		try {
+			if (processingDelete) return;
+			fn();
+			await NotificationServices.delete(_id);
+		} catch {
+			setBanner("Failed to Delete Notification, Please Try Again!");
+			return;
+		}
 
-				const updatedPages = oldPages.pages.map(
-					(page) => page?.filter((n) => n._id !== _id) ?? [],
-				);
-
+		client.setQueryData<
+			InfiniteData<INotification[] | undefined, unknown> | undefined
+		>(["notifications"], (oldPages) => {
+			if (!oldPages) {
 				return {
-					...oldPages,
-					pages: updatedPages,
+					pageParams: [],
+					pages: [],
 				};
-			});
+			}
 
-			client.setQueryData<number>(["NotificationCount"], (old) => {
+			const updatedPages = oldPages.pages.map(
+				(page) => page?.filter((n) => n._id !== _id) ?? [],
+			);
+
+			return {
+				...oldPages,
+				pages: updatedPages,
+			};
+		});
+
+		client.setQueryData<number>(["NotificationCount"], (old) => {
+			return old ? old - 1 : 0;
+		});
+
+		if (type === NotificationTypes.MessageReceived) {
+			client.setQueryData<number>(["NotificationMessageCount"], (old) => {
 				return old ? old - 1 : 0;
 			});
-			if (type === NotificationTypes.MessageReceived) {
-				client.setQueryData<number>(["NotificationMessageCount"], (old) => {
-					return old ? old - 1 : 0;
-				});
-			}
 		}
+		setProcessingDelete(false);
 	};
+
 	return (
 		<Stack
 			sx={{
@@ -115,9 +127,18 @@ const Notification = ({
 					<Typography variant="subtitle2" fontSize={"0.5rem"}>
 						{ParseDateFromNow(timestamp)}
 					</Typography>
-					<IconButton onClick={() => deleteNotification(actionOnDelete)}>
-						<DeleteIcon />
-					</IconButton>
+					{!processingDelete ? (
+						<IconButton onClick={() => deleteNotification(actionOnDelete)}>
+							<DeleteIcon />
+						</IconButton>
+					) : (
+						<Stack
+							padding={1.5}
+							justifyContent={"center"}
+							alignItems={"center"}>
+							<CircularProgress size={"1rem"} />
+						</Stack>
+					)}
 				</Stack>
 			</Stack>
 		</Stack>
