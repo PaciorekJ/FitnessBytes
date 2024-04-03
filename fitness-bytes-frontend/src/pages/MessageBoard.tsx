@@ -1,35 +1,24 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import DeleteIcon from "@mui/icons-material/Delete";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import {
-	Avatar,
 	Box,
 	Button,
-	CircularProgress,
-	Divider,
 	Drawer,
 	Grid,
 	IconButton,
 	List,
-	ListItem,
-	ListItemButton,
-	ListItemIcon,
-	ListItemText,
 	Stack,
 	Typography,
-	useTheme,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import _ from "lodash";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AddConversationModal from "../components/AddConversationModal";
 import Conversation from "../components/Conversation";
+import ConversationListItem from "../components/ConversationListItem";
 import Messenger from "../components/Messenger";
 import useConversations from "../hooks/useConversations";
-import ConversationServices from "../services/ConversationService";
 import { IMessage } from "../services/MessageServices";
-import SocketServices from "../services/SocketServices";
-import NotificationServices from "../services/NotificationServices";
 
 const MessageBoard = () => {
 	const { data: conversations } = useConversations();
@@ -37,7 +26,6 @@ const MessageBoard = () => {
 	const [open, setOpen] = useState(true);
 	const [newMessage, setNewMessage] = useState<IMessage>({} as IMessage);
 	const [addConvoOpen, addConvoSetOpen] = useState(false);
-	const theme = useTheme();
 
 	const queryClient = useQueryClient();
 
@@ -53,18 +41,6 @@ const MessageBoard = () => {
 	}, [conversationId, newMessage, queryClient]);
 
 	const toggleDrawer = () => setOpen(!open);
-
-	const deleteConversation = async (id: string) => {
-		await ConversationServices.delete(id);
-
-		if (id === conversationId) {
-			setConversationId("");
-			SocketServices.leave(id);
-		}
-
-		await NotificationServices.deleteByConversation(id);
-		queryClient.invalidateQueries({ queryKey: ["conversations"] });
-	};
 
 	const list = () => (
 		<>
@@ -88,58 +64,16 @@ const MessageBoard = () => {
 						}}>
 						New Conversation
 					</Button>
-					{(conversations &&
-						conversations.map((c, i) => {
-							const convoTitle =
-								c.title ||
-								c.participantUsernames.join(", ") ||
-								"Empty Conversation";
-							return (
-								<React.Fragment key={"Contact__" + convoTitle + "-" + i}>
-									<Box
-										bgcolor={
-											c._id === conversationId
-												? theme.palette.primary.light
-												: ""
-										}
-										color={c._id === conversationId ? "white" : ""}>
-										<ListItem
-											disablePadding
-											secondaryAction={
-												<IconButton
-													onClick={(e) => {
-														e.stopPropagation();
-														setOpen(true);
-														deleteConversation(c._id);
-													}}
-													edge="end"
-													aria-label="delete">
-													<DeleteIcon />
-												</IconButton>
-											}>
-											<ListItemButton
-												onClick={() => {
-													SocketServices.leave(conversationId);
-													setConversationId(c._id);
-													SocketServices.join(c._id);
-												}}>
-												<ListItemIcon>
-													<Avatar aria-label="User Icon">
-														{convoTitle.charAt(0)}
-													</Avatar>
-												</ListItemIcon>
-												<ListItemText primary={convoTitle} />
-											</ListItemButton>
-										</ListItem>
-									</Box>
-									{i < conversations.length - 1 && <Divider />}
-								</React.Fragment>
-							);
-						})) || (
-						<Stack width={"100%"} alignItems={"center"}>
-							<CircularProgress />
-						</Stack>
-					)}
+					{conversations &&
+						conversations.map((c) => (
+							<ConversationListItem
+								key={c._id}
+								{...c}
+								conversationId={conversationId}
+								setOpen={setOpen}
+								setConversationId={setConversationId}
+							/>
+						))}
 				</List>
 			</Box>
 		</>
