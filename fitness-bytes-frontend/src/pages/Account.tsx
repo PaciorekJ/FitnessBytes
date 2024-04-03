@@ -43,6 +43,7 @@ const Account = () => {
 
 	const [editBioMode, setEditBioMode] = useState(false);
 	const [editableBio, setEditableBio] = useState(user?.bio || "");
+	const [processingBio, setProcessingBio] = useState(false);
 
 	useEffect(() => {
 		if (userIsLoading || !user?.bio) return;
@@ -59,6 +60,9 @@ const Account = () => {
 	const postCount = postCountData || 0;
 
 	const saveBio = async () => {
+		if (processingBio) return;
+
+		setProcessingBio(true);
 		const res = await UserServices.setBio(editableBio || "");
 		if (!res) {
 			setBanner(
@@ -66,7 +70,7 @@ const Account = () => {
 				true,
 			);
 		}
-
+		setProcessingBio(false);
 		setEditBioMode(false);
 	};
 
@@ -209,7 +213,11 @@ const Account = () => {
 					)}
 					{ownerPermissions && (
 						<Box>
-							{editBioMode ? (
+							{processingBio ? (
+								<Stack margin={1.5}>
+									<CircularProgress size={"1rem"} />
+								</Stack>
+							) : editBioMode ? (
 								<IconButton onClick={saveBio}>
 									<DoneTwoToneIcon />
 								</IconButton>
