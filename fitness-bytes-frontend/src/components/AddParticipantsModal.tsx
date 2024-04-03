@@ -50,18 +50,14 @@ const AddParticipantsModal = ({
 	useEffect(() => {
 		if (isLoading || !conversation) return;
 
-		const newParticipants: IUser[] = [];
-
-		conversation.participantIds.map((id, i) => {
-			const u: IUser = {
+		const newParticipants =
+			conversation.participantIds?.map((id, i) => ({
 				_id: id,
 				username: conversation.participantUsernames[i],
 				bio: "",
 				profilePicture: "",
 				profilePictureType: "",
-			};
-			newParticipants.push(u);
-		});
+			})) || [];
 
 		setParticipants(newParticipants);
 	}, [
