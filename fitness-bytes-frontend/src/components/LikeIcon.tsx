@@ -11,28 +11,42 @@ interface Props {
 
 const LikeIcon = ({ likes, postId }: Props) => {
 	const { data, isLoading } = useIsLiked(postId);
+	const [processingLike, setProcessingLike] = useState(false);
 	const [likeCount, setLikeCount] = useState(likes);
-
 	const [isLiked, setLiked] = useState<boolean>(data || false);
+
 	useEffect(() => {
-		if (data) {
+		if (data !== undefined) {
 			setLiked(data);
 		}
 	}, [data]);
 
-	if (isLoading)
+	const handleToggleLike = async () => {
+		if (processingLike) {
+			return;
+		}
+		setProcessingLike(true);
+
+		// Optimistically update UI
+		setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+		setLiked(!isLiked);
+
+		try {
+			await PostServices.like(postId);
+		} catch (error) {
+			setLikeCount(isLiked ? likeCount + 1 : likeCount - 1);
+			setLiked(isLiked);
+		} finally {
+			setProcessingLike(false);
+		}
+	};
+
+	if (isLoading || processingLike)
 		return (
 			<Stack paddingX={1.5} justifyContent={"center"} alignItems={"center"}>
 				<CircularProgress size={"1rem"} />
 			</Stack>
 		);
-
-	const handleToggleLike = async () => {
-		const result = await PostServices.like(postId);
-
-		setLikeCount(result ? likeCount + 1 : likeCount - 1);
-		setLiked(!isLiked);
-	};
 
 	return (
 		<Stack flexDirection={"row"} alignItems={"center"}>
