@@ -27,7 +27,7 @@ const Feed = () => {
 				next={fetchNextPage}
 				dataLength={postsPages?.length || 0}>
 				{postsPages.map((postsPage) =>
-					postsPage?.map((p) => <PostCard key={p._id} {...p} />),
+					postsPage?.map((p) => <PostCard key={p._id} {...p} postQueryKey="" />),
 				)}
 			</InfiniteScroll>
 		</Stack>

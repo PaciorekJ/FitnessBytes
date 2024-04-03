@@ -153,43 +153,48 @@ const PostCard = ({
 
 		if (imageForEdit) {
 			let res: true | IPostImage | undefined = true;
-			if (imageId) {
-				res = await PostServices.updateImage(
-					imageId,
-					imageForEdit.base64Array,
-					imageForEdit.type,
-				);
-
-				queryClient.setQueryData(
-					[`postImage-${imageId}`, imageId],
-					(oldImage: IPostImage | undefined) => {
-						return {
-							...oldImage,
-							image: imageForEdit.base64Array,
-							imageType: imageForEdit.type,
-						};
-					},
-				);
-			} else {
-				res = await PostServices.addImage(
-					_id,
-					imageForEdit.base64Array,
-					imageForEdit.type,
-				);
-				CurrentImageId = res?._id || "";
-			}
-
-			if (!res) {
-				setBanner("Failed to update Post Image", true);
-				return;
+			try {
+				if (imageId) {
+					res = await PostServices.updateImage(
+						imageId,
+						imageForEdit.base64Array,
+						imageForEdit.type,
+					);
+	
+					queryClient.setQueryData(
+						[`postImage-${imageId}`, imageId],
+						(oldImage: IPostImage | undefined) => {
+							return {
+								...oldImage,
+								image: imageForEdit.base64Array,
+								imageType: imageForEdit.type,
+							};
+						},
+					);
+				} else {
+					res = await PostServices.addImage(
+						_id,
+						imageForEdit.base64Array,
+						imageForEdit.type,
+					);
+					CurrentImageId = res?._id || "";
+				}
+			} catch {
+				if (!res) {
+					setBanner("Failed to update Post Image", true);
+					return;
+				}
 			}
 		}
 
 		queryClient.setQueryData<
 			InfiniteData<IPost[] | undefined, unknown> | undefined
 		>(["posts", postQueryKey], (oldPosts) => {
-			const updatedPages = oldPosts?.pages.map(
-				(page) =>
+			console.log("Old Posts");
+			console.log(oldPosts);
+			const updatedPages = oldPosts?.pages.map((page) => {
+				console.log("Old Page -> ", page);
+				return (
 					page?.map((post) => {
 						if (post._id === _id) {
 							return {
@@ -199,8 +204,9 @@ const PostCard = ({
 							};
 						}
 						return post;
-					}) || [],
-			) || [[]];
+					}) || []
+				);
+			}) || [[]];
 
 			return {
 				...oldPosts!,

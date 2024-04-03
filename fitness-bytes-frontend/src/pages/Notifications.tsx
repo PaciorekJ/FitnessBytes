@@ -63,9 +63,17 @@ const Notifications = () => {
 					dataLength={notificationPages?.length || 0}>
 					{notificationPages.map((notifications) => (
 						<Stack gap={2}>
-							{notifications?.map((n) => (
-								<React.Fragment key={n._id}>{fact.create(n)}</React.Fragment>
-							))}
+							{notifications?.map((n, i) => {
+								console.log(n);
+								return (
+									<React.Fragment
+										key={`${n._id} + ${n.dispatcherId.charAt(i) || i}) ${
+											n.dispatcherId
+										} - ${n.recipientId}`}>
+										{fact.create(n)}
+									</React.Fragment>
+								);
+							})}
 						</Stack>
 					))}
 				</InfiniteScroll>
