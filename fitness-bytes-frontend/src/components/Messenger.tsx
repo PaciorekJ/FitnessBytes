@@ -21,6 +21,7 @@ interface Props {
 const Messenger = ({ conversationId, setNewMessage }: Props) => {
 	const { register, reset, handleSubmit } = useForm();
 	const [isOpen, setOpen] = useState(false);
+	const [processingMessage, setProcessingMessage] = useState(false);
 
 	SocketServices.registerCallback(
 		"Message Recieved",
