@@ -1,6 +1,7 @@
 import GroupAddTwoToneIcon from "@mui/icons-material/GroupAddTwoTone";
 import SendIcon from "@mui/icons-material/Send";
 import {
+	CircularProgress,
 	Divider,
 	IconButton,
 	InputAdornment,
@@ -29,6 +30,9 @@ const Messenger = ({ conversationId, setNewMessage }: Props) => {
 	);
 
 	const handleUserMessage = async (data: FieldValues) => {
+		if (processingMessage) return;
+		setProcessingMessage(true);
+
 		const newMessage =
 			(await MessageServices.create(conversationId, data.message)) ||
 			({} as IMessage);
@@ -38,6 +42,8 @@ const Messenger = ({ conversationId, setNewMessage }: Props) => {
 		reset();
 
 		setNewMessage(newMessage);
+
+		setProcessingMessage(false);
 	};
 
 	return (
@@ -76,22 +82,31 @@ const Messenger = ({ conversationId, setNewMessage }: Props) => {
 						</IconButton>
 					}
 					endAdornment={
-						<InputAdornment position="end">
-							<IconButton
-								aria-label="send the message"
-								type="submit"
-								sx={{
-									":hover": {
-										background: "0",
-										color: "primary.main",
-									},
-								}}
-								size={"large"}
-								edge="end">
-								<Divider orientation="vertical" />
-								<SendIcon />
-							</IconButton>
-						</InputAdornment>
+						processingMessage ? (
+							<Stack
+								paddingX={1}
+								justifyContent={"center"}
+								alignItems={"center"}>
+								<CircularProgress size={"1rem"} />
+							</Stack>
+						) : (
+							<InputAdornment position="end">
+								<IconButton
+									aria-label="send the message"
+									type="submit"
+									sx={{
+										":hover": {
+											background: "0",
+											color: "primary.main",
+										},
+									}}
+									size={"large"}
+									edge="end">
+									<Divider orientation="vertical" />
+									<SendIcon />
+								</IconButton>
+							</InputAdornment>
+						)
 					}
 				/>
 			</form>
