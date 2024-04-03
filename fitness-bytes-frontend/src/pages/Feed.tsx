@@ -12,24 +12,21 @@ const Feed = () => {
 	if (isLoading) return <PageSpinner />;
 
 	return (
-		<Stack
-			boxSizing={"border-box"}
-			width={"100%"}
-			padding={2}
-			maxWidth={"700px"}
-			margin={"auto"}
-			paddingX={{ xs: 0, md: "5rem" }}
-			alignItems={"center"}>
-			<div id="top"></div>
-			<InfiniteScroll
-				hasMore={hasNextPage}
-				loader={<PageSpinner />}
-				next={fetchNextPage}
-				dataLength={postsPages?.length || 0}>
-				{postsPages.map((postsPage) =>
-					postsPage?.map((p) => <PostCard key={p._id} {...p} postQueryKey="" />),
-				)}
-			</InfiniteScroll>
+		<Stack alignItems={"center"} padding={2}>
+			<Stack width={"100%"} maxWidth={"700px"}>
+				<div id="top"></div>
+				<InfiniteScroll
+					hasMore={hasNextPage}
+					loader={<PageSpinner />}
+					next={fetchNextPage}
+					dataLength={postsPages?.length || 0}>
+					{postsPages.map((postsPage) =>
+						postsPage?.map((p) => (
+							<PostCard key={p._id} {...p} postQueryKey="" />
+						)),
+					)}
+				</InfiniteScroll>
+			</Stack>
 		</Stack>
 	);
 };
