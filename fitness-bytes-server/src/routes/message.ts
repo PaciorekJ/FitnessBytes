@@ -15,6 +15,10 @@ messageRouter.get('/:conversationId', authMiddleware, async (req, res) => {
     const username = (req.user as IUser).username;
     let _id: string | mongoose.Types.ObjectId = req.params.conversationId;
 
+    const {pageLength: pageLengthRaw, pageNumber: pageNumberRaw} = req.query as {pageLength: string, pageNumber: string};
+    const pageLength = parseInt(pageLengthRaw) || 5;
+    const pageNumber = parseInt(pageNumberRaw) || 0;
+
     // *** Verify User has access to this conversation ***
     try {
         _id = new mongoose.Types.ObjectId(_id);
@@ -33,7 +37,25 @@ messageRouter.get('/:conversationId', authMiddleware, async (req, res) => {
         }
 
         // *** Retrieve messages ***
-        const messages = await MessageModel.find({conversation: _id});
+        const messages = await MessageModel.aggregate(
+            [
+                {
+                    $match: {
+                        conversation: _id
+                    }
+                },
+                {
+                    $sort: { "timeCreated": -1 },
+                },
+                {
+                    $skip: pageLength * pageNumber,
+                },
+                {
+                    $limit: pageLength
+                },
+
+            ]
+        );
 
         return res.json({
             message: "",
