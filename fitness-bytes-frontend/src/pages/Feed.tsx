@@ -7,7 +7,7 @@ import usePosts from "../hooks/usePosts";
 const Feed = () => {
 	const { data, isLoading, fetchNextPage, hasNextPage } = usePosts();
 
-	const postsPages = data?.pages || [];
+	const postsPages = data?.pages || [[]];
 
 	if (isLoading) return <PageSpinner />;
 
@@ -19,12 +19,24 @@ const Feed = () => {
 					hasMore={hasNextPage}
 					loader={<PageSpinner />}
 					next={fetchNextPage}
-					dataLength={postsPages?.length || 0}>
-					{postsPages.map((postsPage) =>
-						postsPage?.map((p) => (
-							<PostCard key={p._id} {...p} postQueryKey="" />
-						)),
-					)}
+					dataLength={postsPages?.reduce(
+						(acc, page) => acc + (Array.isArray(page) ? page.length : 0),
+						0,
+					)}>
+					{postsPages.map((postsPage, index) => {
+						// Ensure postsPage is always an array
+						if (!Array.isArray(postsPage)) {
+							console.error(
+								`Expected postsPage to be an array but got: `,
+								postsPage,
+							);
+							return null; // Return null or an appropriate fallback
+						}
+
+						return postsPage.map((p) => (
+							<PostCard key={`${p._id}-${index}`} {...p} postQueryKey="" />
+						));
+					})}
 				</InfiniteScroll>
 			</Stack>
 		</Stack>
