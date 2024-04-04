@@ -10,6 +10,7 @@ const useNotifications = () => {
         queryFn: ({pageParam = 0}) => NotificationServices.getAll(pageParam, PAGE_LENGTH),
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
+            if (!lastPage) return 0;
             return (lastPage?.length || 0) >= PAGE_LENGTH ?  allPages.length + 1 : undefined;
         },
     })

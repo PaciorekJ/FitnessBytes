@@ -5,13 +5,12 @@ import {
 	Button,
 	CircularProgress,
 	Drawer,
-	Grid,
 	IconButton,
 	List,
 	Stack,
 	Typography,
 } from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import AddConversationModal from "../components/AddConversationModal";
@@ -33,9 +32,22 @@ const MessageBoard = () => {
 	useEffect(() => {
 		queryClient.setQueryData(
 			[`messages-${conversationId}`, conversationId],
-			(conversation: IMessage[] | undefined) => {
-				if (_.isEmpty(newMessage)) return conversation;
-				return [...(conversation || []), newMessage];
+			(oldConversations: InfiniteData<IMessage[] | undefined> | undefined) => {
+				if (!newMessage || _.isEmpty(newMessage)) {
+					return oldConversations || { pageParams: [], pages: [] };
+				}
+
+				const oldPages = oldConversations?.pages || [];
+
+				const updatedPages =
+					oldPages.length > 0
+						? [[newMessage, ...(oldPages[0] || [])], ...oldPages.slice(1)]
+						: [[newMessage]];
+
+				return {
+					...oldConversations,
+					pages: updatedPages,
+				};
 			},
 		);
 	}, [conversationId, newMessage, queryClient]);
@@ -74,7 +86,7 @@ const MessageBoard = () => {
 								setConversationId={setConversationId}
 							/>
 						))}
-						
+
 					{isLoading && (
 						<Stack
 							sx={{
@@ -94,6 +106,9 @@ const MessageBoard = () => {
 
 	return (
 		<>
+			<Drawer anchor={"left"} open={open} onClose={toggleDrawer}>
+				{list()}
+			</Drawer>
 			<Box position={"absolute"} top={"12vh"} left={0}>
 				<IconButton
 					size="large"
@@ -108,34 +123,19 @@ const MessageBoard = () => {
 					<RecentActorsIcon fontSize={"large"} color="primary" />
 				</IconButton>
 			</Box>
-			<Grid padding={2} width={"100%"} height={"100%"} container columns={5}>
-				<Grid item xs={0}>
-					<Drawer anchor={"left"} open={open} onClose={toggleDrawer}>
-						{list()}
-					</Drawer>
-				</Grid>
-				<Grid item xs={5}>
-					{(conversationId && (
-						<Stack
-							overflow={"hidden"}
-							maxWidth={"800px"}
-							marginX={"auto"}
-							justifyContent={"end"}>
-							{conversations && (
-								<Conversation conversationId={conversationId} />
-							)}
-							<Messenger
-								setNewMessage={setNewMessage}
-								conversationId={conversationId}
-							/>
-						</Stack>
-					)) || (
-						<Typography align={"center"} color={"text.disabled"}>
-							No Conversation Selected
-						</Typography>
-					)}
-				</Grid>
-			</Grid>
+			{(conversationId && (
+				<>
+					<Conversation conversationId={conversationId} />
+					<Messenger
+						conversationId={conversationId}
+						setNewMessage={setNewMessage}
+					/>
+				</>
+			)) || (
+				<Typography align={"center"} color={"text.disabled"}>
+					No Conversation Selected
+				</Typography>
+			)}
 		</>
 	);
 };

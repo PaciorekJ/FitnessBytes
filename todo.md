@@ -5,9 +5,8 @@
 
 # Chunk 4
 
-* Make so users, notification, and messages are paginated and then use infinity query to fetch them.
+* Make so users are paginated and then use infinity query to fetch them.
 
-* Make sure delete works, update works with infinity query.
 * Make Alert/Notification/Banner sticky to the top while scrolling
 
 # Chunk 5

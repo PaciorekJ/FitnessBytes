@@ -55,26 +55,31 @@ const Conversation = ({ conversationId }: Props) => {
 		queryClient.invalidateQueries({ queryKey: ["NotificationCount"] });
 	}, [isLoading, conversationId, queryClient]);
 
+	if (isLoading)
+		return (
+			<Stack
+				sx={{
+					width: "100%",
+					height: "100%",
+					alignItems: "center",
+					justifyContent: "start",
+					margin: "auto",
+				}}>
+				<CircularProgress color="secondary" />
+			</Stack>
+		);
+
 	return (
 		<>
-			{isLoading && (
-				<Stack
-					sx={{
-						width: "100%",
-						height: "100%",
-						alignItems: "center",
-						justifyContent: "start",
-						margin: "auto",
-					}}>
-					<CircularProgress color="secondary" />
-				</Stack>
-			)}
-			{!isLoading &&
-				!conversationPages.reduce((acc, e) => (acc += e?.length || 0), 0) && (
+			{conversationPages &&
+				!conversationPages.reduce((acc, e) => (acc += (e || []).length), 0) && (
 					<Stack
 						sx={{
-							width: "100%",
-							height: "100%",
+							position: "absolute",
+							top: "40%",
+							left: "50%",
+							transform: "translate(-50%)",
+							width: "100vw",
 							alignItems: "center",
 							justifyContent: "start",
 							margin: "auto",
@@ -88,10 +93,13 @@ const Conversation = ({ conversationId }: Props) => {
 			<Stack
 				id="scrollableDiv"
 				sx={{
-					height: 500,
-					overflow: "auto",
+					height: "80vh",
+					maxHeight: "100%",
+					overflowY: "scroll",
+					flex: "1 1 auto",
 					flexDirection: "column-reverse",
 				}}>
+				<div ref={messagesEndRef}></div>
 				<InfiniteScroll
 					dataLength={conversationPages.reduce(
 						(acc1, page) => (acc1 += (page || []).length),
@@ -106,6 +114,14 @@ const Conversation = ({ conversationId }: Props) => {
 					inverse={true}
 					hasMore={hasNextPage}
 					loader={<PageSpinner />}
+					endMessage={
+						<Typography
+							textAlign={"center"}
+							variant="body2"
+							color={"text.disabled"}>
+							Start of the Conversation
+						</Typography>
+					}
 					scrollableTarget="scrollableDiv">
 					{conversationPages.map((conversationPage, i) => (
 						<React.Fragment
@@ -122,7 +138,6 @@ const Conversation = ({ conversationId }: Props) => {
 					))}
 				</InfiniteScroll>
 			</Stack>
-			<div ref={messagesEndRef}></div>
 		</>
 	);
 };

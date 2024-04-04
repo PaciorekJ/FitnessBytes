@@ -21,7 +21,7 @@ conversationRouter.get('/', authMiddleware, async (req, res) => {
     }
 
     res.json({
-        message: "",
+    message: "",
         result: conversations,
     })
 
