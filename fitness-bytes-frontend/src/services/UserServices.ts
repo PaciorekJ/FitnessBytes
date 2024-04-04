@@ -28,7 +28,7 @@ class UserServices {
 	static signup = UserServices.fact.post<boolean, AuthData>("/signup");
 	static logout = () => UserServices.fact.post<boolean, undefined>("/logout")(undefined);
 	static isAuth = () => UserServices.fact.get<string>("/auth")("");
-	static search = (query: string, excludeFriends: boolean) => UserServices.fact.get<IUser[]>("/search", { params: excludeFriends ? { query, excludeFriends }: { query } })("");
+	static search = (query: string, excludeFriends: boolean, pageNumber: number, pageLength: number) => UserServices.fact.get<IUser[]>("/search", { params: excludeFriends ? { query, excludeFriends, pageNumber, pageLength }: { query, pageNumber, pageLength } })("");
 	static setBio = (bio: string) => UserServices.fact.patch<boolean, IUser>("/bio")({ bio })
 	static setProfilePicture = (profilePicture: string, profilePictureType: string) => UserServices.fact.patch<boolean, IUser>("/profilePicture")({ 
 		profilePicture, 
