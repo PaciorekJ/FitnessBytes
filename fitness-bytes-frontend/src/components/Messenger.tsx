@@ -47,7 +47,12 @@ const Messenger = ({ conversationId, setNewMessage }: Props) => {
 	};
 
 	return (
-		<Stack marginY={2} minWidth={"100%"}>
+		<Stack
+			position={"absolute"}
+			sx={{ backgroundColor: "background.default" }}
+			bottom={0}
+			padding={2}
+			width={"100%"}>
 			<AddParticipantsModal
 				conversationId={conversationId}
 				setOpen={setOpen}
