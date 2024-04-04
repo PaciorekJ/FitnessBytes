@@ -2,10 +2,11 @@
 import { useQuery } from "@tanstack/react-query";
 import PostServices from "../services/PostServices";
 
-const usePost = (_id: string = "") => {
+const usePost = (id: string) => {
     return useQuery({
-        queryKey: [`post-${_id}`],
-        queryFn: () => PostServices.getOne(_id),
+        queryKey: [`post-${id}`, id],
+        queryFn: () => PostServices.getOne(id),
+        enabled: !!id,
     });
 }
 
