@@ -12,6 +12,7 @@ const useMessages = (id: string) => {
         getNextPageParam: (lastPage, allPages) => {
 			return lastPage?.length !== 0 ? allPages.length + 1 : undefined
         },
+        enabled: !!id,
     })
 }
 
