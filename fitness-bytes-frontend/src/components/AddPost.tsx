@@ -2,7 +2,7 @@ import HistoryEduOutlinedIcon from "@mui/icons-material/HistoryEduOutlined";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useBannerStore from "../hooks/useBannerStore";
@@ -58,15 +58,33 @@ const AddPost = () => {
 			}
 		}
 
-		queryClient.setQueryData(["posts", ""], (oldPosts: IPost[] | undefined) => [
-			{
-				...post,
-				profilePicture: user?.profilePicture,
-				profilePictureType: user?.profilePictureType,
-				imageId: res?._id,
+		queryClient.setQueryData(
+			["posts", ""],
+			(oldPosts: InfiniteData<IPost[] | undefined, unknown> | undefined) => {
+				if (!oldPosts || !oldPosts.pages) {
+					return {
+						pageParams: [],
+						pages: [],
+					};
+				}
+
+				const newPost = {
+					...post,
+					profilePicture: user?.profilePicture,
+					profilePictureType: user?.profilePictureType,
+					imageId: res?._id,
+				};
+
+				const updatedPages = oldPosts.pages.map((page, index) =>
+					index === 0 ? [newPost, ...(page || [])] : page,
+				);
+
+				return {
+					...oldPosts,
+					pages: updatedPages,
+				};
 			},
-			...(oldPosts || []),
-		]);
+		);
 
 		closeModal();
 		setError("");

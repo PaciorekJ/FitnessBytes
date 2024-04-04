@@ -10,7 +10,7 @@ const useMessages = (id: string) => {
         queryFn: ({pageParam = 0}) => MessageServices.getAll(id, pageParam, PAGE_LENGTH),
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
-			return lastPage?.length !== 0 ? allPages.length + 1 : undefined
+            return (lastPage?.length || 0) >= PAGE_LENGTH ?  allPages.length + 1 : undefined;
         },
         enabled: !!id,
     })

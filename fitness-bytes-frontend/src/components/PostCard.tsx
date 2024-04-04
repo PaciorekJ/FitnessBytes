@@ -108,6 +108,12 @@ const PostCard = ({
 				pages: updatedPages,
 			};
 		});
+
+		if (postQueryKey) {
+			queryClient.invalidateQueries({
+				queryKey: [`userPostCount-${postQueryKey}`, postQueryKey],
+			});
+		}
 	}, [_id, postQueryKey, queryClient, setBanner]);
 
 	const handleReport = async () => {
@@ -160,7 +166,7 @@ const PostCard = ({
 						imageForEdit.base64Array,
 						imageForEdit.type,
 					);
-	
+
 					queryClient.setQueryData(
 						[`postImage-${imageId}`, imageId],
 						(oldImage: IPostImage | undefined) => {
