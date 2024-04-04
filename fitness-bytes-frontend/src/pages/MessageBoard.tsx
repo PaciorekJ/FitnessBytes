@@ -132,7 +132,12 @@ const MessageBoard = () => {
 					/>
 				</>
 			)) || (
-				<Typography align={"center"} color={"text.disabled"}>
+				<Typography
+					position={"absolute"}
+					top={"45%"}
+					width={"100%"}
+					align={"center"}
+					color={"text.disabled"}>
 					No Conversation Selected
 				</Typography>
 			)}

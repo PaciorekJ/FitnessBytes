@@ -74,20 +74,17 @@ const Conversation = ({ conversationId }: Props) => {
 			{conversationPages &&
 				!conversationPages.reduce((acc, e) => (acc += (e || []).length), 0) && (
 					<Stack
-						sx={{
-							position: "absolute",
-							top: "40%",
-							left: "50%",
-							transform: "translate(-50%)",
-							width: "100vw",
-							alignItems: "center",
-							justifyContent: "start",
-							margin: "auto",
-						}}>
-						<Typography variant="body2" color={"text.disabled"} component="h3">
-							Go on, send the first message
+						position={"absolute"}
+						top={"45%"}
+						width={"100%"}
+						color={"text.disabled"}>
+						<Typography
+							variant="body2"
+							textAlign={"center"}
+							color={"text.disabled"}
+							component="h3">
+							Go on, send the first message <br /> 😁
 						</Typography>
-						😁
 					</Stack>
 				)}
 			<Stack
