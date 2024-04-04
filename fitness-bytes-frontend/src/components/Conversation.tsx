@@ -10,7 +10,7 @@ import { MessageNotificationProps } from "./MessageNotification";
 import PageSpinner from "./PageSpinner";
 
 interface Props {
-	conversationId: string; // User of the selected conversation
+	conversationId: string;
 }
 
 const Conversation = ({ conversationId }: Props) => {
