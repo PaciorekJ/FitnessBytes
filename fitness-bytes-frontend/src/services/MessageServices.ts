@@ -22,7 +22,9 @@ class MessageServices {
         conversation: _id,
         content: content
     });
-    static getAll = (conversationId: string) => this.factMessage.get<IMessage[]>()(conversationId);
+    static getAll = (conversationId: string, pageNumber: number, pageLength: number) => this.factMessage.get<IMessage[]>("/", {
+        params: {pageNumber, pageLength}
+    })(conversationId);
 }
 
 export type { IMessage };

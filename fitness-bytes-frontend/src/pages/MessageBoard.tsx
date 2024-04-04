@@ -3,6 +3,7 @@ import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import {
 	Box,
 	Button,
+	CircularProgress,
 	Drawer,
 	Grid,
 	IconButton,
@@ -21,7 +22,7 @@ import useConversations from "../hooks/useConversations";
 import { IMessage } from "../services/MessageServices";
 
 const MessageBoard = () => {
-	const { data: conversations } = useConversations();
+	const { data: conversations, isLoading } = useConversations();
 	const [conversationId, setConversationId] = useState("");
 	const [open, setOpen] = useState(true);
 	const [newMessage, setNewMessage] = useState<IMessage>({} as IMessage);
@@ -73,6 +74,19 @@ const MessageBoard = () => {
 								setConversationId={setConversationId}
 							/>
 						))}
+						
+					{isLoading && (
+						<Stack
+							sx={{
+								width: "100%",
+								height: "100%",
+								alignItems: "center",
+								justifyContent: "start",
+								margin: "auto",
+							}}>
+							<CircularProgress color="secondary" />
+						</Stack>
+					)}
 				</List>
 			</Box>
 		</>
@@ -80,7 +94,7 @@ const MessageBoard = () => {
 
 	return (
 		<>
-			<Box position={"sticky"} top={"10vh"} left={0}>
+			<Box position={"absolute"} top={"12vh"} left={0}>
 				<IconButton
 					size="large"
 					sx={{
@@ -103,7 +117,7 @@ const MessageBoard = () => {
 				<Grid item xs={5}>
 					{(conversationId && (
 						<Stack
-							minHeight={"78vh"}
+							overflow={"hidden"}
 							maxWidth={"800px"}
 							marginX={"auto"}
 							justifyContent={"end"}>
