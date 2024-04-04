@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import {
 	Box,
@@ -14,24 +15,37 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
-import { FieldValues, useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import useBannerStore from "../hooks/useBannerStore";
+import useUsers from "../hooks/useUsers";
 import FriendRequestServices from "../services/FriendRequestServices";
-import UserServices, { IUser } from "../services/UserServices";
+import { IUser } from "../services/UserServices";
+import PageSpinner from "./PageSpinner";
 import ProfilePicture from "./ProfilePicture";
 
 const AddFriend = () => {
+	const { register, reset, setValue } = useForm({
+		mode: "onChange",
+	});
+
 	const [isOpen, setOpen] = useState(false);
-	const [searchResults, setSearchResults] = useState<IUser[]>([]);
 	const setBanner = useBannerStore((s) => s.setBanner);
 	const theme = useTheme();
 
-	const { register, handleSubmit, setValue, reset } = useForm({
-		mode: "onChange",
-	});
+	const [searchTerm, setSearchTerm] = useState("");
+	const { data, isLoading } = useUsers(searchTerm, true);
+
+	const client = useQueryClient();
+
+	const searchResultsPages = data?.pages || [[]];
+
+	useEffect(() => {
+		client.invalidateQueries({ queryKey: [`userSearch`] });
+	}, [client, searchTerm]);
 
 	const openModal = () => setOpen(true);
 	const closeModal = () => setOpen(false);
@@ -51,12 +65,6 @@ const AddFriend = () => {
 		overflowY: "scroll",
 	};
 
-	async function handleSearch(data: FieldValues) {
-		const users = await UserServices.search(data.searchContent, true);
-
-		setSearchResults(users || []);
-	}
-	
 	const handleAddFriend = async (_id: string, toUsername: string) => {
 		const friendRequest = await FriendRequestServices.create(_id);
 
@@ -107,7 +115,7 @@ const AddFriend = () => {
 							{...register("searchContent")}
 							onChange={(e) => {
 								setValue("searchContent", e.target.value);
-								handleSubmit(handleSearch)();
+								setSearchTerm(e.target.value);
 							}}
 							placeholder="Search For a Friend..."
 							inputProps={{ "aria-label": "Search For a Friend!" }}
@@ -117,35 +125,49 @@ const AddFriend = () => {
 						</IconButton>
 					</Stack>
 					<List>
-						{searchResults.length ? (
-							searchResults.map((u: IUser, i) => (
-								<ListItem key={"Search__Result- " + i}>
-									<ListItemButton href={"/auth/account/" + u.username}>
-										<Stack flexDirection={"row"}>
-											<ProfilePicture username={u.username} />
-											<ListItem>
-												<Typography>{u.username}</Typography>
+						{isLoading ? (
+							<PageSpinner margin={"2rem"} />
+						) : searchResultsPages.reduce(
+								(acc, searchResultPage) =>
+									(acc += (searchResultPage || []).length),
+								0,
+						  ) ? (
+							searchResultsPages.map((searchResultPage, i) => (
+								<React.Fragment key={"SEARCH-RESULT-USERS-" + i}>
+									{searchResultPage &&
+										searchResultPage.map((u: IUser, j) => (
+											<ListItem key={"Search__Result- " + j}>
+												<ListItemButton href={"/auth/account/" + u.username}>
+													<Stack flexDirection={"row"}>
+														<ProfilePicture username={u.username} />
+														<ListItem>
+															<Typography>{u.username}</Typography>
+														</ListItem>
+													</Stack>
+													<ListItemIcon sx={{ marginLeft: "auto" }}>
+														<IconButton
+															onClick={(e) => {
+																e.preventDefault();
+																closeModal();
+																setSearchTerm("");
+																reset();
+																handleAddFriend(u._id, u.username);
+															}}>
+															<PersonAddOutlinedIcon color="primary" />
+														</IconButton>
+													</ListItemIcon>
+												</ListItemButton>
+												<Divider />
 											</ListItem>
-										</Stack>
-										<ListItemIcon sx={{ marginLeft: "auto" }}>
-											<IconButton
-												onClick={(e) => {
-													e.preventDefault();
-													closeModal();
-													setSearchResults([]);
-													reset();
-													handleAddFriend(u._id, u.username);
-												}}>
-												<PersonAddOutlinedIcon color="primary" />
-											</IconButton>
-										</ListItemIcon>
-									</ListItemButton>
-									<Divider />
-								</ListItem>
+										))}
+								</React.Fragment>
 							))
 						) : (
 							<ListItem sx={{ justifyContent: "center" }}>
-								<Typography component={"p"} color={"text.disabled"}>
+								<Typography
+									margin={"3rem"}
+									component={"p"}
+									color={"text.disabled"}>
 									No Results
 								</Typography>
 							</ListItem>

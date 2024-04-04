@@ -112,6 +112,10 @@ userRouter.get("/search", authMiddleware, async (req, res) => {
     const { username, _id } = req.user as IUser;
     const { query, excludeFriends } = req.query as {query: string, excludeFriends: string};
 
+    const {pageLength: pageLengthRaw, pageNumber: pageNumberRaw} = req.query as {pageLength: string, pageNumber: string};
+    const pageLength = parseInt(pageLengthRaw) || 10;
+    const pageNumber = parseInt(pageNumberRaw) || 0;
+
     try {
         const regex = new RegExp(escapeRegExp(query || ".*"), 'i');
         
@@ -132,7 +136,7 @@ userRouter.get("/search", authMiddleware, async (req, res) => {
                     { username: {$ne: username }},
                     { _id: { $nin: friendIds } }
                 ]
-            }).select("-password");
+            }).skip(pageLength * pageNumber).limit(pageLength).select("-password");
     
             return res.json({
                 message: "",

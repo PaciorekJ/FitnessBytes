@@ -1,6 +1,6 @@
-import { CircularProgress, Stack } from "@mui/material";
+import { CircularProgress, Stack, SxProps } from "@mui/material";
 
-const PageSpinner = () => {
+const PageSpinner = (sx: SxProps = {}) => {
 	return (
 		<Stack
 			boxSizing={"border-box"}
@@ -11,7 +11,7 @@ const PageSpinner = () => {
 			alignItems={"center"}>
 			<div id="top"></div>
 			<CircularProgress
-				sx={{ marginTop: "20vh" }}
+				sx={{ marginTop: "20vh", ...sx }}
 				size={"50px"}
 				color="secondary"
 			/>
