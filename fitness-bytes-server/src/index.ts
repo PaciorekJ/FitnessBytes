@@ -15,6 +15,7 @@ import messageRouter from './routes/message';
 import notificationRouter from './routes/notifcations';
 import postRouter from './routes/post';
 import postsRouter from './routes/posts';
+import replyRouter from './routes/reply';
 import reportRouter from './routes/report';
 import userRouter from './routes/user';
 import userConfigRouter from './routes/userConfig';
@@ -69,6 +70,7 @@ app.use('/friendRequest', friendRequestRouter);
 app.use('/friend', friendRouter);
 app.use('/notifications', notificationRouter);
 app.use('/userConfig', userConfigRouter);
+app.use('/reply', replyRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err.name === 'PayloadTooLargeError') {
