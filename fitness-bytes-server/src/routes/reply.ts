@@ -16,11 +16,11 @@ replyRouter.get("/postRepliesCount/:postId", authMiddleware, async (req, res) =>
     try {
         const postId = new mongoose.Types.ObjectId(postIdRaw);
     
-        const replies = await ReplyModel.countDocuments({postId, parentReplyId: null});
+        const replyCount = await ReplyModel.countDocuments({postId, parentReplyId: null});
     
         return res.json({ 
             message: "",
-            result: replies
+            result: replyCount
         });
         
     } catch (e) {
@@ -40,11 +40,11 @@ replyRouter.get("/replyRepliesCount/:replyId", authMiddleware, async (req, res) 
     try {
         const replyId = new mongoose.Types.ObjectId(replyIdRaw);
 
-        const replies = await ReplyModel.countDocuments({parentReplyId: replyId});
+        const replyCount = await ReplyModel.countDocuments({parentReplyId: replyId});
 
         return res.json({ 
             message: "",
-            result: replies
+            result: replyCount
         });
 
     } catch (e) {
