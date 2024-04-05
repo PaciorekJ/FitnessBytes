@@ -18,11 +18,11 @@ const useThemeStore = create<Theme>(set => {
         nativeLight = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : '';
     }
 
-    // Check localStorage for darkMode setttings
+    // Check localStorage for darkMode settings
     const localStorageLight = localStorage.getItem('themeMode') === 'light' ? 'light' : '';
     const localStorageDark = localStorage.getItem('themeMode') === 'dark' ? 'dark' : '';
     
-    const defaultMode = 'light';
+    const defaultMode = 'dark';
 
     const mode = localStorageDark || localStorageLight || nativeLight || nativeDark || defaultMode;
     
