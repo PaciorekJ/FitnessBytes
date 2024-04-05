@@ -6,8 +6,8 @@ interface IPostLike extends Document {
 }
 
 const PostLikeSchema: Schema = new Schema({
-  postID: { type: Schema.Types.ObjectId, required: true, ref: 'Post' },
-  userID: { type: Schema.Types.ObjectId, required: true, ref: 'User' }
+  postID: { type: Schema.Types.ObjectId, required: true, index: true,  ref: 'Post' },
+  userID: { type: Schema.Types.ObjectId, required: true, index: true, ref: 'User' }
 });
 
 const PostLikeModel = mongoose.model<IPostLike>('PostLike', PostLikeSchema);

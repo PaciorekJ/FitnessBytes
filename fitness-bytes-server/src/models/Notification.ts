@@ -22,9 +22,9 @@ interface INotification extends Document {
 
 const NotificationSchema = new Schema<INotification>({
     type: { type: String, enum: Object.values(NotificationTypes), required: true },
-    recipientId: { type: Schema.Types.ObjectId, required: true},
+    recipientId: { type: Schema.Types.ObjectId, required: true, index: true, ref: 'User' },
     recipientUsername: { type: String, required: true },
-    dispatcherId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    dispatcherId: { type: Schema.Types.ObjectId, required: true, index: true, ref: 'User' },
     dispatcherUsername: { type: String, required: true },
     timeCreated: { type: Date, default: Date.now },
 }, { discriminatorKey: 'type', collection: 'Notifications' });
