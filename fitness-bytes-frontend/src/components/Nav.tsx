@@ -69,11 +69,10 @@ const Nav = () => {
 			navigator("/");
 		}
 	};
-
-	//TODO: For smaller layout condense nav to a Triple Bar button
+	
 	return (
 		<Stack
-			display={bannerIsOpen ? "none" : ""}
+			display={bannerIsOpen ? "none" : "block"}
 			zIndex={"100"}
 			position={"sticky"}
 			top={0}

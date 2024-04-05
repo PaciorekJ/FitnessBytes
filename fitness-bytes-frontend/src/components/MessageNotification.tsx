@@ -4,7 +4,7 @@ import Notification from "./Notification";
 import ProfilePicture from "./ProfilePicture";
 
 interface MessageNotificationProps extends INotification {
-	converstionId: string;
+	conversationId: string;
 }
 
 const MessageNotification = ({

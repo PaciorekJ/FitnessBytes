@@ -29,8 +29,8 @@ const Conversation = ({ conversationId }: Props) => {
 		if (
 			typeof banner.notification !== "string" &&
 			notification &&
-			notification.converstionId &&
-			notification.converstionId === conversationId
+			notification.conversationId &&
+			notification.conversationId === conversationId
 		) {
 			setBanner("");
 			NotificationServices.deleteByConversation(conversationId);
