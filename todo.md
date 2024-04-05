@@ -3,12 +3,6 @@
 * Post should be able to have replies
   * Add Notification for replies
 
-# Chunk 4
-
-* Make so users are paginated and then use infinity query to fetch them.
-
-* Make Alert/Notification/Banner sticky to the top while scrolling
-
 # Chunk 5
 
 * Revamp home page to include a call to action and a section about Fitness Bytes, and a hero section.

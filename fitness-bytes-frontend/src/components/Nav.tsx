@@ -14,9 +14,11 @@ import {
 	Paper,
 	Stack,
 	Tooltip,
+	Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useBannerStore from "../hooks/useBannerStore";
 import useNotificationCount from "../hooks/useNotificationCount";
 import useNotificationMessageCount from "../hooks/useNotificationMessageCount";
 import useUserStore from "../hooks/useUserStore";
@@ -36,6 +38,17 @@ const Nav = () => {
 		isLoading: isLoadingNotiMessageCount,
 	} = useNotificationMessageCount();
 	const navigator = useNavigate();
+	const bannerIsOpen = useBannerStore((s) => s.isOpen);
+	const [burgerMode, setBurgerMode] = useState(window.innerWidth < 500);
+
+	useEffect(() => {
+		const setBurger = () => {
+			setBurgerMode(window.innerWidth < 500);
+		};
+
+		window.addEventListener("resize", setBurger);
+		return () => window.removeEventListener("resize", setBurger);
+	}, []);
 
 	const open = Boolean(anchorEl);
 
@@ -59,7 +72,12 @@ const Nav = () => {
 
 	//TODO: For smaller layout condense nav to a Triple Bar button
 	return (
-		<Stack zIndex={"100"} position={"sticky"} top={0} height={"10vh"}>
+		<Stack
+			display={bannerIsOpen ? "none" : ""}
+			zIndex={"100"}
+			position={"sticky"}
+			top={0}
+			height={"10vh"}>
 			<Paper square>
 				<Stack
 					sx={{
@@ -73,32 +91,36 @@ const Nav = () => {
 					<Box>
 						<AddPost />
 						<AddFriend />
-						<Tooltip title="Notifications">
-							<IconButton href={"/auth/notifications/"}>
-								<Badge
-									badgeContent={isLoadingNotiCount ? 0 : notificationCount}
-									variant="standard"
-									color="warning">
-									<NotificationsNoneIcon color="primary" />
-								</Badge>
-							</IconButton>
-						</Tooltip>
-						<Tooltip title="Messages">
-							<IconButton href={`/auth/messages/`}>
-								<Badge
-									badgeContent={
-										isLoadingNotiMessageCount ? 0 : notificationMessageCount
-									}
-									color="warning">
-									<MailOutlinedIcon color="primary" />
-								</Badge>
-							</IconButton>
-						</Tooltip>
-						{/* <Tooltip title="My Groups">
-							<IconButton>
-								<Diversity3Icon color="primary" />
-							</IconButton>
-						</Tooltip> */}
+						{!burgerMode && (
+							<>
+								<Tooltip title="Notifications">
+									<IconButton href={"/auth/notifications/"}>
+										<Badge
+											badgeContent={isLoadingNotiCount ? 0 : notificationCount}
+											variant="standard"
+											color="warning">
+											<NotificationsNoneIcon color="primary" />
+										</Badge>
+									</IconButton>
+								</Tooltip>
+								<Tooltip title="Messages">
+									<IconButton href={`/auth/messages/`}>
+										<Badge
+											badgeContent={
+												isLoadingNotiMessageCount ? 0 : notificationMessageCount
+											}
+											color="warning">
+											<MailOutlinedIcon color="primary" />
+										</Badge>
+									</IconButton>
+								</Tooltip>
+								{/* <Tooltip title="My Groups">
+									<IconButton>
+										<Diversity3Icon color="primary" />
+									</IconButton>
+								</Tooltip> */}
+							</>
+						)}
 						<Tooltip title="Home">
 							<IconButton href={`/auth/feed/#top`}>
 								<HomeIcon color="primary" />
@@ -136,6 +158,48 @@ const Nav = () => {
 								</ListItemIcon>
 								{username}
 							</MenuItem>
+							{burgerMode && (
+								<Stack paddingY={2}>
+									<Divider />
+									<MenuItem
+										sx={{ gap: "10px" }}
+										onClick={() => {
+											handleClose();
+											navigator(`/auth/messages/`);
+										}}>
+										<IconButton>
+											<Badge
+												badgeContent={
+													isLoadingNotiMessageCount
+														? 0
+														: notificationMessageCount
+												}
+												color="warning">
+												<MailOutlinedIcon color="primary" />
+											</Badge>
+										</IconButton>
+										<Typography>Messages</Typography>
+									</MenuItem>
+									<MenuItem
+										sx={{ gap: "10px" }}
+										onClick={() => {
+											handleClose();
+											navigator(`/auth/notifications/`);
+										}}>
+										<IconButton>
+											<Badge
+												badgeContent={
+													isLoadingNotiCount ? 0 : notificationCount
+												}
+												variant="standard"
+												color="warning">
+												<NotificationsNoneIcon color="primary" />
+											</Badge>
+										</IconButton>
+										<Typography>Notifications</Typography>
+									</MenuItem>
+								</Stack>
+							)}
 							<Divider />
 							<MenuItem
 								onClick={() => {
