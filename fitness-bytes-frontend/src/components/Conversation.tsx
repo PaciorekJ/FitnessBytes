@@ -21,7 +21,7 @@ const Conversation = ({ conversationId }: Props) => {
 	const conversationPages = data?.pages || [];
 
 	const banner = useBannerStore((s) => s.banner);
-	const setBanner = useBannerStore((s) => s.setBanner);
+	const setBannerOpen = useBannerStore((s) => s.setOpen);
 
 	useEffect(() => {
 		const notification: MessageNotificationProps =
@@ -32,10 +32,10 @@ const Conversation = ({ conversationId }: Props) => {
 			notification.conversationId &&
 			notification.conversationId === conversationId
 		) {
-			setBanner("");
+			setBannerOpen(false);
 			NotificationServices.deleteByConversation(conversationId);
 		}
-	}, [banner, conversationId, setBanner]);
+	}, [banner, conversationId, setBannerOpen]);
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({
