@@ -15,5 +15,5 @@ const FriendSchema: Schema = new Schema({
 
 const FriendModel = mongoose.model<IFriend>('Friend', FriendSchema);
 
-export type { FriendSchema };
+export type { IFriend };
 export default FriendModel;

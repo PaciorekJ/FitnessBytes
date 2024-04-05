@@ -10,8 +10,8 @@ interface IPost extends Document {
 }
 
 const PostSchema: Schema = new Schema({
-  userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
-  imageId: { type: Schema.Types.ObjectId, ref: 'PostImage' },
+  userId: { type: Schema.Types.ObjectId, required: true, index: true, ref: 'User' },
+  imageId: { type: Schema.Types.ObjectId, index: true, ref: 'PostImage' },
   username: { type: String, required: true },
   content: { type: String, required: true },
   likes: { type: Number, default: 0 },
