@@ -10,6 +10,10 @@ friendRouter.get('/', authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
     const { query } = req.query as {query: string};
 
+    const {pageLength: pageLengthRaw, pageNumber: pageNumberRaw} = req.query as {pageLength: string, pageNumber: string};
+    const pageLength = parseInt(pageLengthRaw) || 10;
+    const pageNumber = parseInt(pageNumberRaw) || 0;
+
     const regex = new RegExp(escapeRegExp(query || "*"), 'i');
 
     try {
@@ -73,7 +77,13 @@ friendRouter.get('/', authMiddleware, async (req, res) => {
             },
             {
                 $replaceRoot: { newRoot: "$friendDetails" }
-            }
+            },
+            {
+                $skip: pageLength * pageNumber,
+            },
+            {
+                $limit: pageLength
+            },
         ]).exec();
 
         return res.json({

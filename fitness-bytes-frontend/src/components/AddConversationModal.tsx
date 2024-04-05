@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import CloseIcon from "@mui/icons-material/Close";
 import {
 	Alert,
@@ -6,7 +7,6 @@ import {
 	Checkbox,
 	Divider,
 	IconButton,
-	List,
 	ListItem,
 	ListItemIcon,
 	Modal,
@@ -15,15 +15,18 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 
 import SearchIcon from "@mui/icons-material/Search";
 import { useQueryClient } from "@tanstack/react-query";
+import React from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import useBannerStore from "../hooks/useBannerStore";
+import useUserFriends from "../hooks/useUserFriends";
 import ConversationServices from "../services/ConversationService";
-import FriendServices from "../services/FriendServices";
 import { IUser } from "../services/UserServices";
+import PageSpinner from "./PageSpinner";
 import ProfilePicture from "./ProfilePicture";
 
 interface Props {
@@ -35,14 +38,22 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 	const theme = useTheme();
 	const {
 		register,
-		handleSubmit,
 		setValue,
+		handleSubmit,
 		formState: { errors },
 	} = useForm({
 		mode: "onChange",
 	});
-
 	const queryClient = useQueryClient();
+
+	const [searchTerm, setSearchTerm] = useState("");
+	const { data, hasNextPage, fetchNextPage, isLoading } =
+		useUserFriends(searchTerm);
+	const searchResultsPages = data?.pages || [[]];
+
+	useEffect(() => {
+		queryClient.invalidateQueries({ queryKey: [`userSearch`] });
+	}, [queryClient, searchTerm]);
 
 	const setBanner = useBannerStore((s) => s.setBanner);
 	const style = {
@@ -57,10 +68,8 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 		borderRadius: "25px",
 		boxShadow: "0px 0px 10vh " + theme.palette.primary.light,
 		p: 3,
-		overflowY: "scroll",
 	};
 
-	const [searchResults, setSearchResults] = useState<IUser[]>([]);
 	const [participants, setParticipants] = useState<IUser[]>([]);
 
 	const toggleParticipants = (user: IUser) => {
@@ -79,11 +88,6 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 		}
 		setParticipants(newParticipants || []);
 	};
-
-	async function handleSearch(data: FieldValues) {
-		const users = await FriendServices.search(data.searchContent || "");
-		setSearchResults(users || []);
-	}
 
 	async function handleCreateConversation(data: FieldValues) {
 		setParticipants([]);
@@ -165,7 +169,7 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 						{...register("searchContent")}
 						onChange={(e) => {
 							setValue("searchContent", e.target.value);
-							handleSubmit(handleSearch)();
+							setSearchTerm(e.target.value);
 						}}
 						placeholder="Search for Participants..."
 						InputProps={{
@@ -187,38 +191,73 @@ const AddConversationModal = ({ isOpen, setOpen }: Props) => {
 							Create Conversation
 						</Button>
 					</Stack>
-					<List>
-						{searchResults.length ? (
-							searchResults.map((u: IUser, i) => (
-								<Stack
-									sx={{
-										flexDirection: "row",
-										padding: 1,
-									}}
-									key={"Search__Result-" + u.username + " " + i}>
-									<ListItemIcon>
-										<ProfilePicture username={u.username} />
-									</ListItemIcon>
-									<ListItem>
-										<Typography>{u.username}</Typography>
-									</ListItem>
-									<Checkbox
-										onClick={() => toggleParticipants(u)}
-										checked={participants.some(
-											(p) => p.username === u.username,
-										)}
-									/>
-									<Divider />
-								</Stack>
-							))
+					<Stack
+						id="addParticipantContainer"
+						sx={{
+							"marginTop": 2,
+							"height": "20vh",
+							"@media (max-width: 768px) and (orientation: landscape)": {
+								height: "20vh",
+							},
+							"overflowY": "auto",
+							"display": "flex",
+							"flexDirection": "column",
+						}}>
+						{isLoading ? (
+							<PageSpinner margin={"3rem"} />
+						) : searchResultsPages.reduce(
+								(acc, searchResultPage) =>
+									acc + (searchResultPage?.length || 0),
+								0,
+						  ) > 0 ? (
+							<InfiniteScroll
+								hasMore={hasNextPage}
+								loader={<PageSpinner />}
+								scrollableTarget={"addParticipantContainer"}
+								next={fetchNextPage}
+								dataLength={searchResultsPages.reduce(
+									(acc, searchResultPage) =>
+										acc + (searchResultPage?.length || 0),
+									0,
+								)}>
+								{searchResultsPages.map((searchResultPage, i) => (
+									<React.Fragment key={"SEARCH-RESULT-USERS-FRIENDS" + i}>
+										{searchResultPage?.map((u: IUser, j) => (
+											<Stack
+												sx={{
+													flexDirection: "row",
+													padding: 1,
+												}}
+												key={"Search__Result-Friend" + u.username + " " + j}>
+												<ListItemIcon>
+													<ProfilePicture username={u.username} />
+												</ListItemIcon>
+												<ListItem>
+													<Typography>{u.username}</Typography>
+												</ListItem>
+												<Checkbox
+													onClick={() => toggleParticipants(u)}
+													checked={participants.some(
+														(p) => p.username === u.username,
+													)}
+												/>
+												<Divider />
+											</Stack>
+										))}
+									</React.Fragment>
+								))}
+							</InfiniteScroll>
 						) : (
 							<ListItem sx={{ justifyContent: "center" }}>
-								<Typography component={"p"} color={"text.disabled"}>
+								<Typography
+									margin={"3rem"}
+									component={"p"}
+									color={"text.disabled"}>
 									No Results
 								</Typography>
 							</ListItem>
 						)}
-					</List>
+					</Stack>
 				</form>
 			</Box>
 		</Modal>

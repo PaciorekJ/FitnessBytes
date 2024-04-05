@@ -16,7 +16,7 @@ type FriendResponse = ResponseResult<IUser[]>;
 class FriendServices {
 	private static factFriend = new EndpointFactory<FriendResponse>("/friend/");
 
-    static search = (query: string) => FriendServices.factFriend.get<IUser[]>("", { params: { query } })("");
+    static search = (query: string, pageNumber: number, pageLength: number) => FriendServices.factFriend.get<IUser[]>("", { params: { query, pageLength, pageNumber } })("");
 }
 
 export type { IFriend };

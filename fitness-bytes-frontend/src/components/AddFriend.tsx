@@ -5,7 +5,6 @@ import {
 	Divider,
 	IconButton,
 	InputBase,
-	List,
 	ListItem,
 	ListItemButton,
 	ListItemIcon,
@@ -20,6 +19,7 @@ import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import InfiniteScroll from "react-infinite-scroll-component";
 import useBannerStore from "../hooks/useBannerStore";
 import useUsers from "../hooks/useUsers";
 import FriendRequestServices from "../services/FriendRequestServices";
@@ -37,7 +37,10 @@ const AddFriend = () => {
 	const theme = useTheme();
 
 	const [searchTerm, setSearchTerm] = useState("");
-	const { data, isLoading } = useUsers(searchTerm, true);
+	const { data, hasNextPage, fetchNextPage, isLoading } = useUsers(
+		searchTerm,
+		true,
+	);
 
 	const client = useQueryClient();
 
@@ -62,7 +65,6 @@ const AddFriend = () => {
 		borderRadius: "25px",
 		boxShadow: "0px 0px 10vh " + theme.palette.primary.light,
 		p: 3,
-		overflowY: "scroll",
 	};
 
 	const handleAddFriend = async (_id: string, toUsername: string) => {
@@ -124,18 +126,37 @@ const AddFriend = () => {
 							<SearchIcon />
 						</IconButton>
 					</Stack>
-					<List>
+					<Stack
+						id={"addFriendContainer"}
+						sx={{
+							"marginTop": 2,
+							"height": "70%",
+							"@media (max-width: 768px) and (orientation: landscape)": {
+								height: "40%",
+							},
+							"overflow": "auto",
+							"display": "flex",
+						}}>
 						{isLoading ? (
-							<PageSpinner margin={"2rem"} />
+							<PageSpinner margin={"3rem"} />
 						) : searchResultsPages.reduce(
 								(acc, searchResultPage) =>
-									(acc += (searchResultPage || []).length),
+									acc + (searchResultPage?.length || 0),
 								0,
-						  ) ? (
-							searchResultsPages.map((searchResultPage, i) => (
-								<React.Fragment key={"SEARCH-RESULT-USERS-" + i}>
-									{searchResultPage &&
-										searchResultPage.map((u: IUser, j) => (
+						  ) > 0 ? (
+							<InfiniteScroll
+								hasMore={hasNextPage}
+								loader={<PageSpinner />}
+								scrollableTarget={"addFriendContainer"}
+								next={fetchNextPage}
+								dataLength={searchResultsPages.reduce(
+									(acc, searchResultPage) =>
+										acc + (searchResultPage?.length || 0),
+									0,
+								)}>
+								{searchResultsPages.map((searchResultPage, i) => (
+									<React.Fragment key={"SEARCH-RESULT-USERS-" + i}>
+										{searchResultPage?.map((u: IUser, j) => (
 											<ListItem key={"Search__Result- " + j}>
 												<ListItemButton href={"/auth/account/" + u.username}>
 													<Stack flexDirection={"row"}>
@@ -160,8 +181,9 @@ const AddFriend = () => {
 												<Divider />
 											</ListItem>
 										))}
-								</React.Fragment>
-							))
+									</React.Fragment>
+								))}
+							</InfiniteScroll>
 						) : (
 							<ListItem sx={{ justifyContent: "center" }}>
 								<Typography
@@ -172,7 +194,7 @@ const AddFriend = () => {
 								</Typography>
 							</ListItem>
 						)}
-					</List>
+					</Stack>
 				</Box>
 			</Modal>
 		</>
