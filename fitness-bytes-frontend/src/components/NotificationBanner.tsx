@@ -11,7 +11,7 @@ const NotificationBanner = () => {
 	const mode = useThemeStore((s) => s.mode);
 
 	const styles: SxProps<Theme> = {
-		position: "absolute",
+		position: "sticky",
 		top: 0,
 		width: "100%",
 		zIndex: "2000",

@@ -41,7 +41,7 @@ const Conversation = ({ conversationId }: Props) => {
 		messagesEndRef.current?.scrollIntoView({
 			behavior: "smooth",
 		});
-	}, [conversationId, data]);
+	}, [conversationId, data?.pages[0]]);
 
 	useEffect(() => {
 		const clearConvoNotifications = async () => {
@@ -71,7 +71,7 @@ const Conversation = ({ conversationId }: Props) => {
 
 	return (
 		<>
-			{conversationPages &&
+			{(conversationPages &&
 				!conversationPages.reduce((acc, e) => (acc += (e || []).length), 0) && (
 					<Stack
 						position={"absolute"}
@@ -86,55 +86,56 @@ const Conversation = ({ conversationId }: Props) => {
 							Go on, send the first message <br /> 😁
 						</Typography>
 					</Stack>
-				)}
-			<Stack
-				id="scrollableDiv"
-				sx={{
-					height: "80vh",
-					maxHeight: "100%",
-					overflowY: "scroll",
-					flex: "1 1 auto",
-					flexDirection: "column-reverse",
-				}}>
-				<div ref={messagesEndRef}></div>
-				<InfiniteScroll
-					dataLength={conversationPages.reduce(
-						(acc1, page) => (acc1 += (page || []).length),
-						0,
-					)}
-					next={fetchNextPage}
-					style={{
-						display: "flex",
-						padding: 5,
+				)) || (
+				<Stack
+					id="scrollableDiv"
+					sx={{
+						height: "80vh",
+						maxHeight: "100%",
+						overflowY: "scroll",
+						flex: "1 1 auto",
 						flexDirection: "column-reverse",
-					}}
-					inverse={true}
-					hasMore={hasNextPage}
-					loader={<PageSpinner />}
-					endMessage={
-						<Typography
-							textAlign={"center"}
-							variant="body2"
-							color={"text.disabled"}>
-							Start of the Conversation
-						</Typography>
-					}
-					scrollableTarget="scrollableDiv">
-					{conversationPages.map((conversationPage, i) => (
-						<React.Fragment
-							key={`ConversationPage/${conversationId}/${conversationPage}/${i}`}>
-							{conversationPage?.map((m, j) => {
-								return (
-									<Message
-										key={`Conversation__Messages-${i}/${j}/${m.timeCreated}/${m.senderUsername.length}`}
-										message={m}
-									/>
-								);
-							})}
-						</React.Fragment>
-					))}
-				</InfiniteScroll>
-			</Stack>
+					}}>
+					<div ref={messagesEndRef}></div>
+					<InfiniteScroll
+						dataLength={conversationPages.reduce(
+							(acc1, page) => (acc1 += (page || []).length),
+							0,
+						)}
+						next={fetchNextPage}
+						style={{
+							display: "flex",
+							padding: 5,
+							flexDirection: "column-reverse",
+						}}
+						inverse={true}
+						hasMore={hasNextPage}
+						loader={<PageSpinner />}
+						endMessage={
+							<Typography
+								textAlign={"center"}
+								variant="body2"
+								color={"text.disabled"}>
+								Start of the Conversation
+							</Typography>
+						}
+						scrollableTarget="scrollableDiv">
+						{conversationPages.map((conversationPage, i) => (
+							<React.Fragment
+								key={`ConversationPage/${conversationId}/${conversationPage}/${i}`}>
+								{conversationPage?.map((m, j) => {
+									return (
+										<Message
+											key={`Conversation__Messages-${i}/${j}/${m.timeCreated}/${m.senderUsername.length}`}
+											message={m}
+										/>
+									);
+								})}
+							</React.Fragment>
+						))}
+					</InfiniteScroll>
+				</Stack>
+			)}
 		</>
 	);
 };
