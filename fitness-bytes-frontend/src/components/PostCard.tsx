@@ -5,7 +5,6 @@ import {
 	CardHeader,
 	CircularProgress,
 	Divider,
-	IconButton,
 	Link,
 	Paper,
 	Stack,
@@ -16,7 +15,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import ReplyIcon from "@mui/icons-material/Reply";
+
 import ReportIcon from "@mui/icons-material/Report";
 import ShareIcon from "@mui/icons-material/Share";
 
@@ -34,9 +33,12 @@ import LikeIcon from "./LikeIcon";
 import MoreOptions from "./MoreOptions";
 import PostModal from "./PostModal";
 import ProfilePicture from "./ProfilePicture";
+import RepliesButton from "./RepliesButton";
+import ReplyButton from "./ReplyButton";
 
 interface PostCardProps extends IPost {
 	postQueryKey?: string;
+	disabled?: boolean;
 }
 
 const PostCard = ({
@@ -47,6 +49,7 @@ const PostCard = ({
 	timeCreated,
 	imageId = "",
 	postQueryKey = "",
+	disabled = false,
 }: PostCardProps) => {
 	const queryClient = useQueryClient();
 	const currentUserUsername = useUserStore((s) => s.username);
@@ -227,7 +230,7 @@ const PostCard = ({
 		{
 			component: <DeleteIcon />,
 			text: "Delete",
-			onClick: handleDelete,
+			onClick: disabled ? () => {} : handleDelete,
 			requireOwnership: true,
 		},
 		{
@@ -248,7 +251,7 @@ const PostCard = ({
 				/>
 			),
 			text: "Edit",
-			onClick: () => setOpen(true),
+			onClick: disabled ? () => {} : () => setOpen(true),
 			requireOwnership: true,
 		},
 		{
@@ -311,9 +314,7 @@ const PostCard = ({
 						}}>
 						<Stack flexDirection={"row"}>
 							<LikeIcon postId={_id} likes={likes || 0} />
-							<IconButton aria-label="write a reply to this post">
-								<ReplyIcon />
-							</IconButton>
+							{!disabled && <ReplyButton postId={_id} />}
 						</Stack>
 						<MoreOptions
 							isOwner={postUsername === currentUserUsername}
@@ -322,6 +323,7 @@ const PostCard = ({
 					</Stack>
 				</CardActions>
 			</Paper>
+			{!disabled && <RepliesButton postId={_id} />}
 		</Box>
 	);
 };
