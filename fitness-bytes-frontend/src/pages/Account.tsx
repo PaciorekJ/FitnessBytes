@@ -176,7 +176,7 @@ const Account = () => {
 						/>
 					</Badge>
 				</Grid>
-				<Grid item maxWidth={"700px"}>
+				<Grid item maxWidth={"800px"}>
 					<Typography variant="h4" letterSpacing={".1rem"} component="h2">
 						{username}
 					</Typography>

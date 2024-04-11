@@ -35,6 +35,7 @@ const ProfilePicture = ({ username, sx }: ProfilePictureProps) => {
 	return (
 		<Avatar
 			aria-label={`User Profile Icon - ${username}`}
+			alt={`User Profile Icon - ${username}`}
 			sx={sx || {}}
 			src={imageUrl}></Avatar>
 	);

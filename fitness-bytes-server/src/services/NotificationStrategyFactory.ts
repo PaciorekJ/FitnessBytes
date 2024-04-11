@@ -6,10 +6,11 @@ import { RequestWithSocket } from "../middleware/socketMiddleware";
 import { IConversation } from "../models/Conversation";
 import { IFriendRequest } from "../models/FriendRequest";
 import { IPost } from "../models/Post";
+import { IReply } from "../models/Reply";
 import UserModel, { IUser } from "../models/User";
 import UserConfigModel from "../models/UserConfig";
 
-type NotificationData = IPost | IFriendRequest | IConversation;
+type NotificationData = IPost | IFriendRequest | IConversation | IReply;
 
 class NotificationStrategyFactory {
     static create(type: NotificationTypes) {
@@ -28,6 +29,9 @@ class NotificationStrategyFactory {
         else if (type === NotificationTypes.PostLiked) {
             notificationStrategy = new NotificationStrategyPostLiked();
         }
+        // else if (type === NotificationTypes.ReplyLiked) {
+            // notificationStrategy = new NotificationStrategyReplyLiked();
+        // }
         return new NotificationEmitterDecorator<NotificationData>(notificationStrategy);
     }
 }

@@ -1,10 +1,83 @@
 import { Router } from "express";
 import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware";
+import socketMiddleware from "../middleware/socketMiddleware";
+import userConfigMiddleware from "../middleware/userConfigMiddleware";
 import ReplyModel, { IReply } from "../models/Reply";
+import ReplyLikeModel from "../models/ReplyLike";
 import { IUser } from "../models/User";
 
 const replyRouter = Router();
+
+
+replyRouter.get('/liked/:_id', authMiddleware, async (req, res) => {
+
+    const userId = (req.user as IUser)._id;
+
+    try {
+        const _id = new mongoose.Types.ObjectId(req.params._id);
+
+        const count = await ReplyLikeModel.countDocuments({ replyId: _id, userID: userId });
+
+        res.status(200).json({
+            message: "",
+            result: (count ? true: false)
+        });
+
+    } 
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}`, 
+            result: 0,
+        });
+    }
+});
+
+
+replyRouter.post("/like", authMiddleware, socketMiddleware, userConfigMiddleware, async (req, res) => {
+
+    const userId = (req.user as IUser)._id;
+
+    try {
+        const _id = new mongoose.Types.ObjectId(req.body._id);
+        
+        if (!_id) {
+            return res.status(400).json({
+                message: "No postID",
+            });
+        }
+
+        const existingLike = await ReplyLikeModel.findOne({ replyId: _id, userID: userId });
+
+        
+        if (!existingLike) {
+            // *** Reply is liked ***
+            const reply = await ReplyModel.findById(_id) || {} as IReply;
+            
+            // NotificationStrategyFactory.create(NotificationTypes.ReplyLike).handle(reply, req as RequestWithSocket);
+            
+            await ReplyLikeModel.create({ replyId: _id, userID: userId });
+            await ReplyModel.findByIdAndUpdate(_id, { $inc: { likes: 1 } });
+            return res.status(200).json({
+                message: "",
+                result: true,
+            });
+        } 
+        
+        // *** Reply is unliked ***
+        await ReplyLikeModel.deleteOne({ replyId: _id, userID: userId });
+        await ReplyModel.findByIdAndUpdate(_id, { $inc: { likes: -1 } });
+        return res.status(200).json({
+            message: "",
+            result: false,
+        });
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }
+});
 
 replyRouter.get("/:id", async (req, res) => {
     const idRaw = req.params.id;
@@ -156,6 +229,55 @@ replyRouter.patch("/", authMiddleware, async (req, res) => {
     }
 })
 
+const deleteReplies = async (replyId: mongoose.Types.ObjectId) => {
+    const replyToDelete = await ReplyModel.findById(replyId);
+    if (!replyToDelete) {
+      return false;
+    }
+  
+    if (replyToDelete.parentReplyId === null) {
+
+        const repliesToDelete = await ReplyModel.find({ postId: replyToDelete.postId }, '_id');
+        const replyIdsToDelete = repliesToDelete.map(reply => reply._id);
+
+        // It's a root reply. Delete all replies associated with the post.
+        const { deletedCount } = await ReplyModel.deleteMany({ _id: { $in: replyIdsToDelete } });
+
+        if (deletedCount) {
+            await ReplyLikeModel.deleteMany({ replyId: { $in: replyIdsToDelete } });
+        }
+        else {
+            return false;
+        }
+    } else { 
+    
+        // It's a non-root reply. Delete this reply and all its descendants.
+        const success = await deleteReplyAndDescendants(replyId);
+        return success;
+    }
+    return true;
+};
+  
+const deleteReplyAndDescendants = async (initialReplyId: mongoose.Types.ObjectId) => {
+    let queue = [initialReplyId];
+
+    while (queue.length > 0) {
+        let currentReplyId = queue.shift();
+        
+        // Find direct child replies
+        const childReplies = await ReplyModel.find({ parentReplyId: currentReplyId });
+        queue.push(...childReplies.map(reply => reply._id));
+
+        // Delete the current reply and its likes
+        const { deletedCount } = await ReplyModel.deleteOne({ _id: currentReplyId });
+        if (deletedCount) {
+            await ReplyLikeModel.deleteMany({ _id: currentReplyId });
+        }
+
+    }
+};
+  
+
 replyRouter.delete("/:replyId", authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
     const replyIdRaw = req.params.replyId;
@@ -167,11 +289,11 @@ replyRouter.delete("/:replyId", authMiddleware, async (req, res) => {
     try {
         const replyId = new mongoose.Types.ObjectId(replyIdRaw);
 
-        const reply = await ReplyModel.deleteOne({_id: replyId, userId});
+        const success = await deleteReplies(replyId);
 
         return res.json({ 
             message: "",
-            result: reply.deletedCount ? true: false
+            result: success
         });
 
     } catch (e) {

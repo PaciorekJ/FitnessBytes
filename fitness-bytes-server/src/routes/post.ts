@@ -7,6 +7,8 @@ import { NotificationTypes } from "../models/Notification";
 import PostModel, { IPost } from "../models/Post";
 import PostImageModel, { IPostImage } from "../models/PostImages";
 import PostLikeModel from "../models/PostLike";
+import ReplyModel from "../models/Reply";
+import ReplyLikeModel from "../models/ReplyLike";
 import { IUser } from "../models/User";
 import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
 
@@ -67,26 +69,26 @@ postRouter.post("/like", authMiddleware, socketMiddleware, userConfigMiddleware,
     const userId = (req.user as IUser)._id;
 
     try {
-        const postId = new mongoose.Types.ObjectId(req.body.postId);
+        const _id = new mongoose.Types.ObjectId(req.body._id);
         
-        if (!postId) {
+        if (!_id) {
             return res.status(400).json({
                 message: "No postID",
             });
         }
 
-        const existingLike = await PostLikeModel.findOne({ postID: postId, userID: userId });
+        const existingLike = await PostLikeModel.findOne({ postID: _id, userID: userId });
 
         
         if (!existingLike) {
             // *** Post is liked ***
-            const post = await PostModel.findById(postId) || {} as IPost;
+            const post = await PostModel.findById(_id) || {} as IPost;
 
             
             NotificationStrategyFactory.create(NotificationTypes.PostLiked).handle(post, req as RequestWithSocket);
             
-            await PostLikeModel.create({ postID: postId, userID: userId });
-            await PostModel.findByIdAndUpdate(postId, { $inc: { likes: 1 } });
+            await PostLikeModel.create({ postID: _id, userID: userId });
+            await PostModel.findByIdAndUpdate(_id, { $inc: { likes: 1 } });
             return res.status(200).json({
                 message: "",
                 result: true,
@@ -94,8 +96,8 @@ postRouter.post("/like", authMiddleware, socketMiddleware, userConfigMiddleware,
         } 
         
         // *** Post is unliked ***
-        await PostLikeModel.deleteOne({ postID: postId, userID: userId });
-        await PostModel.findByIdAndUpdate(postId, { $inc: { likes: -1 } });
+        await PostLikeModel.deleteOne({ postID: _id, userID: userId });
+        await PostModel.findByIdAndUpdate(_id, { $inc: { likes: -1 } });
         return res.status(200).json({
             message: "",
             result: false,
@@ -237,32 +239,40 @@ postRouter.get("/:postId", async (req, res) => {
 
 
 postRouter.delete("/:postId", async (req, res) => {
-
     try {
-        const postId = new mongoose.Types.ObjectId(req.params.postId)
+        const rawPostId = req.params.postId;
 
-        if (!postId) {
+        if (!mongoose.Types.ObjectId.isValid(rawPostId)) {
             return res.status(400).json({
                 message: "Invalid postID",
             });
         }
 
-        // *** Remove all Likes ***
-        await PostLikeModel.deleteMany({ postID: postId });
-
+        const postId = new mongoose.Types.ObjectId(rawPostId);
         const { deletedCount } = await PostModel.deleteOne({ _id: postId });
+
+        if (deletedCount) {
+            await PostLikeModel.deleteMany({ postId }); // Assuming the field is `postId` in your schema
+            const replies = await ReplyModel.find({ postId }).select("_id");
+            const replyIds = replies.map((r) => r._id);
+
+            await ReplyModel.deleteMany({ postId });
+            if (replyIds.length) {
+                await ReplyLikeModel.deleteMany({ replyId: { $in: replyIds } });
+            }
+        }
 
         return res.status(200).json({
             message: "",
-            result: deletedCount
+            result: deletedCount > 0
         });
-    }
-    catch (e) {
+    } catch (e) {
         return res.status(500).json({ 
             message: `Error: Internal Server Error: ${e}` 
         });
     }
 });
+
 
 postRouter.patch("/", authMiddleware, async (req, res) => {
 
