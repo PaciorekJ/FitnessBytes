@@ -4,6 +4,7 @@ import ModeEditOutlineTwoToneIcon from "@mui/icons-material/ModeEditOutlineTwoTo
 import {
 	Badge,
 	Box,
+	Button,
 	CircularProgress,
 	Container,
 	Divider,
@@ -26,6 +27,7 @@ import usePostCount from "../hooks/usePostCount";
 import usePosts from "../hooks/usePosts";
 import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
+import FriendRequestServices from "../services/FriendRequestServices";
 import UserServices, { IUser } from "../services/UserServices";
 import { compressImage, encodeImage } from "../utils/ImageProcessing";
 
@@ -58,6 +60,19 @@ const Account = () => {
 	);
 
 	const postCount = postCountData || 0;
+
+	const handleAddFriend = async (_id: string, toUsername: string) => {
+		const friendRequest = await FriendRequestServices.create(_id);
+
+		if (friendRequest) {
+			setBanner(`Friend Request has been sent to ${toUsername}`);
+		} else {
+			setBanner(
+				`Friend Request could not be send. A friend request is already pending or you guys are already friends`,
+				true,
+			);
+		}
+	};
 
 	const saveBio = async () => {
 		if (processingBio) return;
@@ -177,9 +192,19 @@ const Account = () => {
 					</Badge>
 				</Grid>
 				<Grid item maxWidth={"800px"}>
-					<Typography variant="h4" letterSpacing={".1rem"} component="h2">
-						{username}
-					</Typography>
+					<Stack flexDirection={"row"} justifyContent={"space-between"}>
+						<Typography variant="h4" letterSpacing={".1rem"} component="h2">
+							{username}
+						</Typography>
+						{!ownerPermissions && (
+							<Button
+								sx={{ alignSelf: "center" }}
+								variant="contained"
+								onClick={() => handleAddFriend(user._id, user.username)}>
+								Add +
+							</Button>
+						)}
+					</Stack>
 					<Divider sx={{ marginY: 1 }} />
 					{!editBioMode ? (
 						<Typography
