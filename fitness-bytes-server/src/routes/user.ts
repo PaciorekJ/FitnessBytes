@@ -1,6 +1,7 @@
 
 import bcrypt from 'bcrypt';
 import { Router } from "express";
+import mongoose from 'mongoose';
 import passport from 'passport';
 import escapeRegExp from '../libs/RegExp';
 import { authMiddleware } from '../middleware/authMiddleware';
@@ -90,11 +91,26 @@ userRouter.patch("/username", authMiddleware, async (req, res) => {
     }
 });
 
-userRouter.get("/user/:username", authMiddleware, async (req, res) => {
-    const username = req.params.username;
+userRouter.get("/user/:identifier", authMiddleware, async (req, res) => {
+    const identifier = req.params.identifier;
 
     try {
-        const user = await UserModel.findOne({username}).select("-password");
+
+        const username = identifier;
+
+        let _id;
+
+        try {
+            _id = new mongoose.Types.ObjectId(identifier);
+        } catch {}
+
+        const user = await UserModel.findOne({
+            $or: [
+                { username },
+                { _id }
+            ]
+        }).select("-password");
+        
 
         return res.json({
             message: "",

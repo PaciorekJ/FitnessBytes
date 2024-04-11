@@ -1,21 +1,15 @@
 
 import { useQuery } from "@tanstack/react-query";
-import ReplyServices from "../services/ReplyServices";
+import ReplyServices, { IReplyNode } from "../services/ReplyServices";
 
-
-interface ReplyCount {
-    postId?: string;
-    replyId?: string;
-}
-
-const useReplies = ({postId, replyId}: ReplyCount) => {
-    const queryFn = postId ? () => ReplyServices.getFromPost(postId) : () => ReplyServices.getFromReply(replyId!);
-    const queryKey = postId ? ["repliesByPostId", postId] : ["repliesByReplyId", replyId];
+const useReplies = ({rootId, parentId}: IReplyNode) => {
+    const queryFn = parentId ? () => ReplyServices.getFromReply(parentId): () => ReplyServices.getFromPost(rootId)
+    const queryKey = parentId ? ["repliesByReplyId", parentId]: ["repliesByPostId", rootId]
 
     return useQuery({
         queryKey,
         queryFn,
-        enabled: !!postId || !!replyId,
+        enabled: (!!rootId) || (!!rootId && !!parentId),
     })
 }
 

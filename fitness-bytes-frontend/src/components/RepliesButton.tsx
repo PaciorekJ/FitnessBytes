@@ -1,33 +1,70 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { Button, Divider, IconButton, Stack } from "@mui/material";
+import { Button, Divider, IconButton, Stack, useTheme } from "@mui/material";
 import { useState } from "react";
+import useReplies from "../hooks/useReplies";
 import useReplyCount from "../hooks/useReplyCount";
-import Replies from "./Replies";
+import useThemeStore from "../hooks/useThemeStore";
+import { IReplyNode } from "../services/ReplyServices";
+import PageSpinner from "./PageSpinner";
+import Reply from "./Reply";
 
-interface RepliesProps {
-	postId?: string;
-	replyId?: string;
-}
+const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
+	const { data: count, isLoading: countIsLoading } = useReplyCount({
+		rootId,
+		parentId,
+	});
+	const { data: replies, isLoading: repliesIsLoading } = useReplies({
+		rootId,
+		parentId,
+	});
 
-const RepliesButton = ({ postId, replyId }: RepliesProps) => {
-	const { data: count, isLoading } = useReplyCount({ postId, replyId });
+	const theme = useTheme();
+	const mode = useThemeStore((s) => s.mode);
 	const [open, setOpen] = useState(false);
 
-	if (count === 0) return null;
-	if (isLoading) return null;
+	if (countIsLoading) return null;
 
 	return (
 		<Stack padding={1}>
-			{open && (
+			{open ? (
 				<>
+					{console.log("Im being rerendered Good!")}
 					<IconButton sx={{ alignSelf: "end" }} onClick={() => setOpen(!open)}>
 						<CloseIcon />
 					</IconButton>
-					<Replies postId={postId} replyId={replyId} />
+					{repliesIsLoading ? (
+						<PageSpinner />
+					) : (
+						<Stack
+							borderLeft={"2px solid"}
+							borderColor={"secondary.light"}
+							paddingLeft={{ sx: 0.5, sm: 1 }}
+							gap={2}>
+							{replies?.map((r) => (
+								<Reply
+									key={`${r._id} ${r.content} ${r.parentReplyId}`}
+									{...r}
+								/>
+							))}
+						</Stack>
+					)}
 				</>
-			)}
-			{!open && (
-				<Divider variant="middle" textAlign="center">
+			) : count ? (
+				<Divider
+					sx={
+						mode === "dark"
+							? {
+									"&.MuiDivider-root": {
+										"&::before, &::after": {
+											borderTop: `thin solid ${theme.palette.secondary.light}`,
+										},
+									},
+									// eslint-disable-next-line no-mixed-spaces-and-tabs
+							  }
+							: {}
+					}
+					variant="middle"
+					textAlign="center">
 					<Button
 						variant="outlined"
 						onClick={() => setOpen(!open)}
@@ -35,6 +72,8 @@ const RepliesButton = ({ postId, replyId }: RepliesProps) => {
 						Replies {count}
 					</Button>
 				</Divider>
+			) : (
+				<></>
 			)}
 		</Stack>
 	);

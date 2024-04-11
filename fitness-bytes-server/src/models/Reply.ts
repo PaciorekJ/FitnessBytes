@@ -4,7 +4,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 interface IReply extends Document {
   userId: mongoose.Types.ObjectId;
   postId: mongoose.Types.ObjectId; // Reference to the root post
-  parentReplyId?: mongoose.Types.ObjectId;
+  parentReplyId: mongoose.Types.ObjectId | null;
   content: string;
   likes: number;
   timeCreated: Date;

@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import UserServices from "../services/UserServices";
 
-const useUser = (username: string) => {
+const useUser = (identifier: string) => {
     return useQuery({
-        queryKey: [`users-${username}`, username],
-        queryFn: () => UserServices.get(username),
-        enabled: !!username
+        queryKey: [`users-${identifier}`, identifier],
+        queryFn: () => UserServices.get(identifier),
+        enabled: !!identifier
     });
 }
 
