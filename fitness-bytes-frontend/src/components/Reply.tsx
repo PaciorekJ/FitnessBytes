@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import useBannerStore from "../hooks/useBannerStore";
+import { LikeId } from "../hooks/useIsLiked";
 import useReplies from "../hooks/useReplies";
 import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
@@ -125,7 +126,7 @@ const Reply = ({
 									width: "100%",
 								}}>
 								<Stack flexDirection={"row"}>
-									<LikeIcon postId={_id} likes={likes || 0} />
+									<LikeIcon id={_id} likes={likes || 0} type={LikeId.replyId} />
 									<ReplyButton rootId={postId} parentId={_id} />
 								</Stack>
 								<MoreOptions

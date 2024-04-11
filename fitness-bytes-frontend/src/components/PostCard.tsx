@@ -21,6 +21,7 @@ import ShareIcon from "@mui/icons-material/Share";
 
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import useBannerStore from "../hooks/useBannerStore";
+import { LikeId } from "../hooks/useIsLiked";
 import usePostImage from "../hooks/usePostImage";
 import useUserStore from "../hooks/useUserStore";
 import PostServices, { IPost, IPostImage } from "../services/PostServices";
@@ -311,7 +312,7 @@ const PostCard = ({
 								width: "100%",
 							}}>
 							<Stack flexDirection={"row"}>
-								<LikeIcon postId={_id} likes={likes || 0} />
+								<LikeIcon id={_id} likes={likes || 0} type={LikeId.postId} />
 								<ReplyButton rootId={_id} parentId={null} />
 							</Stack>
 							<MoreOptions

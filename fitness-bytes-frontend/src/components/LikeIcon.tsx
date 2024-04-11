@@ -1,16 +1,18 @@
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { CircularProgress, IconButton, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import useIsLiked from "../hooks/useIsLiked";
+import useIsLiked, { LikeId } from "../hooks/useIsLiked";
 import PostServices from "../services/PostServices";
+import ReplyServices from "../services/ReplyServices";
 
 interface Props {
 	likes: number;
-	postId: string;
+	id: string;
+	type: LikeId;
 }
 
-const LikeIcon = ({ likes, postId }: Props) => {
-	const { data, isLoading } = useIsLiked(postId);
+const LikeIcon = ({ likes, id, type }: Props) => {
+	const { data, isLoading } = useIsLiked(id, type);
 	const [processingLike, setProcessingLike] = useState(false);
 	const [likeCount, setLikeCount] = useState(likes);
 	const [isLiked, setLiked] = useState<boolean>(data || false);
@@ -32,7 +34,11 @@ const LikeIcon = ({ likes, postId }: Props) => {
 		setLiked(!isLiked);
 
 		try {
-			await PostServices.like(postId);
+			if (type === LikeId.postId) {
+				await PostServices.like(id);
+			} else {
+				await ReplyServices.like(id);
+			}
 		} catch (error) {
 			setLikeCount(isLiked ? likeCount + 1 : likeCount - 1);
 			setLiked(isLiked);

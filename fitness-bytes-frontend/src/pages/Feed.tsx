@@ -13,7 +13,7 @@ const Feed = () => {
 
 	return (
 		<Stack alignItems={"center"} padding={2}>
-			<Stack width={"100%"} maxWidth={"700px"}>
+			<Stack width={"100%"} maxWidth={"800px"}>
 				<div id="top"></div>
 				<InfiniteScroll
 					hasMore={hasNextPage}

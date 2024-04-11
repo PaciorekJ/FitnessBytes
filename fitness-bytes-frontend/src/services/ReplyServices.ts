@@ -30,6 +30,9 @@ class ReplyServices {
     static getFromPost = (postId: string) => this.fact.get<IReply[]>("/postReplies/")(postId);
     static getFromReply = (replyId: string) => this.fact.get<IReply[]>("/replyReplies/")(replyId);
     static delete = this.fact.delete<boolean>();
+
+    static like = (_id: string) => this.fact.post<boolean, IReply>("/like")({ _id });
+    static isLiked = this.fact.get<boolean>("/liked/");
 }
 
 export type { IReply };

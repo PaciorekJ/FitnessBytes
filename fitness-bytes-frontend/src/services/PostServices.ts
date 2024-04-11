@@ -42,7 +42,7 @@ class PostServices {
     })(username);
     static getOne = PostServices.factPost.get<IPost>();
 
-    static like = (_id: string) => PostServices.factPost.post<boolean, { postId: string }>("/like")({ postId: _id });
+    static like = (_id: string) => PostServices.factPost.post<boolean, IPost>("/like")({ _id });
     static isLiked = PostServices.factPost.get<boolean>("/liked/");
     static getCount = (username: string) => PostServices.factPosts.get<number>("/count/")(username);
 }
