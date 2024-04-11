@@ -5,6 +5,7 @@ import {
 	CardActions,
 	CardContent,
 	CardHeader,
+	Link,
 	Paper,
 	Stack,
 	Typography,
@@ -94,20 +95,22 @@ const Reply = ({
 		<Box minWidth={"100%"}>
 			<Paper variant="outlined">
 				<Card>
-					<CardHeader
-						titleTypographyProps={{ fontSize: "1.2rem" }}
-						title={
-							<Typography variant="body1" color={"text.secondary"}>
-								{user?.username || ""}
-							</Typography>
-						}
-						avatar={<ProfilePicture username={user?.username || ""} />}
-						subheader={
-							<Typography color={"text.disabled"} variant="body2">
-								{time || ""}
-							</Typography>
-						}
-					/>
+					<Link href={"/auth/account/" + user?.username} underline="none">
+						<CardHeader
+							titleTypographyProps={{ fontSize: "1.2rem" }}
+							title={
+								<Typography variant="body1" color={"text.secondary"}>
+									{user?.username || ""}
+								</Typography>
+							}
+							avatar={<ProfilePicture username={user?.username || ""} />}
+							subheader={
+								<Typography color={"text.disabled"} variant="body2">
+									{time || ""}
+								</Typography>
+							}
+						/>
+					</Link>
 					<CardContent>
 						<Typography variant="body2" color="text.secondary">
 							{content}

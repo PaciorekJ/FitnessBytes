@@ -1,4 +1,4 @@
-import CloseIcon from "@mui/icons-material/Close";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { Button, Divider, IconButton, Stack, useTheme } from "@mui/material";
 import { useState } from "react";
 import useReplies from "../hooks/useReplies";
@@ -28,9 +28,8 @@ const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
 		<Stack padding={1}>
 			{open ? (
 				<>
-					{console.log("Im being rerendered Good!")}
 					<IconButton sx={{ alignSelf: "end" }} onClick={() => setOpen(!open)}>
-						<CloseIcon />
+						<CancelIcon />
 					</IconButton>
 					{repliesIsLoading ? (
 						<PageSpinner />
