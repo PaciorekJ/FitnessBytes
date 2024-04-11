@@ -34,7 +34,7 @@ const MessageBoard = () => {
 			[`messages-${conversationId}`, conversationId],
 			(oldConversations: InfiniteData<IMessage[] | undefined> | undefined) => {
 				if (!newMessage || _.isEmpty(newMessage)) {
-					return oldConversations || { pageParams: [], pages: [] };
+					return oldConversations || { pageParams: 0, pages: [] };
 				}
 
 				const oldPages = oldConversations?.pages || [];

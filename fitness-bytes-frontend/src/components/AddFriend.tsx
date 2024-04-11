@@ -2,6 +2,7 @@
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import {
 	Box,
+	Button,
 	Divider,
 	IconButton,
 	InputBase,
@@ -166,7 +167,9 @@ const AddFriend = () => {
 														</ListItem>
 													</Stack>
 													<ListItemIcon sx={{ marginLeft: "auto" }}>
-														<IconButton
+														<Button
+															sx={{ alignSelf: "center" }}
+															variant="contained"
 															onClick={(e) => {
 																e.preventDefault();
 																closeModal();
@@ -174,8 +177,8 @@ const AddFriend = () => {
 																reset();
 																handleAddFriend(u._id, u.username);
 															}}>
-															<PersonAddOutlinedIcon color="primary" />
-														</IconButton>
+															Add +
+														</Button>
 													</ListItemIcon>
 												</ListItemButton>
 												<Divider />
