@@ -24,13 +24,12 @@ const Feed = () => {
 						0,
 					)}>
 					{postsPages.map((postsPage, index) => {
-						// Ensure postsPage is always an array
 						if (!Array.isArray(postsPage)) {
 							console.error(
 								`Expected postsPage to be an array but got: `,
 								postsPage,
 							);
-							return null; // Return null or an appropriate fallback
+							return null;
 						}
 
 						return postsPage.map((p) => (

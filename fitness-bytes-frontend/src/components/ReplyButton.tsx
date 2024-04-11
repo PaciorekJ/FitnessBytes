@@ -17,43 +17,65 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import usePost from "../hooks/usePost";
-import ReplyServices from "../services/ReplyServices";
-import {
-	MAX_CHAR,
-	PostData,
-} from "../services/Validators/PostValidatorService";
+import useReply from "../hooks/useReply";
+import ReplyServices, { IReply, IReplyNode } from "../services/ReplyServices";
+import { MAX_CHAR } from "../services/Validators/PostValidatorService";
 import {
 	ReplyData,
 	schema,
 } from "../services/Validators/ReplyValidatorService";
 import PostCard from "./PostCard";
+import Reply from "./Reply";
 
-interface ReplyButtonProps {
-	postId?: string;
-	replyId?: string;
-}
-
-const ReplyButton = ({ postId }: ReplyButtonProps) => {
+const ReplyButton = ({ rootId, parentId = null }: IReplyNode) => {
 	const {
 		register,
 		handleSubmit,
 		watch,
+		setValue,
 		reset,
 		formState: { errors },
 	} = useForm<ReplyData>({ resolver: zodResolver(schema), mode: "onChange" });
 	const theme = useTheme();
 	const [isOpen, setOpen] = useState(false);
-	const { data: parentPost, isLoading } = usePost(postId || "");
+
+	const { data: parentPost, isLoading: isLoadingPost } = usePost(rootId || "");
+	const { data: parentReply, isLoading: isLoadingReply } = useReply(
+		parentId || "",
+	);
+
+	const isLoading = isLoadingPost && isLoadingReply;
+
 	const content = watch("content", "");
 	const queryClient = useQueryClient();
 
-	const createReply = async (data: PostData) => {
-		await ReplyServices.create({
+	const createReply = async (data: ReplyData) => {
+		const reply = await ReplyServices.create({
 			...data,
-			postId,
+			postId: rootId,
+			parentReplyId: parentId,
 		});
 
-		queryClient.invalidateQueries({ queryKey: ["replyCountByPostId", postId] });
+		if (!reply) return;
+
+		queryClient.setQueryData<IReply[]>(
+			parentId ? ["repliesByReplyId", parentId] : ["repliesByPostId", rootId],
+			(oldReplies) => {
+				return [...(oldReplies || []), reply];
+			},
+		);
+
+		queryClient.refetchQueries({
+			queryKey: parentId
+				? ["repliesByReplyId", parentId]
+				: ["repliesByPostId", rootId],
+		});
+
+		queryClient.invalidateQueries({
+			queryKey: parentId
+				? ["replyCountByReplyId", parentId]
+				: ["replyCountByPostId", rootId],
+		});
 
 		setOpen(false);
 	};
@@ -69,6 +91,7 @@ const ReplyButton = ({ postId }: ReplyButtonProps) => {
 				open={isOpen}
 				onClose={() => {
 					setOpen(false);
+					setValue("content", "");
 					reset();
 				}}>
 				<Card
@@ -90,9 +113,11 @@ const ReplyButton = ({ postId }: ReplyButtonProps) => {
 					variant="outlined">
 					{isLoading ? (
 						<CircularProgress />
-					) : parentPost ? (
-						<PostCard {...parentPost} disabled={true} />
-					) : null}
+					) : parentId ? (
+						<Reply {...parentReply!} disabled={true} />
+					) : (
+						<PostCard {...parentPost!} disabled={true} />
+					)}
 					<form onSubmit={handleSubmit(createReply)}>
 						{errors.content && content.length !== 0 && (
 							<Alert color="error">{errors.content?.message}</Alert>

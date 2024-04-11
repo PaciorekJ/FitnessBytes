@@ -6,6 +6,30 @@ import { IUser } from "../models/User";
 
 const replyRouter = Router();
 
+replyRouter.get("/:id", async (req, res) => {
+    const idRaw = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(idRaw)) {
+        return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    try {
+        const _id = new mongoose.Types.ObjectId(idRaw);
+
+        const reply = await ReplyModel.findById(_id);
+
+        return res.json({ 
+            message: "",
+            result: reply
+        });
+
+    } catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }
+})
+
 replyRouter.get("/postRepliesCount/:postId", authMiddleware, async (req, res) => {
     const postIdRaw = req.params.postId;
 

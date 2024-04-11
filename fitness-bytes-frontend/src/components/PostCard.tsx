@@ -199,10 +199,7 @@ const PostCard = ({
 		queryClient.setQueryData<
 			InfiniteData<IPost[] | undefined, unknown> | undefined
 		>(["posts", postQueryKey], (oldPosts) => {
-			console.log("Old Posts");
-			console.log(oldPosts);
 			const updatedPages = oldPosts?.pages.map((page) => {
-				console.log("Old Page -> ", page);
 				return (
 					page?.map((post) => {
 						if (post._id === _id) {
@@ -305,25 +302,27 @@ const PostCard = ({
 					</CardContent>
 				</Box>
 				<Divider />
-				<CardActions>
-					<Stack
-						sx={{
-							flexDirection: "row",
-							justifyContent: "space-between",
-							width: "100%",
-						}}>
-						<Stack flexDirection={"row"}>
-							<LikeIcon postId={_id} likes={likes || 0} />
-							{!disabled && <ReplyButton postId={_id} />}
+				<CardActions sx={disabled ? { paddingBottom: 4 } : {}}>
+					{!disabled && (
+						<Stack
+							sx={{
+								flexDirection: "row",
+								justifyContent: "space-between",
+								width: "100%",
+							}}>
+							<Stack flexDirection={"row"}>
+								<LikeIcon postId={_id} likes={likes || 0} />
+								<ReplyButton rootId={_id} parentId={null} />
+							</Stack>
+							<MoreOptions
+								isOwner={postUsername === currentUserUsername}
+								menuItems={MoreOptionsMenuItems}
+							/>
 						</Stack>
-						<MoreOptions
-							isOwner={postUsername === currentUserUsername}
-							menuItems={MoreOptionsMenuItems}
-						/>
-					</Stack>
+					)}
 				</CardActions>
 			</Paper>
-			{!disabled && <RepliesButton postId={_id} />}
+			{!disabled && <RepliesButton rootId={_id} parentId={null} />}
 		</Box>
 	);
 };
