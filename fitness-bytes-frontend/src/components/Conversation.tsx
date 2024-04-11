@@ -71,22 +71,21 @@ const Conversation = ({ conversationId }: Props) => {
 
 	return (
 		<>
-			{(conversationPages &&
-				!conversationPages.reduce((acc, e) => (acc += (e || []).length), 0) && (
-					<Stack
-						position={"absolute"}
-						top={"45%"}
-						width={"100%"}
-						color={"text.disabled"}>
-						<Typography
-							variant="body2"
-							textAlign={"center"}
-							color={"text.disabled"}
-							component="h3">
-							Go on, send the first message <br /> 😁
-						</Typography>
-					</Stack>
-				)) || (
+			{(conversationPages && !conversationPages.length && (
+				<Stack
+					position={"absolute"}
+					top={"45%"}
+					width={"100%"}
+					color={"text.disabled"}>
+					<Typography
+						variant="body2"
+						textAlign={"center"}
+						color={"text.disabled"}
+						component="h3">
+						Go on, send the first message <br /> 😁
+					</Typography>
+				</Stack>
+			)) || (
 				<Stack
 					id="scrollableDiv"
 					sx={{
