@@ -1,11 +1,13 @@
 import { Router } from "express";
 import mongoose from "mongoose";
 import { authMiddleware } from "../middleware/authMiddleware";
-import socketMiddleware from "../middleware/socketMiddleware";
+import socketMiddleware, { RequestWithSocket } from "../middleware/socketMiddleware";
 import userConfigMiddleware from "../middleware/userConfigMiddleware";
+import { NotificationTypes } from "../models/Notification";
 import ReplyModel, { IReply } from "../models/Reply";
 import ReplyLikeModel from "../models/ReplyLike";
 import { IUser } from "../models/User";
+import NotificationStrategyFactory from "../services/NotificationStrategyFactory";
 
 const replyRouter = Router();
 
@@ -54,7 +56,7 @@ replyRouter.post("/like", authMiddleware, socketMiddleware, userConfigMiddleware
             // *** Reply is liked ***
             const reply = await ReplyModel.findById(_id) || {} as IReply;
             
-            // NotificationStrategyFactory.create(NotificationTypes.ReplyLike).handle(reply, req as RequestWithSocket);
+            NotificationStrategyFactory.create(NotificationTypes.ReplyLiked).handle(reply, req as RequestWithSocket);
             
             await ReplyLikeModel.create({ replyId: _id, userID: userId });
             await ReplyModel.findByIdAndUpdate(_id, { $inc: { likes: 1 } });
@@ -303,7 +305,7 @@ replyRouter.delete("/:replyId", authMiddleware, async (req, res) => {
     }
 });
 
-replyRouter.post("/", authMiddleware, async (req, res) => {
+replyRouter.post("/", authMiddleware, socketMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
 
     const { postId: postIdRaw, parentReplyId: parentReplyIdRaw, content } = req.body as IReply;
@@ -340,6 +342,8 @@ replyRouter.post("/", authMiddleware, async (req, res) => {
         }
 
         const reply = await ReplyModel.create(replyPayload);
+
+        NotificationStrategyFactory.create(NotificationTypes.Replied).handle(reply, req as RequestWithSocket);        
 
         return res.status(201).json({
             message: "",

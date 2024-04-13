@@ -6,6 +6,7 @@ interface INotificationConfig {
 	message: boolean;
 	like: boolean;
 	reply: boolean;
+    replyLiked: boolean;
 }
 
 interface IUserConfig extends INotificationConfig {}
@@ -16,6 +17,7 @@ const UserConfigSchema: Schema = new Schema({
     message: {type: Boolean, default: true},
     like: {type: Boolean, default: true},
     reply: {type: Boolean, default: true},
+    replyLiked: {type: Boolean, default: true},
   });
   
   const UserConfigModel = mongoose.model<IUserConfig>('UserConfig', UserConfigSchema);

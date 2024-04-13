@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema, model } from "mongoose";
 
-
 enum NotificationTypes {
     FriendRequest = "Friend Request",
     NewFriend = "New Friend",
@@ -8,6 +7,13 @@ enum NotificationTypes {
     MessageReceived = "Message Received",
     PostLiked = "Post Liked",
     GroupActivity = "Group Activity",
+    ReplyLiked = "Reply Liked",
+    Replied = "Replied",
+}
+
+enum ContentType {
+    postId = "postId",
+    replyId = "replyId",
 }
 interface INotification extends Document {
     type: NotificationTypes;
@@ -34,11 +40,11 @@ const NotificationModel = model<INotification>('Notification', NotificationSchem
 
 interface IFriendRequestNotification extends INotification {}
 const FriendRequestNotificationSchema = new Schema({});
-const FriendRequestNotificationModel = NotificationModel.discriminator<IFriendRequestNotification>('Friend Request', FriendRequestNotificationSchema);
+const FriendRequestNotificationModel = NotificationModel.discriminator<IFriendRequestNotification>(NotificationTypes.FriendRequest, FriendRequestNotificationSchema);
 
 interface IFriendNotification extends INotification {}
 const FriendNotificationSchema = new Schema({});
-const FriendNotificationModel = NotificationModel.discriminator<IFriendNotification>('New Friend', FriendNotificationSchema);
+const FriendNotificationModel = NotificationModel.discriminator<IFriendNotification>(NotificationTypes.NewFriend, FriendNotificationSchema);
 
 interface IPostLikeNotification extends INotification {
     postId: mongoose.Types.ObjectId;
@@ -46,7 +52,7 @@ interface IPostLikeNotification extends INotification {
 const PostLikeNotificationSchema = new Schema({
     postId: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
 });
-const PostLikedNotificationModel = NotificationModel.discriminator<IPostLikeNotification>('Post Liked', PostLikeNotificationSchema);
+const PostLikedNotificationModel = NotificationModel.discriminator<IPostLikeNotification>(NotificationTypes.PostLiked, PostLikeNotificationSchema);
 
 interface IMessageNotification extends INotification {
     conversationId: mongoose.Types.ObjectId;
@@ -54,8 +60,28 @@ interface IMessageNotification extends INotification {
 const MessageNotificationSchema = new Schema({
     conversationId: { type: Schema.Types.ObjectId, ref: 'Conversation', required: true },
 });
-const MessageNotificationModel = NotificationModel.discriminator<IMessageNotification>('Message Received', MessageNotificationSchema);
+const MessageNotificationModel = NotificationModel.discriminator<IMessageNotification>(NotificationTypes.MessageReceived, MessageNotificationSchema);
 
-export { FriendNotificationModel, FriendRequestNotificationModel, MessageNotificationModel, NotificationModel, NotificationTypes, PostLikedNotificationModel };
+interface IReplyLikedNotification extends INotification {
+    contentId: mongoose.Types.ObjectId;
+    contentType: ContentType;
+}
+const ReplyLikedNotificationSchema = new Schema({
+    contentId: { type: Schema.Types.ObjectId, ref: 'Reply', required: true },
+    contentType: { type: String, enum: Object.values(ContentType), required: true },
+});
+const ReplyLikedNotificationModel = NotificationModel.discriminator<IReplyLikedNotification>(NotificationTypes.ReplyLiked, ReplyLikedNotificationSchema);
+
+interface IReplyNotification extends INotification {
+    contentId: mongoose.Types.ObjectId;
+    contentType: ContentType;
+}
+const ReplyNotificationSchema = new Schema({
+    contentId: { type: Schema.Types.ObjectId, ref: 'Reply', required: true },
+    contentType: { type: String, enum: Object.values(ContentType), required: true },
+});
+const ReplyNotificationModel = NotificationModel.discriminator<IReplyNotification>(NotificationTypes.Replied, ReplyNotificationSchema);
+
+export { ContentType, FriendNotificationModel, FriendRequestNotificationModel, MessageNotificationModel, NotificationModel, NotificationTypes, PostLikedNotificationModel, ReplyLikedNotificationModel, ReplyNotificationModel };
 export type { INotification };
 
