@@ -77,6 +77,8 @@ const ReplyButton = ({ rootId, parentId = null }: IReplyNode) => {
 				: ["replyCountByPostId", rootId],
 		});
 
+		setValue("content", "");
+		reset({ content: "" });
 		setOpen(false);
 	};
 
@@ -90,9 +92,9 @@ const ReplyButton = ({ rootId, parentId = null }: IReplyNode) => {
 			<Modal
 				open={isOpen}
 				onClose={() => {
-					setOpen(false);
 					setValue("content", "");
-					reset();
+					reset({ content: "" });
+					setOpen(false);
 				}}>
 				<Card
 					sx={{
