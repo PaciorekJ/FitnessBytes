@@ -6,7 +6,13 @@ import { FriendRequestProps as FriendRequestNotificationProps } from "../compone
 import { MessageNotificationProps } from "../components/MessageNotification";
 import { PostLikedNotificationProps } from "../components/PostLikedNotification";
 import ProfilePicture from "../components/ProfilePicture";
-import { INotification, NotificationTypes } from "./NotificationServices";
+import { ReplyLikedNotificationProps } from "../components/ReplyLikedNotification";
+import { ReplyNotificationProps } from "../components/ReplyNotification";
+import {
+	ContentType,
+	INotification,
+	NotificationTypes,
+} from "./NotificationServices";
 
 class AlertNotificationFactory {
 	create(payload: INotification | string): ReactNode {
@@ -85,6 +91,39 @@ class AlertNotificationFactory {
 								{props.dispatcherUsername}
 							</Typography>{" "}
 							just liked one of your posts!
+						</>
+					}
+				/>
+			);
+		} else if (payload.type === NotificationTypes.ReplyLiked) {
+			const props = payload as ReplyNotificationProps;
+			return (
+				<AlertContent
+					icon={<ProfilePicture username={props.dispatcherUsername} />}
+					content={
+						<>
+							<Typography component="b" fontWeight={600}>
+								{props.dispatcherUsername}
+							</Typography>{" "}
+							just liked one of your replies!
+						</>
+					}
+				/>
+			);
+		} else if (payload.type === NotificationTypes.Replied) {
+			const props = payload as ReplyLikedNotificationProps;
+			return (
+				<AlertContent
+					icon={<ProfilePicture username={props.dispatcherUsername} />}
+					content={
+						<>
+							<Typography component="b" fontWeight={600}>
+								{props.dispatcherUsername}
+							</Typography>{" "}
+							replied to your{" "}
+							{props.contentType === ContentType.postId
+								? "post"
+								: "reply to a post"}
 						</>
 					}
 				/>

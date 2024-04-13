@@ -6,6 +6,7 @@ interface INotificationConfig {
 	message: boolean;
 	like: boolean;
 	reply: boolean;
+    replyLiked: boolean;
 }
 
 interface userConfig extends INotificationConfig {}

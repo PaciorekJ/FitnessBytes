@@ -7,10 +7,16 @@ import EndpointFactory from "./HTTP-Services/EndpointFactory";
 enum NotificationTypes {
     FriendRequest = "Friend Request",
     NewFriend = "New Friend",
-    PostReplied = "Post Replied",
     MessageReceived = "Message Received",
     PostLiked = "Post Liked",
     GroupActivity = "Group Activity",
+    ReplyLiked = "Reply Liked",
+    Replied = "Replied",
+}
+
+enum ContentType {
+    postId = "postId",
+    replyId = "replyId",
 }
 
 interface INotification {
@@ -41,6 +47,6 @@ class NotificationServices {
 	static getCount = () => this.fact.get<number>("/count")();
 }
 
-export { NotificationTypes };
+export { ContentType, NotificationTypes };
 export type { INotification };
 export default NotificationServices;

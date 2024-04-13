@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import { FriendNotificationModel, FriendRequestNotificationModel, INotification, MessageNotificationModel, NotificationTypes, PostLikedNotificationModel } from "../models/Notification";
+import { ContentType, FriendNotificationModel, FriendRequestNotificationModel, INotification, MessageNotificationModel, NotificationTypes, PostLikedNotificationModel, ReplyLikedNotificationModel, ReplyNotificationModel } from "../models/Notification";
 
 import { Request } from "express";
 import { RequestWithSocket } from "../middleware/socketMiddleware";
 import { IConversation } from "../models/Conversation";
 import { IFriendRequest } from "../models/FriendRequest";
-import { IPost } from "../models/Post";
-import { IReply } from "../models/Reply";
+import PostModel, { IPost } from "../models/Post";
+import ReplyModel, { IReply } from "../models/Reply";
 import UserModel, { IUser } from "../models/User";
 import UserConfigModel from "../models/UserConfig";
 
@@ -29,9 +29,12 @@ class NotificationStrategyFactory {
         else if (type === NotificationTypes.PostLiked) {
             notificationStrategy = new NotificationStrategyPostLiked();
         }
-        // else if (type === NotificationTypes.ReplyLiked) {
-            // notificationStrategy = new NotificationStrategyReplyLiked();
-        // }
+        else if (type === NotificationTypes.ReplyLiked) {
+            notificationStrategy = new NotificationStrategyReplyLiked();
+        }
+        else if (type === NotificationTypes.Replied) {
+            notificationStrategy = new NotificationStrategyReply();
+        }
         return new NotificationEmitterDecorator<NotificationData>(notificationStrategy);
     }
 }
@@ -70,7 +73,7 @@ class NotificationStrategyMessage implements NotificationStrategy<IConversation>
         try {
             // Await all the notification creation promises
             const notifications = await Promise.all(notificationPromises);
-            return notifications.filter(notif => notif !== null) as INotification[];
+            return notifications.filter(notify => notify !== null) as INotification[];
         } catch (error) {
             console.error("Failed to process message notifications", error);
             return [];
@@ -103,6 +106,84 @@ class NotificationStrategyPostLiked implements NotificationStrategy<IPost> {
         }
         catch {
             console.error("PostLike Notification failed");
+        }
+        return [];
+	}
+}
+
+class NotificationStrategyReplyLiked implements NotificationStrategy<IReply> {
+	async handle(data: IReply, req: Request): Promise<INotification[]> {
+        const id: mongoose.Types.ObjectId = (req.user as IUser)._id
+        const notifications: Promise<INotification>[] = []; 
+        
+        try {
+            if (!data._id) {
+                throw new Error("Invalid data provided to notification ReplyLike");
+            }
+
+            const user = await UserModel.findById(data.userId);
+            const config = await UserConfigModel.findOne({username: user?.username});
+
+            if (id.equals(user?._id) || !config?.replyLiked) return [];
+
+            notifications.push(ReplyLikedNotificationModel.create({
+                recipientUsername: user?.username,
+                recipientId: user?._id,
+                dispatcherId: (req.user as IUser)._id,
+                dispatcherUsername: (req.user as IUser).username,
+                contentId: data._id,
+                contentType: ContentType.replyId
+            }));
+            return await Promise.all(notifications);
+        }
+        catch (e){
+            console.error(`Reply Liked Notification failed: ${e}`);
+        }
+        return [];
+	}
+}
+
+class NotificationStrategyReply implements NotificationStrategy<IReply> {
+	async handle(data: IReply, req: Request): Promise<INotification[]> {
+        const id: mongoose.Types.ObjectId = (req.user as IUser)._id
+        const notifications: Promise<INotification>[] = []; 
+
+        let userId: mongoose.Types.ObjectId | undefined = undefined;
+        let type: ContentType = ContentType.postId;
+        try {
+            if (data.parentReplyId) {
+                const reply = await ReplyModel.findById(data.parentReplyId);
+                userId = reply?.userId;
+                type = ContentType.replyId;
+            }
+            else {
+                const post = await PostModel.findById(data.postId);
+                userId = post?.userId;
+            }
+
+            if (!userId) {
+                throw new Error("No User associated with post/reply");
+            }
+            const user = await UserModel.findById(userId);
+            const config = await UserConfigModel.findOne({username: user?.username});
+
+            if (id.equals(userId)) return [];
+        
+            if (config?.reply) {
+                notifications.push(ReplyNotificationModel.create({
+                        recipientUsername: user?.username,
+                        recipientId: user?._id,
+                        dispatcherId: (req.user as IUser)._id,
+                        dispatcherUsername: (req.user as IUser).username,
+                        contentId: data._id,
+                        contentType: type
+                    }));
+            }
+
+            return await Promise.all(notifications);
+        }
+        catch {
+            console.error("Reply Notification failed");
         }
         return [];
 	}
@@ -192,7 +273,7 @@ class NotificationEmitterDecorator<T> implements NotificationStrategy<T> {
                 req.io.to("User:" + notification.recipientUsername).emit("Notification Recieved", notification);
             }
 
-            const {profilePicture, profilePictureType} = res; 
+            const { profilePicture, profilePictureType } = res; 
             req.io.to("User:" + notification.recipientUsername).emit("Notification Recieved", {
                 ...notification.toObject(),
                 profilePicture: profilePicture, 

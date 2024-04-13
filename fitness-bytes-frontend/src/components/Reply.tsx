@@ -112,8 +112,13 @@ const Reply = ({
 							}
 						/>
 					</Link>
-					<CardContent>
-						<Typography variant="body2" color="text.secondary">
+					<CardContent sx={{ height: "max-content", textWrap: "wrap" }}>
+						<Typography
+							sx={{
+								textWrap: "wrap",
+							}}
+							variant="body2"
+							color="text.secondary">
 							{content}
 						</Typography>
 					</CardContent>

@@ -30,7 +30,7 @@ const AccountSettings = () => {
 	const mode = useThemeStore((s) => s.mode);
 	const toggleTheme = useThemeStore((s) => s.toggleTheme);
 	const theme = useTheme();
-	const [isNotificationAlterted, setNotificationAlerted] = useState(false);
+	const [isNotificationAltered, setNotificationAlerted] = useState(false);
 	const notificationChanged = () => {
 		setNotificationAlerted(true);
 	};
@@ -202,7 +202,7 @@ const AccountSettings = () => {
 						</Typography>
 					</Stack>
 					<Typography
-						color={isNotificationAlterted ? "error" : ""}
+						color={isNotificationAltered ? "error" : ""}
 						variant="body2">
 						You must save your changes
 					</Typography>
@@ -230,6 +230,7 @@ const AccountSettings = () => {
 														friend: false,
 														message: true,
 														like: true,
+														replyLiked: true,
 													};
 												},
 											);
@@ -261,6 +262,7 @@ const AccountSettings = () => {
 														friend: true,
 														message: false,
 														like: true,
+														replyLiked: true,
 													};
 												},
 											);
@@ -291,6 +293,7 @@ const AccountSettings = () => {
 														friend: true,
 														message: true,
 														like: false,
+														replyLiked: true,
 													};
 												},
 											);
@@ -321,13 +324,45 @@ const AccountSettings = () => {
 														friend: true,
 														message: true,
 														like: true,
+														replyLiked: true,
 													};
 												},
 											);
 										}}
 									/>
 								}
-								label={"When someone replies to your post "}
+								label={"When someone replies to you"}
+							/>
+							<FormControlLabel
+								control={
+									<Checkbox
+										id="replyLiked"
+										checked={userConfig?.replyLiked}
+										onClick={() => {
+											notificationChanged();
+											queryClient.setQueryData<userConfig>(
+												["userConfig"],
+												(oldConfig) => {
+													if (oldConfig) {
+														return {
+															...oldConfig,
+															replyLiked: !oldConfig.replyLiked,
+														};
+													}
+
+													return {
+														reply: true,
+														friend: true,
+														message: true,
+														like: true,
+														replyLiked: false,
+													};
+												},
+											);
+										}}
+									/>
+								}
+								label={"When someone likes one of your replies"}
 							/>
 							<Button variant="outlined" color="secondary" type="submit">
 								Save

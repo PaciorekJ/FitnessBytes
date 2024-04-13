@@ -11,6 +11,12 @@ import MessageNotification, {
 import PostLikedNotification, {
 	PostLikedNotificationProps,
 } from "../components/PostLikedNotification";
+import ReplyLikedNotification, {
+	ReplyLikedNotificationProps,
+} from "../components/ReplyLikedNotification";
+import ReplyNotification, {
+	ReplyNotificationProps,
+} from "../components/ReplyNotification";
 import { INotification, NotificationTypes } from "./NotificationServices";
 
 class NotificationFactory {
@@ -27,21 +33,18 @@ class NotificationFactory {
 		} else if (payload.type === NotificationTypes.PostLiked) {
 			const props = payload as PostLikedNotificationProps;
 			return <PostLikedNotification {...props} />;
+		} else if (payload.type === NotificationTypes.Replied) {
+			const props = payload as ReplyNotificationProps;
+			return <ReplyNotification {...props} />;
+		} else if (payload.type === NotificationTypes.ReplyLiked) {
+			const props = payload as ReplyLikedNotificationProps;
+			return <ReplyLikedNotification {...props} />;
 		}
 		return null;
 	}
 }
 
-// Extending the Notification interface for a Post Replied Notification
-interface PostRepliedNotification extends INotification {
-	type: NotificationTypes.PostReplied;
-	postId: string;
-	replyId: string;
-	repliedByUserId: string;
-	repliedByUserName: string;
-	timestamp: Date;
-}
-
+// Still in Development
 // Extending the Notification interface for a Group Activity Notification
 interface GroupActivityNotification extends INotification {
 	type: NotificationTypes.GroupActivity;
@@ -52,6 +55,6 @@ interface GroupActivityNotification extends INotification {
 	timestamp: Date;
 }
 
-export type { GroupActivityNotification, PostRepliedNotification };
+export type { GroupActivityNotification };
 
 export { NotificationFactory };
