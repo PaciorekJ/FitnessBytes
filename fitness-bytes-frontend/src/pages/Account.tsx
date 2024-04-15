@@ -274,7 +274,7 @@ const Account = () => {
 					next={fetchNextPage}
 					dataLength={postsPages?.length || 0}>
 					{postsPages.map((postsPage) =>
-						postsPage?.map((p) => (
+						postsPage?.posts.map((p) => (
 							<PostCard key={p._id} {...p} postQueryKey={username} />
 						)),
 					)}

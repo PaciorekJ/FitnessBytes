@@ -8,11 +8,8 @@ const usePosts = (username: string = "") => {
         queryKey: ['posts', username],
         queryFn: ({ pageParam = 0 }) => PostServices.getAll(username, pageParam, PAGE_LENGTH),
         initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages) => {
-            return (lastPage?.length || 0) > 0 ?  allPages.length + 1 : undefined;
-        },
+        getNextPageParam: (lastPage, allPages) => lastPage?.hasMore ? allPages.length : undefined,
     });
 };
-
 
 export default usePosts;
