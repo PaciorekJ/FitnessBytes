@@ -24,7 +24,11 @@ import useBannerStore from "../hooks/useBannerStore";
 import { LikeId } from "../hooks/useIsLiked";
 import usePostImage from "../hooks/usePostImage";
 import useUserStore from "../hooks/useUserStore";
-import PostServices, { IPost, IPostImage } from "../services/PostServices";
+import PostServices, {
+	IPaginatedPosts,
+	IPost,
+	IPostImage,
+} from "../services/PostServices";
 import ReportServices from "../services/ReportServices";
 import { PostData } from "../services/Validators/PostValidatorService";
 import { decodeImage } from "../utils/ImageProcessing";
@@ -94,7 +98,7 @@ const PostCard = ({
 		}
 
 		queryClient.setQueryData<
-			InfiniteData<IPost[] | undefined, unknown> | undefined
+			InfiniteData<IPaginatedPosts | undefined, unknown>
 		>(["posts", postQueryKey], (oldPosts) => {
 			if (!oldPosts) {
 				return {
@@ -103,22 +107,26 @@ const PostCard = ({
 				};
 			}
 
-			const updatedPages = oldPosts.pages.map(
-				(page) => page?.filter((post) => post._id !== _id) || [],
-			);
+			const updatedPages = oldPosts.pages.map((page) => {
+				if (!page)
+					return {
+						hasMore: false,
+						posts: [],
+					};
+
+				const newPosts = page.posts.filter((post) => post._id !== _id);
+				return {
+					...page,
+					posts: newPosts,
+				};
+			});
 
 			return {
 				...oldPosts,
 				pages: updatedPages,
 			};
 		});
-
-		if (postQueryKey) {
-			queryClient.invalidateQueries({
-				queryKey: [`userPostCount-${postQueryKey}`, postQueryKey],
-			});
-		}
-	}, [_id, postQueryKey, queryClient, setBanner]);
+	}, [_id, queryClient, postQueryKey, setBanner]);
 
 	const handleReport = async () => {
 		const res = await ReportServices.create({

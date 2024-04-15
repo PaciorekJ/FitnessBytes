@@ -5,10 +5,13 @@ const axiosInstance = axios.create({
     withCredentials: true,
 });
 
+export interface Paginated {
+    hasMore: boolean;
+}
+
 export interface ResponseResult<T> {
     message: string;
     result?: T; 
-    next?: boolean;
 }
 
 class ClientService<T> {

@@ -40,13 +40,21 @@ postsRouter.get('/', async (req, res) => {
                 $skip: pageLength * pageNumber,
             },
             {
-                $limit: pageLength
+                $limit: pageLength + 1
             },
         ]);
         
-        return res.json({
+        const hasMore = posts.length > pageLength;
+        if (hasMore) posts.pop();
+
+        const postPayload = {
+            posts,
+            hasMore,
+        }
+
+        return res.status(200).json({
             message: "",
-            result: posts,
+            result: postPayload,
         });
 
     } catch (e) {
@@ -100,13 +108,21 @@ postsRouter.get('/:username', async (req, res) => {
                 $skip: pageLength * pageNumber,
             },
             {
-                $limit: pageLength
+                $limit: pageLength + 1
             },
         ]);
 
+        const hasMore = posts.length > pageLength;
+        if (hasMore) posts.pop();
+
+        const postPayload = {
+            posts,
+            hasMore,
+        }
+
         return res.status(200).json({
             message: "",
-            result: posts,
+            result: postPayload,
         });
     }
     catch (e) {

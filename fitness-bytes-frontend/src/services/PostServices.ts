@@ -1,5 +1,9 @@
-import { ResponseResult } from "./HTTP-Services/ClientService";
+import { Paginated, ResponseResult } from "./HTTP-Services/ClientService";
 import EndpointFactory from "./HTTP-Services/EndpointFactory";
+
+interface IPaginatedPosts extends Paginated {
+    posts: IPost[];
+}
 
 interface IPost {
     _id: string;
@@ -17,7 +21,7 @@ interface IPostImage {
     imageType: string;
 }
 
-type PostResponse = ResponseResult<boolean | IPost | IPost[]>;
+type PostResponse = ResponseResult<boolean | IPost | IPost[] | IPaginatedPosts>;
 
 class PostServices {
     private static factPost = new EndpointFactory<PostResponse>("/post");
@@ -37,7 +41,7 @@ class PostServices {
     })
     static getImage = PostServices.factPost.get<IPostImage>("/image/")
     static delete = PostServices.factPost.delete<boolean>();
-    static getAll = (username: string = "", pageNumber: number, pageLength: number ) => PostServices.factPosts.get<IPost[]>("/", {
+    static getAll = (username: string = "", pageNumber: number, pageLength: number ) => PostServices.factPosts.get<IPaginatedPosts>("/", {
         params: {pageNumber, pageLength}
     })(username);
     static getOne = PostServices.factPost.get<IPost>();
@@ -47,5 +51,5 @@ class PostServices {
     static getCount = (username: string) => PostServices.factPosts.get<number>("/count/")(username);
 }
 
-export type { IPost, IPostImage };
+export type { IPaginatedPosts, IPost, IPostImage };
 export default PostServices;

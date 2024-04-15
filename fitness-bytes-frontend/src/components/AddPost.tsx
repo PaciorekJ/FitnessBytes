@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import HistoryEduOutlinedIcon from "@mui/icons-material/HistoryEduOutlined";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -8,7 +9,10 @@ import { useNavigate } from "react-router-dom";
 import useBannerStore from "../hooks/useBannerStore";
 import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
-import PostServices, { IPost, IPostImage } from "../services/PostServices";
+import PostServices, {
+	IPaginatedPosts,
+	IPostImage,
+} from "../services/PostServices";
 import { PostData } from "../services/Validators/PostValidatorService";
 import PostModal from "./PostModal";
 
@@ -60,7 +64,11 @@ const AddPost = () => {
 
 		queryClient.setQueryData(
 			["posts", ""],
-			(oldPosts: InfiniteData<IPost[] | undefined, unknown> | undefined) => {
+			(
+				oldPosts:
+					| InfiniteData<IPaginatedPosts | undefined, unknown>
+					| undefined,
+			) => {
 				if (!oldPosts || !oldPosts.pages) {
 					return {
 						pageParams: [],
@@ -76,7 +84,12 @@ const AddPost = () => {
 				};
 
 				const updatedPages = oldPosts.pages.map((page, index) =>
-					index === 0 ? [newPost, ...(page || [])] : page,
+					index === 0
+						? {
+								...page,
+								posts: [newPost, ...(page?.posts || [])],
+						  }
+						: page,
 				);
 
 				return {
