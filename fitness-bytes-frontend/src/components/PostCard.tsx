@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import {
 	Box,
 	CardActions,
@@ -206,26 +207,36 @@ const PostCard = ({
 		}
 
 		queryClient.setQueryData<
-			InfiniteData<IPost[] | undefined, unknown> | undefined
+			InfiniteData<IPaginatedPosts | undefined, unknown> | undefined
 		>(["posts", postQueryKey], (oldPosts) => {
-			const updatedPages = oldPosts?.pages.map((page) => {
-				return (
-					page?.map((post) => {
-						if (post._id === _id) {
-							return {
-								...post,
-								content: data.content,
-								imageId: CurrentImageId,
-							};
-						}
-						return post;
-					}) || []
-				);
-			}) || [[]];
+			if (!oldPosts) {
+				return undefined;
+			}
+
+			const updatedPages = oldPosts.pages
+				.map((page) => {
+					if (!page) {
+						return undefined;
+					}
+
+					return {
+						...page,
+						posts: page.posts.map((post) =>
+							post._id === _id
+								? {
+										...post,
+										content: data.content,
+										imageId: CurrentImageId,
+								  }
+								: post,
+						),
+					};
+				})
+				.filter((page) => page !== undefined);
 
 			return {
-				...oldPosts!,
 				pages: updatedPages,
+				pageParams: oldPosts.pageParams || [],
 			};
 		});
 

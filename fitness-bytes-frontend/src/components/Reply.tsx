@@ -40,7 +40,7 @@ const Reply = ({
 	disabled = false,
 }: ReplyProps) => {
 	const { data: user, isLoading } = useUser(userId);
-	const repliesQuery = useReplies({
+	const { data } = useReplies({
 		rootId: postId,
 		parentId: _id,
 	});
@@ -88,8 +88,14 @@ const Reply = ({
 	if (isLoading) return <PageSpinner />;
 
 	const time = ParseDateFromNow(new Date(timeCreated || ""));
-	const lastReplyId = repliesQuery.data?.[repliesQuery.data.length - 1]?._id;
-	const repliesCount = repliesQuery.data?.length;
+	const lastPage = data?.pages?.[data.pages.length - 1];
+	const lastReply = lastPage?.[lastPage.length - 1];
+	const lastReplyId = lastReply?._id ?? "default-id";
+
+	const repliesCount = data?.pages.reduce(
+		(acc, e) => acc + (e?.length || 0),
+		0,
+	);
 	const key = `${lastReplyId}-${repliesCount}`;
 
 	return (
