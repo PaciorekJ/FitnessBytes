@@ -18,7 +18,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import usePost from "../hooks/usePost";
 import useReply from "../hooks/useReply";
-import ReplyServices, { IReply, IReplyNode } from "../services/ReplyServices";
+import ReplyServices, { IReplyNode } from "../services/ReplyServices";
 import { MAX_CHAR } from "../services/Validators/PostValidatorService";
 import {
 	ReplyData,
@@ -58,22 +58,18 @@ const ReplyButton = ({ rootId, parentId = null }: IReplyNode) => {
 
 		if (!reply) return;
 
-		queryClient.setQueryData<IReply[]>(
-			parentId ? ["repliesByReplyId", parentId] : ["repliesByPostId", rootId],
-			(oldReplies) => {
-				return [...(oldReplies || []), reply];
-			},
-		);
-
-		queryClient.refetchQueries({
+		// *** TODO: Optimistic updates are tricky here and can be added later as replies are already paginated
+		// So the load of the refetch is quite small but updating the UI with setQueryData is better!
+		// Updating in this manner worked well for root replies but difficult for nested replies as the nested
+		// Component would not rerender, saving this for later as a larger patch ***
+		queryClient.invalidateQueries({
 			queryKey: parentId
 				? ["repliesByReplyId", parentId]
 				: ["repliesByPostId", rootId],
 		});
-
 		queryClient.invalidateQueries({
 			queryKey: parentId
-				? ["replyCountByReplyId", parentId]
+				? ["replyCountByReply", parentId]
 				: ["replyCountByPostId", rootId],
 		});
 

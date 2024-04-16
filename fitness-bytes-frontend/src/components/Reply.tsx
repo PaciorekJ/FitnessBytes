@@ -10,7 +10,7 @@ import {
 	Stack,
 	Typography,
 } from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import useBannerStore from "../hooks/useBannerStore";
 import { LikeId } from "../hooks/useIsLiked";
 import useReplies from "../hooks/useReplies";
@@ -49,23 +49,35 @@ const Reply = ({
 	const queryClient = useQueryClient();
 
 	const handleDelete = async () => {
-		const reply = await ReplyServices.delete(_id);
+		const result = await ReplyServices.delete(_id);
 
-		if (!reply) {
-			setBanner("Error: Failed to delete post, please try again!", true);
+		if (!result) {
+			setBanner("Error: Failed to delete reply, please try again!", true);
 			return;
 		}
 
-		queryClient.setQueryData<IReply[]>(
+		queryClient.setQueryData<InfiniteData<IReply[] | undefined, unknown>>(
 			parentReplyId
 				? ["repliesByReplyId", parentReplyId]
 				: ["repliesByPostId", postId],
 			(oldReplies) => {
-				if (!oldReplies) {
-					return [];
+				if (!oldReplies || !oldReplies.pages) {
+					return {
+						pages: [],
+						pageParams: [],
+					};
 				}
 
-				return oldReplies.filter((r) => r._id !== _id);
+				const newPages = oldReplies.pages.map((page) =>
+					page?.filter((reply) => reply._id !== _id),
+				);
+				const nonEmptyPages = newPages.filter((page) => page?.length || 0 > 0);
+
+				return {
+					...oldReplies,
+					pages: nonEmptyPages,
+					pageParams: oldReplies.pageParams,
+				};
 			},
 		);
 
@@ -96,7 +108,7 @@ const Reply = ({
 		(acc, e) => acc + (e?.length || 0),
 		0,
 	);
-	const key = `${lastReplyId}-${repliesCount}`;
+	const key = `${lastReplyId}-${repliesCount}-${parentReplyId}-${postId}`;
 
 	return (
 		<Box minWidth={"100%"}>

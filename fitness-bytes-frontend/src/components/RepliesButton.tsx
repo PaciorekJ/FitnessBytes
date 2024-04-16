@@ -1,6 +1,6 @@
 import CancelIcon from "@mui/icons-material/Cancel";
 import { Button, Divider, IconButton, Stack, useTheme } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useReplies from "../hooks/useReplies";
 import useReplyCount from "../hooks/useReplyCount";
@@ -10,7 +10,7 @@ import PageSpinner from "./PageSpinner";
 import Reply from "./Reply";
 
 const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
-	const { data: count, isLoading: countIsLoading } = useReplyCount({
+	const { data: repliesCount, isLoading: countIsLoading } = useReplyCount({
 		rootId,
 		parentId,
 	});
@@ -30,6 +30,11 @@ const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
 
 	if (countIsLoading) return null;
 
+	const lastPage = replies?.pages?.[replies.pages.length - 1];
+	const lastReply = lastPage?.[lastPage.length - 1];
+
+	const key = (lastReply?._id || "undefined") + "-" + repliesCount;
+
 	return (
 		<Stack padding={1}>
 			{open ? (
@@ -47,8 +52,7 @@ const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
 							paddingLeft={{ sx: 0.5, sm: 1 }}
 							gap={2}
 							sx={{
-								height: "80vh",
-								maxHeight: "100%",
+								maxHeight: "80vh",
 								overflowY: "scroll",
 								flex: "1 1 auto",
 							}}>
@@ -63,19 +67,21 @@ const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
 										0,
 									) || 0
 								}>
-								{replies?.pages.map((p) =>
-									p?.map((r) => (
-										<Reply
-											key={`${r._id} ${r.content} ${r.parentReplyId}`}
-											{...r}
-										/>
-									)),
-								)}
+								{replies?.pages.map((p, i) => (
+									<React.Fragment key={"Replies " + i + p?.length}>
+										{p?.map((r) => (
+											<Reply
+												key={`${r._id} ${r.content} ${r.parentReplyId} ${r.postId}`}
+												{...r}
+											/>
+										))}
+									</React.Fragment>
+								))}
 							</InfiniteScroll>
 						</Stack>
 					)}
 				</>
-			) : count ? (
+			) : repliesCount ? (
 				<Divider
 					sx={
 						mode === "dark"
@@ -92,10 +98,11 @@ const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
 					variant="middle"
 					textAlign="center">
 					<Button
+						key={key}
 						variant="outlined"
 						onClick={() => setOpen(!open)}
 						sx={{ textDecoration: "none", color: "secondary.light" }}>
-						Replies {count}
+						Replies {repliesCount}
 					</Button>
 				</Divider>
 			) : (

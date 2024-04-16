@@ -1,7 +1,3 @@
-# Chunk 2
-
-* Post should be able to have replies
-  * Add Notification for replies
 
 # Chunk 5
 
@@ -9,14 +5,15 @@
 
 # Things to Consider
 
-* Refactor username in favor of _id so username can be changed simply
+* Refactor username in favor of exclusively the user's _id so username can be changed
 * Add Change password for account management and for login page
-* Add My Groups Functionality
+* Fix where invalidateQueryData is used in favor of optimistic updates in particular the replies use invalidate Query Data because there nested structure cause difficulties with rerenders. Data can be set and updated but theres rendering issues that are also required to be addressed in this situation. Also, counts can be changed to setQueryData, but this has side effect and will act funny with strict mode, so this can be tackled for production purposes only.
 
-* Create Groups
-* Edit Groups
-* Group privacy (public, private, secret)
-* Join groups
-* Leave Groups
-* Groups have -> Names, participants, events
-* This is a large feature and may be added in the future if the website gains traction and users want it.
+* Add My Groups Functionality
+  * Create Groups
+  * Edit Groups
+  * Group privacy (public, private, secret)
+  * Join groups
+  * Leave Groups
+  * Groups have -> Names, participants, events
+  * This is a large feature and may be added in the future if the website gains traction and users want it.
