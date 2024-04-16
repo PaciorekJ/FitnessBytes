@@ -27,8 +27,12 @@ class ReplyServices {
     static get = this.fact.get<IReply>("/");
     static create = this.fact.post<IReply, IReply>();
     static update = this.fact.patch<IReply, IReply>("/");
-    static getFromPost = (postId: string) => this.fact.get<IReply[]>("/postReplies/")(postId);
-    static getFromReply = (replyId: string) => this.fact.get<IReply[]>("/replyReplies/")(replyId);
+    static getFromPost = (postId: string, pageNumber: number, pageLength: number) => this.fact.get<IReply[]>("/postReplies/", {
+        params: {pageNumber, pageLength}
+    })(postId);
+    static getFromReply = (replyId: string, pageNumber: number, pageLength: number) => this.fact.get<IReply[]>("/replyReplies/", {
+        params: {pageNumber, pageLength}
+    })(replyId);
     static delete = this.fact.delete<boolean>();
 
     static like = (_id: string) => this.fact.post<boolean, IReply>("/like")({ _id });

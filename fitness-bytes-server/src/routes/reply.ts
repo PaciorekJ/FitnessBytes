@@ -156,14 +156,37 @@ replyRouter.get("/replyRepliesCount/:replyId", authMiddleware, async (req, res) 
 replyRouter.get("/postReplies/:postId", authMiddleware, async (req, res) => {
     const postIdRaw = req.params.postId;
 
+    const {pageLength: pageLengthRaw, pageNumber: pageNumberRaw} = req.query as {pageLength: string, pageNumber: string};
+    const pageLength = parseInt(pageLengthRaw) || 10;
+    const pageNumber = parseInt(pageNumberRaw) || 0;
+
     if (!mongoose.Types.ObjectId.isValid(postIdRaw)) {
         return res.status(400).json({ message: "Invalid Post ID" });
     }
 
     try {
         const postId = new mongoose.Types.ObjectId(postIdRaw);
-    
-        const replies = await ReplyModel.find({postId, parentReplyId: null});
+
+        const replies = await ReplyModel.aggregate(
+            [
+                {
+                    $match: {
+                        postId,
+                        parentReplyId: null
+                    }
+                },
+                {
+                    $sort: { "timeCreated": -1 },
+                },
+                {
+                    $skip: pageLength * pageNumber,
+                },
+                {
+                    $limit: pageLength
+                },
+
+            ]
+        );
     
         return res.json({ 
             message: "",
@@ -180,6 +203,10 @@ replyRouter.get("/postReplies/:postId", authMiddleware, async (req, res) => {
 replyRouter.get("/replyReplies/:replyId", authMiddleware, async (req, res) => {
     const replyIdRaw = req.params.replyId;
 
+    const {pageLength: pageLengthRaw, pageNumber: pageNumberRaw} = req.query as {pageLength: string, pageNumber: string};
+    const pageLength = parseInt(pageLengthRaw) || 10;
+    const pageNumber = parseInt(pageNumberRaw) || 0;
+
     if (!mongoose.Types.ObjectId.isValid(replyIdRaw)) {
         return res.status(400).json({ message: "Invalid Reply ID" });
     }
@@ -187,7 +214,25 @@ replyRouter.get("/replyReplies/:replyId", authMiddleware, async (req, res) => {
     try {
         const replyId = new mongoose.Types.ObjectId(replyIdRaw);
 
-        const replies = await ReplyModel.find({parentReplyId: replyId});
+        const replies = await ReplyModel.aggregate(
+            [
+                {
+                    $match: {
+                        parentReplyId: replyId
+                    }
+                },
+                {
+                    $sort: { "timeCreated": -1 },
+                },
+                {
+                    $skip: pageLength * pageNumber,
+                },
+                {
+                    $limit: pageLength
+                },
+
+            ]
+        );
 
         return res.json({ 
             message: "",
