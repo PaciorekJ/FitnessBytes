@@ -23,11 +23,13 @@ import PageSpinner from "../components/PageSpinner";
 import PostCard from "../components/PostCard";
 import ProfilePicture from "../components/ProfilePicture";
 import useBannerStore from "../hooks/useBannerStore";
+import useIsFriend from "../hooks/useIsFriend";
 import usePostCount from "../hooks/usePostCount";
 import usePosts from "../hooks/usePosts";
 import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
 import FriendRequestServices from "../services/FriendRequestServices";
+import { FriendStatus } from "../services/FriendServices";
 import UserServices, { IUser } from "../services/UserServices";
 import { compressImage, encodeImage } from "../utils/ImageProcessing";
 
@@ -35,6 +37,9 @@ const Account = () => {
 	const { username } = useParams();
 	const activeUsername = useUserStore((s) => s.username);
 	const { data: user, isLoading: userIsLoading } = useUser(username!);
+	const { data: isFriend, isLoading: isLoadingIsFriend } = useIsFriend(
+		username || "",
+	);
 	const setBanner = useBannerStore((s) => s.setBanner);
 
 	const queryClient = useQueryClient();
@@ -48,10 +53,13 @@ const Account = () => {
 	const [processingBio, setProcessingBio] = useState(false);
 
 	useEffect(() => {
-		if (userIsLoading || !user?.bio) return;
+		if (userIsLoading || !user?.bio) {
+			setEditableBio("");
+			return;
+		}
 
 		setEditableBio(user.bio);
-	}, [user?.bio, userIsLoading]);
+	}, [user?.bio, userIsLoading, username]);
 
 	const postsPages = data?.pages || [];
 
@@ -63,6 +71,11 @@ const Account = () => {
 
 	const handleAddFriend = async (_id: string, toUsername: string) => {
 		const friendRequest = await FriendRequestServices.create(_id);
+
+		queryClient.setQueryData(
+			[`isFriend-${username}`, username],
+			() => FriendStatus.Pending,
+		);
 
 		if (friendRequest) {
 			setBanner(`Friend Request has been sent to ${toUsername}`);
@@ -183,6 +196,7 @@ const Account = () => {
 							)
 						}>
 						<ProfilePicture
+							key={username}
 							username={username!}
 							sx={{
 								width: "200px",
@@ -196,14 +210,20 @@ const Account = () => {
 						<Typography variant="h4" letterSpacing={".1rem"} component="h2">
 							{username}
 						</Typography>
-						{!ownerPermissions && (
-							<Button
-								sx={{ alignSelf: "center" }}
-								variant="contained"
-								onClick={() => handleAddFriend(user._id, user.username)}>
-								Add +
-							</Button>
-						)}
+						{!ownerPermissions &&
+							!isLoadingIsFriend &&
+							isFriend !== FriendStatus.Friend && (
+								<Button
+									sx={{ alignSelf: "center" }}
+									variant="contained"
+									onClick={
+										isFriend === FriendStatus.None
+											? () => handleAddFriend(user._id, user.username)
+											: () => {}
+									}>
+									{isFriend === FriendStatus.None ? "Add +" : "Pending..."}
+								</Button>
+							)}
 					</Stack>
 					<Divider sx={{ marginY: 1 }} />
 					{!editBioMode ? (
