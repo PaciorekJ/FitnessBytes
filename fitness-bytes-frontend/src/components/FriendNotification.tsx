@@ -1,4 +1,4 @@
-import { Link, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import Notification from "../components/Notification";
 import { INotification } from "../services/NotificationServices";
 import ProfilePicture from "./ProfilePicture";
@@ -18,18 +18,22 @@ const FriendNotification = ({
 			actions
 			icon={<ProfilePicture username={dispatcherUsername} />}
 			content={
-				<>
-					You and{" "}
-					<Typography component="b" fontWeight={600}>
-						<Link href={"/auth/account/" + dispatcherUsername}>
+				<Stack width={"100%"} flexDirection={"row"}>
+					<Typography>
+						You and{" "}
+						<Typography
+							component="a"
+							color={"secondary"}
+							sx={{ textDecoration: "none" }}
+							href={"/auth/account/" + dispatcherUsername}>
 							{dispatcherUsername}
-						</Link>
-					</Typography>{" "}
-					are now{" "}
-					<Typography component="b" fontWeight={600}>
-						friends
+						</Typography>{" "}
+						are now{" "}
+						<Typography component="b" color={"secondary"} fontWeight={600}>
+							friends
+						</Typography>
 					</Typography>
-				</>
+				</Stack>
 			}
 			timestamp={new Date(timeCreated)}
 		/>

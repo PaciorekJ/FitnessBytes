@@ -1,4 +1,4 @@
-import { Link, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import Notification from "../components/Notification";
 import useBannerStore from "../hooks/useBannerStore";
 import FriendRequestServices from "../services/FriendRequestServices";
@@ -52,16 +52,22 @@ const FriendRequestNotification = ({
 			actionOnReject={onReject}
 			icon={<ProfilePicture username={dispatcherUsername} />}
 			content={
-				<>
-					You have a{" "}
-					<Typography component="b" fontWeight={600}>
-						friend request
-					</Typography>{" "}
-					from{" "}
-					<Link href={"/auth/account/" + dispatcherUsername}>
-						{dispatcherUsername}
-					</Link>
-				</>
+				<Stack flexDirection={"row"}>
+					<Typography>
+						You have a{" "}
+						<Typography component="b" color={"secondary"} fontWeight={600}>
+							friend request
+						</Typography>{" "}
+						from{" "}
+						<Typography
+							component={"a"}
+							color={"secondary"}
+							sx={{ textDecoration: "none" }}
+							href={"/auth/account/" + dispatcherUsername}>
+							{dispatcherUsername}
+						</Typography>
+					</Typography>
+				</Stack>
 			}
 			timestamp={new Date(timeCreated)}
 		/>
