@@ -11,12 +11,20 @@ interface IFriend {
     timeCreated?: Date;
 }
 
+export enum FriendStatus {
+    None = "None",
+    Pending = "Pending",
+    Friend = "Friend"
+}
+
 type FriendResponse = ResponseResult<IUser[]>;
 
 class FriendServices {
 	private static factFriend = new EndpointFactory<FriendResponse>("/friend/");
 
     static search = (query: string, pageNumber: number, pageLength: number) => FriendServices.factFriend.get<IUser[]>("", { params: { query, pageLength, pageNumber } })("");
+
+    static isFriend = (friendUsername: string) => this.factFriend.get<FriendStatus>("/isFriend/")(friendUsername);
 }
 
 export type { IFriend };
