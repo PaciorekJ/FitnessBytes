@@ -1,7 +1,7 @@
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { CircularProgress, IconButton, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, IconButton, Stack, Typography } from "@mui/material";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import useBannerStore from "../hooks/useBannerStore";
@@ -94,10 +94,14 @@ const Notification = ({
 				sx={{
 					flexDirection: "row",
 					alignItems: "center",
+					width: "100%",
 					gap: 4,
 				}}>
+				<Box sx={{ alignSelf: "start" }}>
+
 				{icon}
-				<Typography>{content}</Typography>
+				</Box>
+				{content}
 			</Stack>
 			<Stack
 				sx={{
@@ -123,8 +127,11 @@ const Notification = ({
 						</>
 					)}
 				</Stack>
-				<Stack maxWidth={"50px"}>
-					<Typography variant="subtitle2" fontSize={"0.5rem"}>
+				<Stack>
+					<Typography
+						sx={{ textWrap: "nowrap" }}
+						variant="subtitle2"
+						fontSize={"0.5rem"}>
 						{ParseDateFromNow(timestamp)}
 					</Typography>
 					{!processingDelete ? (
