@@ -1,6 +1,6 @@
 import CancelIcon from "@mui/icons-material/Cancel";
 import { Button, Divider, IconButton, Stack, useTheme } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useReplies from "../hooks/useReplies";
 import useReplyCount from "../hooks/useReplyCount";
@@ -28,13 +28,22 @@ const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
 	const mode = useThemeStore((s) => s.mode);
 	const [open, setOpen] = useState(false);
 
+	useEffect(() => {
+		if (repliesCount === 0 && !repliesIsLoading) {
+			setOpen(false);
+		}
+	}, [repliesCount, repliesIsLoading]);
+
 	if (countIsLoading) return null;
+	if (!replies && !repliesIsLoading) return null;
 
 	const lastPage = replies?.pages?.[replies.pages.length - 1];
 	const lastReply = lastPage?.[lastPage.length - 1];
 
 	const key = (lastReply?._id || "undefined") + "-" + repliesCount;
 
+	const repliesLength =
+		replies?.pages.reduce((acc, page) => acc + (page?.length || 0), 0) || 0;
 	return (
 		<Stack padding={1}>
 			{open ? (
@@ -43,7 +52,7 @@ const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
 						<CancelIcon />
 					</IconButton>
 					{repliesIsLoading ? (
-						<PageSpinner />
+						<PageSpinner sx={{ margin: 1 }} />
 					) : (
 						<Stack
 							id="scrollableDiv"
@@ -58,15 +67,10 @@ const RepliesButton = ({ rootId, parentId }: IReplyNode) => {
 							}}>
 							<InfiniteScroll
 								hasMore={hasNextPage}
-								loader={<PageSpinner />}
+								loader={<PageSpinner sx={{ margin: 2 }} />}
 								next={fetchNextPage}
 								scrollableTarget="scrollableDiv"
-								dataLength={
-									replies?.pages.reduce(
-										(acc, page) => acc + (page?.length || 0),
-										0,
-									) || 0
-								}>
+								dataLength={repliesLength}>
 								{replies?.pages.map((p, i) => (
 									<React.Fragment key={"Replies " + i + p?.length}>
 										{p?.map((r) => (
