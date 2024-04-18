@@ -69,9 +69,14 @@ const Conversation = ({ conversationId }: Props) => {
 			</Stack>
 		);
 
+	const messageCount = conversationPages.reduce(
+		(acc1, page) => (acc1 += (page || []).length),
+		0,
+	);
+
 	return (
 		<>
-			{(conversationPages && !conversationPages.length && (
+			{(conversationPages && messageCount <= 0 && (
 				<Stack
 					position={"absolute"}
 					top={"45%"}
@@ -97,10 +102,7 @@ const Conversation = ({ conversationId }: Props) => {
 					}}>
 					<div ref={messagesEndRef}></div>
 					<InfiniteScroll
-						dataLength={conversationPages.reduce(
-							(acc1, page) => (acc1 += (page || []).length),
-							0,
-						)}
+						dataLength={messageCount}
 						next={fetchNextPage}
 						style={{
 							display: "flex",

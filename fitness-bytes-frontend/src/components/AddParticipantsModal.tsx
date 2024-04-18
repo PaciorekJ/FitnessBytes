@@ -48,7 +48,12 @@ const AddParticipantsModal = ({
 	const reset = () => setReset(resetVal);
 
 	useEffect(() => {
-		if (isLoading || !conversation) return;
+		if (isLoading && !conversation) {
+			setParticipants([]);
+			return;
+		}
+
+		if (!conversation) return;
 
 		const newParticipants =
 			conversation.participantIds?.map((id, i) => ({
@@ -74,8 +79,6 @@ const AddParticipantsModal = ({
 	}
 
 	async function handleUpdateConversation() {
-		setParticipants([]);
-
 		const participantUsernames = participants.map((u) => u.username);
 		const participantIds = participants.map((u) => u._id);
 
