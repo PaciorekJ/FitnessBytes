@@ -4,7 +4,6 @@ import ModeEditOutlineTwoToneIcon from "@mui/icons-material/ModeEditOutlineTwoTo
 import {
 	Badge,
 	Box,
-	Button,
 	CircularProgress,
 	Container,
 	Divider,
@@ -19,17 +18,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams } from "react-router-dom";
+import AddFriendButton from "../components/AddFriendButton";
 import PageSpinner from "../components/PageSpinner";
 import PostCard from "../components/PostCard";
 import ProfilePicture from "../components/ProfilePicture";
 import useBannerStore from "../hooks/useBannerStore";
-import useIsFriend from "../hooks/useIsFriend";
 import usePostCount from "../hooks/usePostCount";
 import usePosts from "../hooks/usePosts";
 import useUser from "../hooks/useUser";
 import useUserStore from "../hooks/useUserStore";
-import FriendRequestServices from "../services/FriendRequestServices";
-import { FriendStatus } from "../services/FriendServices";
 import UserServices, { IUser } from "../services/UserServices";
 import { compressImage, encodeImage } from "../utils/ImageProcessing";
 
@@ -37,9 +34,6 @@ const Account = () => {
 	const { username } = useParams();
 	const activeUsername = useUserStore((s) => s.username);
 	const { data: user, isLoading: userIsLoading } = useUser(username!);
-	const { data: isFriend, isLoading: isLoadingIsFriend } = useIsFriend(
-		username || "",
-	);
 	const setBanner = useBannerStore((s) => s.setBanner);
 
 	const queryClient = useQueryClient();
@@ -68,24 +62,6 @@ const Account = () => {
 	);
 
 	const postCount = postCountData || 0;
-
-	const handleAddFriend = async (_id: string, toUsername: string) => {
-		const friendRequest = await FriendRequestServices.create(_id);
-
-		queryClient.setQueryData(
-			[`isFriend-${username}`, username],
-			() => FriendStatus.Pending,
-		);
-
-		if (friendRequest) {
-			setBanner(`Friend Request has been sent to ${toUsername}`);
-		} else {
-			setBanner(
-				`Friend Request could not be send. A friend request is already pending or you guys are already friends`,
-				true,
-			);
-		}
-	};
 
 	const saveBio = async () => {
 		if (processingBio) return;
@@ -210,20 +186,7 @@ const Account = () => {
 						<Typography variant="h4" letterSpacing={".1rem"} component="h2">
 							{username}
 						</Typography>
-						{!ownerPermissions &&
-							!isLoadingIsFriend &&
-							isFriend !== FriendStatus.Friend && (
-								<Button
-									sx={{ alignSelf: "center" }}
-									variant="contained"
-									onClick={
-										isFriend === FriendStatus.None
-											? () => handleAddFriend(user._id, user.username)
-											: () => {}
-									}>
-									{isFriend === FriendStatus.None ? "Add +" : "Pending..."}
-								</Button>
-							)}
+						{!ownerPermissions && user && <AddFriendButton {...user} />}
 					</Stack>
 					<Divider sx={{ marginY: 1 }} />
 					{!editBioMode ? (

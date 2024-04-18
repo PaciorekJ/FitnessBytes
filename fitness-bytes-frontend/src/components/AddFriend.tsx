@@ -2,7 +2,6 @@
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import {
 	Box,
-	Button,
 	Divider,
 	IconButton,
 	InputBase,
@@ -21,10 +20,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
-import useBannerStore from "../hooks/useBannerStore";
 import useUsers from "../hooks/useUsers";
-import FriendRequestServices from "../services/FriendRequestServices";
 import { IUser } from "../services/UserServices";
+import AddFriendButton from "./AddFriendButton";
 import PageSpinner from "./PageSpinner";
 import ProfilePicture from "./ProfilePicture";
 
@@ -34,7 +32,6 @@ const AddFriend = () => {
 	});
 
 	const [isOpen, setOpen] = useState(false);
-	const setBanner = useBannerStore((s) => s.setBanner);
 	const theme = useTheme();
 
 	const [searchTerm, setSearchTerm] = useState("");
@@ -66,19 +63,6 @@ const AddFriend = () => {
 		borderRadius: "25px",
 		boxShadow: "0px 0px 10vh " + theme.palette.primary.light,
 		p: 3,
-	};
-
-	const handleAddFriend = async (_id: string, toUsername: string) => {
-		const friendRequest = await FriendRequestServices.create(_id);
-
-		if (friendRequest) {
-			setBanner(`Friend Request has been sent to ${toUsername}`);
-		} else {
-			setBanner(
-				`Friend Request could not be send. A friend request is already pending or you guys are already friends`,
-				true,
-			);
-		}
 	};
 
 	return (
@@ -167,18 +151,15 @@ const AddFriend = () => {
 														</ListItem>
 													</Stack>
 													<ListItemIcon sx={{ marginLeft: "auto" }}>
-														<Button
-															sx={{ alignSelf: "center" }}
-															variant="contained"
+														<Stack
 															onClick={(e) => {
 																e.preventDefault();
 																closeModal();
 																setSearchTerm("");
 																reset();
-																handleAddFriend(u._id, u.username);
 															}}>
-															Add +
-														</Button>
+															<AddFriendButton {...u} />
+														</Stack>
 													</ListItemIcon>
 												</ListItemButton>
 												<Divider />
