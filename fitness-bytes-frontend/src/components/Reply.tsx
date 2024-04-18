@@ -10,7 +10,7 @@ import {
 	Stack,
 	Typography,
 } from "@mui/material";
-import { InfiniteData, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import useBannerStore from "../hooks/useBannerStore";
 import { LikeId } from "../hooks/useIsLiked";
 import useReplies from "../hooks/useReplies";
@@ -56,35 +56,17 @@ const Reply = ({
 			return;
 		}
 
-		queryClient.setQueryData<InfiniteData<IReply[] | undefined, unknown>>(
-			parentReplyId
-				? ["repliesByReplyId", parentReplyId]
-				: ["repliesByPostId", postId],
-			(oldReplies) => {
-				if (!oldReplies || !oldReplies.pages) {
-					return {
-						pages: [],
-						pageParams: [],
-					};
-				}
-
-				const newPages = oldReplies.pages.map((page) =>
-					page?.filter((reply) => reply._id !== _id),
-				);
-				const nonEmptyPages = newPages.filter((page) => page?.length || 0 > 0);
-
-				return {
-					...oldReplies,
-					pages: nonEmptyPages,
-					pageParams: oldReplies.pageParams,
-				};
-			},
-		);
-
+		
 		queryClient.invalidateQueries({
 			queryKey: parentReplyId
-				? ["replyCountByReply", parentReplyId]
-				: ["replyCountByPostId", postId],
+			? ["replyCountByReply", parentReplyId]
+			: ["replyCountByPostId", postId],
+		});
+		
+		queryClient.invalidateQueries({
+			queryKey: parentReplyId
+				? ["repliesByReplyId", parentReplyId]
+				: ["repliesByPostId", postId],
 		});
 	};
 

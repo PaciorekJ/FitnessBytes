@@ -279,34 +279,23 @@ replyRouter.patch("/", authMiddleware, async (req, res) => {
 const deleteReplies = async (replyId: mongoose.Types.ObjectId) => {
     const replyToDelete = await ReplyModel.findById(replyId);
     if (!replyToDelete) {
-      return false;
+        return false;
     }
   
     if (replyToDelete.parentReplyId === null) {
-
-        const repliesToDelete = await ReplyModel.find({ postId: replyToDelete.postId }, '_id');
-        const replyIdsToDelete = repliesToDelete.map(reply => reply._id);
-
-        // It's a root reply. Delete all replies associated with the post.
-        const { deletedCount } = await ReplyModel.deleteMany({ _id: { $in: replyIdsToDelete } });
-
-        if (deletedCount) {
-            await ReplyLikeModel.deleteMany({ replyId: { $in: replyIdsToDelete } });
-        }
-        else {
-            return false;
-        }
+        // It's a root reply. Delete this reply and all its descendants.
+        const success = await deleteReplyAndDescendants(replyId);
+        return success;
     } else { 
-    
         // It's a non-root reply. Delete this reply and all its descendants.
         const success = await deleteReplyAndDescendants(replyId);
         return success;
     }
-    return true;
 };
   
 const deleteReplyAndDescendants = async (initialReplyId: mongoose.Types.ObjectId) => {
     let queue = [initialReplyId];
+    let replyIdsToDelete = [];
 
     while (queue.length > 0) {
         let currentReplyId = queue.shift();
@@ -315,15 +304,23 @@ const deleteReplyAndDescendants = async (initialReplyId: mongoose.Types.ObjectId
         const childReplies = await ReplyModel.find({ parentReplyId: currentReplyId });
         queue.push(...childReplies.map(reply => reply._id));
 
-        // Delete the current reply and its likes
-        const { deletedCount } = await ReplyModel.deleteOne({ _id: currentReplyId });
-        if (deletedCount) {
-            await ReplyLikeModel.deleteMany({ _id: currentReplyId });
-        }
-
+        // Collect this reply for deletion
+        replyIdsToDelete.push(currentReplyId);
     }
+
+    // Delete all collected replies and their likes
+    if (replyIdsToDelete.length > 0) {
+        const { deletedCount } = await ReplyModel.deleteMany({ _id: { $in: replyIdsToDelete } });
+        if (deletedCount) {
+            await ReplyLikeModel.deleteMany({ replyId: { $in: replyIdsToDelete } });
+        } else {
+            return false;
+        }
+    }
+
+    return true;
 };
-  
+
 
 replyRouter.delete("/:replyId", authMiddleware, async (req, res) => {
     const userId = (req.user as IUser)._id;
