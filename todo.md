@@ -1,8 +1,6 @@
 
 # Chunk 5
 
-* Patch issue where two people can have outgoing friendrequest. This can be done by preventing isFriend endpoint form not looking at the bidirectional nature of a friendRequest
-
 * Fix AddParticipant Modal, currently will break if you add and remove participants repeatably
 
 * Revamp home page to include a call to action and a section about Fitness Bytes, and a hero section.

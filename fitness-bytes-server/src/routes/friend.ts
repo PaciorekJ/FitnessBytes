@@ -26,32 +26,29 @@ friendRouter.get('/isFriend/:friendUsername', authMiddleware, async (req, res) =
 
         const friendId = friend._id;
 
-        const exists = await FriendModel.aggregate([
+        const exists = await FriendModel.findOne(
             {
-                $match: {
-                    $or: [
-                        { userId1: userId, userId2: friendId },
-                        { userId1: friendId, userId2: userId }
-                    ]
-                }
+                $or: [
+                    { userId1: userId, userId2: friendId },
+                    { userId1: friendId, userId2: userId }
+                ]
             }
-        ]).exec();
+        );
 
-        const pending = await FriendRequestModel.aggregate([
-            {
-                $match: {
-                    $or: [
-                        { requesterId: userId, recipientId: friendId },
-                        { recipientId: friendId, requesterId: userId }   
-                    ]
-                }
-            }
-        ]).exec();
+        const pending = await FriendRequestModel.find({
+            $or: [
+                { requesterId: userId, recipientId: friendId },
+                { requesterId: friendId, recipientId: userId }
+            ]
+        });
 
-        const isFriend = exists.length > 0;
-        const isPending = pending.length > 0;
+        let friendStatus = FriendStatus.None;
 
-        const friendStatus = isPending ? FriendStatus.Pending : isFriend ? FriendStatus.Friend : FriendStatus.None;
+        if (pending.length > 0) {
+            friendStatus = FriendStatus.Pending;
+        } else if (exists) {
+            friendStatus = FriendStatus.Friend;
+        }
 
         return res.json({
             message: "",
