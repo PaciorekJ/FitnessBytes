@@ -22,7 +22,7 @@ type FriendResponse = ResponseResult<IUser[]>;
 class FriendServices {
 	private static factFriend = new EndpointFactory<FriendResponse>("/friend/");
 
-    static search = (query: string, pageNumber: number, pageLength: number) => FriendServices.factFriend.get<IUser[]>("", { params: { query, pageLength, pageNumber } })("");
+    static search = (query: string, pageNumber?: number, pageLength?: number) => FriendServices.factFriend.get<IUser[]>("", { params: { query, pageLength, pageNumber } })("");
 
     static isFriend = (friendUsername: string) => this.factFriend.get<FriendStatus>("/isFriend/")(friendUsername);
 }
