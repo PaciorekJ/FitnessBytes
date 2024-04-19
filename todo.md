@@ -1,8 +1,6 @@
 
 # Chunk 5
 
-* Fix AddParticipant Modal, currently will break if you add and remove participants repeatably
-
 * Revamp home page to include a call to action and a section about Fitness Bytes, and a hero section.
 
 # Things to Consider
