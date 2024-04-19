@@ -59,7 +59,7 @@ const Messenger = ({ conversationId, setNewMessage }: Props) => {
 				setOpen={setOpen}
 				isOpen={isOpen}
 				action={ConversationServices.updateParticipants}
-				header={"Add More Participants to your current Conversation"}
+				header={"Add/Remove Participants"}
 				subheaderWarning={"You can only have conversations with friends"}
 				submitButton={"Update conversation Participants"}
 				participantsAction={true}
