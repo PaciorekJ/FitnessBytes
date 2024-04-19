@@ -1,4 +1,5 @@
 import DeleteTwoToneIcon from "@mui/icons-material/DeleteTwoTone";
+import ModeTwoToneIcon from "@mui/icons-material/ModeTwoTone";
 import {
 	Avatar,
 	Box,
@@ -7,6 +8,7 @@ import {
 	ListItem,
 	ListItemButton,
 	ListItemIcon,
+	ListItemSecondaryAction,
 	ListItemText,
 	Stack,
 	useTheme,
@@ -18,6 +20,7 @@ import ConversationServices, {
 } from "../services/ConversationService";
 import NotificationServices from "../services/NotificationServices";
 import SocketServices from "../services/SocketServices";
+import ConversationModal from "./ConversationModal";
 
 interface ConversationListItemProps extends IConversation {
 	conversationId: string;
@@ -36,6 +39,7 @@ const ConversationListItem = ({
 	const convoTitle =
 		title || participantUsernames.join(", ") || "Empty Conversation";
 	const [processingDelete, setProcessingDelete] = useState(false);
+	const [editModalOpen, setEditModalOpen] = useState(false);
 	const queryClient = useQueryClient();
 	const theme = useTheme();
 
@@ -62,40 +66,83 @@ const ConversationListItem = ({
 	return (
 		(
 			<React.Fragment key={convoTitle + "/" + _id}>
+				<ConversationModal
+					_id={_id}
+					header={`Update the "${convoTitle}" Conversation`}
+					subheaderWarning={"You can only have conversations with friends"}
+					submitButton={"Update Conversation"}
+					participantsAction={true}
+					titleAction={true}
+					action={ConversationServices.update}
+					isOpen={editModalOpen}
+					setOpen={setEditModalOpen}
+				/>
 				<Box
 					bgcolor={_id === conversationId ? theme.palette.primary.light : ""}
 					color={_id === conversationId ? "white" : ""}>
-					<ListItem
-						disablePadding
-						secondaryAction={
-							processingDelete ? (
-								<Stack margin={0.5}>
-									<CircularProgress size={"1rem"} />
-								</Stack>
-							) : (
-								<IconButton
-									onClick={(e) => {
-										e.stopPropagation();
-										setOpen(true);
-										deleteConversation(_id);
-									}}
-									edge="end"
-									aria-label="delete">
-									<DeleteTwoToneIcon />
-								</IconButton>
-							)
-						}>
+					<ListItem disablePadding={true}>
 						<ListItemButton
 							onClick={() => {
 								SocketServices.leave(conversationId);
 								setConversationId(_id);
 								SocketServices.join(_id);
+								setOpen(false);
 							}}>
-							<ListItemIcon>
-								<Avatar aria-label="User Icon">{convoTitle.charAt(0)}</Avatar>
-							</ListItemIcon>
-							<ListItemText primary={convoTitle} />
+							<Stack flexDirection={"row"}>
+								<ListItemIcon>
+									<Avatar aria-label="User Icon">{convoTitle.charAt(0)}</Avatar>
+								</ListItemIcon>
+								<ListItemText
+									primary={convoTitle}
+									sx={{
+										paddingRight: "40px",
+									}}
+								/>
+							</Stack>
 						</ListItemButton>
+						<ListItemSecondaryAction>
+							{processingDelete ? (
+								<Stack gap={1} flexDirection={"row"} alignItems={"center"}>
+									<IconButton
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setOpen(true);
+											setEditModalOpen(true);
+										}}
+										edge="end"
+										aria-label="edit conversation name">
+										<ModeTwoToneIcon />
+									</IconButton>
+									<CircularProgress sx={{ marginLeft: 1 }} size={"1rem"} />
+								</Stack>
+							) : (
+								<Stack gap={1} flexDirection={"row"} alignItems={"center"}>
+									<IconButton
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setOpen(true);
+											setEditModalOpen(true);
+										}}
+										edge="end"
+										aria-label="edit conversation">
+										<ModeTwoToneIcon />
+									</IconButton>
+									<IconButton
+										onClick={(e) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setOpen(true);
+											deleteConversation(_id);
+										}}
+										edge="end"
+										aria-label="delete">
+										<DeleteTwoToneIcon />
+									</IconButton>
+								</Stack>
+							)}
+						</ListItemSecondaryAction>
 					</ListItem>
 				</Box>
 			</React.Fragment>

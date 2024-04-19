@@ -1,4 +1,3 @@
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import {
 	Box,
@@ -13,11 +12,12 @@ import {
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import _ from "lodash";
 import { useEffect, useState } from "react";
-import AddConversationModal from "../components/AddConversationModal";
 import Conversation from "../components/Conversation";
 import ConversationListItem from "../components/ConversationListItem";
+import ConversationModal from "../components/ConversationModal";
 import Messenger from "../components/Messenger";
 import useConversations from "../hooks/useConversations";
+import ConversationServices from "../services/ConversationService";
 import { IMessage } from "../services/MessageServices";
 
 const MessageBoard = () => {
@@ -56,25 +56,28 @@ const MessageBoard = () => {
 
 	const list = () => (
 		<>
-			<AddConversationModal isOpen={addConvoOpen} setOpen={addConvoSetOpen} />
-			<Box
-				sx={{ width: 250 }}
-				role="presentation"
-				onClick={toggleDrawer}
-				onKeyDown={toggleDrawer}
-				justifyItems={"center"}>
+			<ConversationModal
+				header={"Create A New Conversation"}
+				subheaderWarning={"You can only start conversations with friends"}
+				submitButton={"Create Conversation"}
+				participantsAction={true}
+				titleAction={true}
+				action={ConversationServices.create}
+				isOpen={addConvoOpen}
+				setOpen={addConvoSetOpen}
+			/>
+			<Box sx={{ width: 270 }} role="presentation" justifyItems={"center"}>
 				<List>
 					<Button
 						variant="contained"
 						color={"secondary"}
-						startIcon={<AddCircleIcon />}
 						size="large"
-						sx={{ ml: 2.5, my: 1 }}
+						sx={{ marginX: "30px", marginY: 2, paddingY: "25px" }}
 						onClick={(e) => {
 							addConvoSetOpen(true);
 							e.stopPropagation();
 						}}>
-						New Conversation
+						(+) New Conversation
 					</Button>
 					{conversations &&
 						conversations.map((c) => (

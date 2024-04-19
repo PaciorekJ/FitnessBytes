@@ -124,6 +124,41 @@ conversationRouter.post('/', authMiddleware, async (req, res) => {
     }
 })
 
+conversationRouter.patch('/', authMiddleware, async (req, res) => {
+
+    const conversation = req.body as IConversation;
+
+    try {
+        
+        if (!conversation.participantUsernames.length || !conversation.participantIds.length) {
+            return res.status(400).json({
+                message: "A Conversation requires at least 1 participant besides the creator"
+            })
+        }
+
+        if (!conversation._id) {
+            return res.status(400).json({
+                message: "A Conversation id is not present in request body"
+            })
+        }
+        
+        const updatedConversation = await ConversationModel.updateOne({_id: conversation._id}, {
+            participantIds: conversation.participantIds, 
+            participantUsernames: conversation.participantUsernames,
+            title: conversation.title || null,
+        }, {new: true});
+    
+        return res.status(200).json({
+            message: "",
+            result: updatedConversation
+        })
+    } catch (e) {
+        return res.status(500).json({
+            message: `${e}`,
+        })
+    }
+})
+
 conversationRouter.patch('/participants', authMiddleware, async (req, res) => {
 
     const conversation = req.body as IConversation;

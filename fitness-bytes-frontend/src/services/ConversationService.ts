@@ -15,7 +15,8 @@ type ConversationResponse = ResponseResult< IConversation[] | IConversation | bo
 class ConversationServices {
     private static factConvo = new EndpointFactory<ConversationResponse>("/conversation");
     
-    static updateParticipants = this.factConvo.patch<IConversation, IConversation>('/participants/')
+    static updateParticipants = this.factConvo.patch<IConversation, IConversation>('/participants/');
+    static update = this.factConvo.patch<IConversation, IConversation>('/');
     static create = this.factConvo.post<IConversation, IConversation>();
     static delete = this.factConvo.delete<boolean>();
     static getAll = () => this.factConvo.get<IConversation[]>()("");
