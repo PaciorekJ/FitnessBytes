@@ -74,6 +74,7 @@ const ConversationModal = ({
 	const queryClient = useQueryClient();
 
 	const [searchTerm, setSearchTerm] = useState("");
+	const [titleValue, setTitleValue] = useState("");
 	const { data, hasNextPage, fetchNextPage, isLoading } =
 		useUserFriends(searchTerm);
 	const { data: conversation, isLoading: conversationIsLoading } =
@@ -120,6 +121,12 @@ const ConversationModal = ({
 
 		setParticipants(newParticipants);
 	}, [conversation, conversationIsLoading]);
+
+	useEffect(() => {
+		if (conversation) {
+			setTitleValue(conversation?.title || "");
+		}
+	}, [conversation]);
 
 	const toggleParticipants = (user: IUser) => {
 		const newParticipants: IUser[] = [];
@@ -191,8 +198,9 @@ const ConversationModal = ({
 					<IconButton
 						onClick={() => {
 							setOpen(false);
-							reset({ searchContent: "" });
+							reset({ searchContent: "", title: "" });
 							setSearchTerm("");
+							setTitleValue("");
 						}}>
 						<CloseIcon />
 					</IconButton>
@@ -209,6 +217,7 @@ const ConversationModal = ({
 								sx={{ width: "100%" }}
 								id="title"
 								focused
+								value={titleValue}
 								label={"Conversation Title"}
 								color={"secondary"}
 								type="input"
@@ -218,6 +227,10 @@ const ConversationModal = ({
 										message: "Max Length for a Title is 20 characters",
 									},
 								})}
+								onChange={(e) => {
+									setValue("title", e.target.value);
+									setTitleValue(e.target.value);
+								}}
 								placeholder="Conversation Title..."
 								inputProps={{
 									"aria-label": "Conversation Title",
