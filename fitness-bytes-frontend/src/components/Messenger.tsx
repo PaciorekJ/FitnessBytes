@@ -10,9 +10,10 @@ import {
 import Stack from "@mui/material/Stack";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import ConversationServices from "../services/ConversationService";
 import MessageServices, { IMessage } from "../services/MessageServices";
 import SocketServices, { CallbackFn } from "../services/SocketServices";
-import AddParticipantsModal from "./AddParticipantsModal";
+import ConversationModal from "./ConversationModal";
 
 interface Props {
 	conversationId: string;
@@ -53,10 +54,16 @@ const Messenger = ({ conversationId, setNewMessage }: Props) => {
 			bottom={0}
 			padding={2}
 			width={"100%"}>
-			<AddParticipantsModal
-				conversationId={conversationId}
+			<ConversationModal
+				_id={conversationId}
 				setOpen={setOpen}
 				isOpen={isOpen}
+				action={ConversationServices.updateParticipants}
+				header={"Add More Participants to your current Conversation"}
+				subheaderWarning={"You can only have conversations with friends"}
+				submitButton={"Update conversation Participants"}
+				participantsAction={true}
+				titleAction={false}
 			/>
 			<form onSubmit={handleSubmit(handleUserMessage)}>
 				<OutlinedInput
