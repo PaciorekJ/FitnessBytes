@@ -1,10 +1,11 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, SxProps, Typography, useTheme } from "@mui/material";
 
 interface Props {
 	center?: boolean;
+	sx?: SxProps;
 }
 
-const LogoName = ({ center = false }: Props) => {
+const LogoName = ({ center = false, sx }: Props) => {
 	const theme = useTheme();
 
 	const fontSizes = {
@@ -19,11 +20,12 @@ const LogoName = ({ center = false }: Props) => {
 	};
 
 	return (
-		<Box textAlign={center ? "center" : "initial"}>
+		<Box display={"block"} textAlign={center ? "center" : "initial"} sx={sx}>
 			<Typography
 				sx={{
 					...generalStyles,
-					color: theme.palette.primary.main,
+					"color": theme.palette.primary.main,
+					"text-shadow": `1px 1px 2px ${theme.palette.secondary.main}, 0px -1px 1px ${theme.palette.secondary.main}, 0 0 0em ${theme.palette.secondary.main}`,
 				}}
 				variant="h2">
 				Fitness

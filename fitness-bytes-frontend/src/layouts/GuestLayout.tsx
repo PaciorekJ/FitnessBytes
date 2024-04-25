@@ -1,4 +1,4 @@
-import { Grid, Stack } from "@mui/material";
+import { Button, Link, List, ListItem, Stack } from "@mui/material";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import LogoIcon from "../components/LogoIcon";
@@ -18,22 +18,68 @@ const GuestLayout = () => {
 		authUser();
 	}, [navigator]);
 
+	const linkProps = {
+		color: "secondary.light",
+		sx: {
+			"textDecoration": "none",
+			"transition": "border-bottom 2s, border-color 2s",
+			"&:hover": {
+				borderBottom: "2px solid",
+				borderColor: "secondary.light",
+			},
+		},
+	};
+
 	return (
 		<>
-			<Stack alignItems={"center"} paddingTop={1}>
-				<LogoIcon size="8em" />
-			</Stack>
-			<Grid
-				container
+			<List
 				sx={{
-					position: "absolute",
-					top: "50%",
-					left: "50%",
-					transform: "translate(-50%, -50%)",
 					width: "100%",
+					display: "flex",
+					boxSizing: "border-box",
+					flexDirection: "row",
+					position: "absolute",
+					top: 0,
+					left: 0,
+					padding: 2,
 				}}>
-				<Outlet />
-			</Grid>
+				<ListItem>
+					<LogoIcon size="5em" />
+				</ListItem>
+				<ListItem>
+					<Link {...linkProps} href="/#about">
+						{" "}
+						About{" "}
+					</Link>
+				</ListItem>
+				<ListItem>
+					<Link {...linkProps} href="/#features">
+						{" "}
+						Features{" "}
+					</Link>
+				</ListItem>
+				<ListItem>
+					<Link {...linkProps} href="/#faqs">
+						{" "}
+						FAQs{" "}
+					</Link>
+				</ListItem>
+				<ListItem sx={{ display: "flex", gap: 2 }}>
+					<Stack gap={4} justifyContent={"end"} flexDirection={"row"}>
+						<Button
+							variant="contained"
+							sx={{ textWrap: "nowrap" }}
+							size="medium"
+							href="/signup/">
+							Join Now
+						</Button>
+						<Button variant="contained" color={"secondary"} href="/signup/">
+							Login
+						</Button>
+					</Stack>
+				</ListItem>
+			</List>
+			<Outlet />
 		</>
 	);
 };
