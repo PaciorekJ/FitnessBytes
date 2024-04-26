@@ -50,6 +50,7 @@ const GuestLayout = () => {
 				sx={{
 					width: "100%",
 					height: "80px",
+					zIndex: "1000",
 					overflow: "hidden",
 					display: "flex",
 					boxSizing: "border-box",

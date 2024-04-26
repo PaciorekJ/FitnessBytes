@@ -12,6 +12,7 @@ const Login = () => {
 			position={"absolute"}
 			top={"50%"}
 			left={"50%"}
+			paddingTop={"100px"}
 			sx={{ transform: "translateX(-50%) translateY(-50%)" }}>
 			<Grid item xs xl>
 				<LogoName />
