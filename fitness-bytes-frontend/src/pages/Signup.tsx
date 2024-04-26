@@ -23,7 +23,7 @@ const Signup = () => {
 					A social network for pump chasers, improvement seekers, and gym lovers
 				</Typography>
 			</Stack>
-			<Stack maxWidth={{ lg: "400px" }} width={"100%"} marginX={"auto"}>
+			<Stack maxWidth={{ lg: "600px" }} width={"100%"} marginX={"auto"}>
 				<SignupForm />
 			</Stack>
 		</Stack>
