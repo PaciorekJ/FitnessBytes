@@ -1,6 +1,6 @@
-import { Box, Button, Divider, Grid, Stack, Typography } from "@mui/material";
+import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import darkImage from "../assets/Hero - 1 - Dark - fixed.png";
-import lightImage from "../assets/Hero - 2- light -png.png";
+import lightImage from "../assets/Hero - 1 - Light.png";
 import community from "../assets/community-engagement.webp";
 import exclusivity from "../assets/exclusivity-fitness.webp";
 import professional from "../assets/professional-networking.webp";
@@ -11,18 +11,18 @@ import useThemeStore from "../hooks/useThemeStore";
 
 const Welcome = () => {
 	const mode = useThemeStore((s) => s.mode);
-
 	return (
 		<Stack>
 			<Box
 				component={"img"}
-				src={mode === "light" ? lightImage : darkImage}
+				src={mode === "dark" ? darkImage : lightImage}
 				alt="Hero Section image for Fitness Bytes"
 			/>
 			<Stack
 				id="about"
 				padding={10}
-				bgcolor={"secondary.dark"}
+				bgcolor={"secondary.light"}
+				color={"secondary.contrastText"}
 				paddingX={5}
 				gap={5}>
 				<Typography
@@ -49,7 +49,8 @@ const Welcome = () => {
 					personal and professional fitness success.
 				</Typography>
 			</Stack>
-			<Grid container bgcolor={"primary.dark"}>
+			<FeatureList id="features" />
+			<Grid container bgcolor={"primary.dark"} color={"primary.contrastText"}>
 				<Grid item xs={12} lg={4}>
 					<Stack
 						display={{ sx: "flex", lg: "block" }}
@@ -165,7 +166,6 @@ const Welcome = () => {
 					</Stack>
 				</Grid>
 			</Grid>
-			<FeatureList id="features" />
 			<Box paddingY={5}>
 				<FAQ id="faqs" />
 			</Box>

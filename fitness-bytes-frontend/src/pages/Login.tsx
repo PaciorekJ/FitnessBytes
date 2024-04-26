@@ -9,9 +9,10 @@ const Login = () => {
 			container
 			columns={1}
 			margin={"auto"}
-			gap={4}
-			paddingTop={{ xs: "200px" }}
-			padding={{ xs: 2, md: 10 }}>
+			position={"absolute"}
+			top={"50%"}
+			left={"50%"}
+			sx={{ transform: "translateX(-50%) translateY(-50%)" }}>
 			<Grid item xs xl>
 				<LogoName />
 				<Typography
