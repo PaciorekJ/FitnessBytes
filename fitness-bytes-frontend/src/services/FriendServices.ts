@@ -25,6 +25,7 @@ class FriendServices {
     static search = (query: string, pageNumber?: number, pageLength?: number) => FriendServices.factFriend.get<IUser[]>("", { params: { query, pageLength, pageNumber } })("");
 
     static isFriend = (friendUsername: string) => this.factFriend.get<FriendStatus>("/isFriend/")(friendUsername);
+    static delete = this.factFriend.delete<boolean>();
 }
 
 export type { IFriend };

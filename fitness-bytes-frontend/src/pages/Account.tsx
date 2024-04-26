@@ -186,7 +186,9 @@ const Account = () => {
 						<Typography variant="h4" letterSpacing={".1rem"} component="h2">
 							{username}
 						</Typography>
-						{!ownerPermissions && user && <AddFriendButton {...user} />}
+						{!ownerPermissions && user && (
+							<AddFriendButton {...user} actionDelete={true} />
+						)}
 					</Stack>
 					<Divider sx={{ marginY: 1 }} />
 					{!editBioMode ? (

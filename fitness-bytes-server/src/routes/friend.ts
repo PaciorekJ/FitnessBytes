@@ -1,4 +1,5 @@
 import { Router } from "express";
+import mongoose from "mongoose";
 import escapeRegExp from "../libs/RegExp";
 import { authMiddleware } from "../middleware/authMiddleware";
 import FriendModel from "../models/Friend";
@@ -145,6 +146,32 @@ friendRouter.get('/', authMiddleware, async (req, res) => {
         return res.json({
             message: "",
             result: friendships
+        })
+    }
+    catch (e) {
+        return res.status(500).json({ 
+            message: `Error: Internal Server Error: ${e}` 
+        });
+    }
+})
+
+friendRouter.delete("/:id", authMiddleware, async (req, res) => {
+    const userId = (req.user as IUser)._id;
+    const friendIdRaw = req.params.id;
+
+    try {
+        const friendId = new mongoose.Types.ObjectId(friendIdRaw);
+
+        const { deletedCount: isDeleted } = await FriendModel.deleteOne({
+            $or: [
+                { userId1: userId, userId2: friendId },
+                { userId1: friendId, userId2: userId }
+            ]
+        });
+
+        return res.json({
+            message: "",
+            result: isDeleted
         })
     }
     catch (e) {
