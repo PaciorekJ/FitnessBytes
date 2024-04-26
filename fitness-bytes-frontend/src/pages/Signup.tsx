@@ -7,11 +7,11 @@ const Signup = () => {
 		<Stack
 			width={"100%"}
 			height={"100%"}
-			zIndex={"-1"}
 			position={"absolute"}
 			top={"50%"}
 			left={"50%"}
 			padding={4}
+			paddingTop={"100px"}
 			flexDirection={{ xs: "column", sm: "row" }}
 			justifyContent={"center"}
 			alignItems={"center"}
