@@ -190,7 +190,7 @@ const Account = () => {
 							<AddFriendButton {...user} actionDelete={true} />
 						)}
 					</Stack>
-					<Divider sx={{ marginY: 1 }} />
+					<Divider sx={{ padding: 1.5 }} />
 					{!editBioMode ? (
 						<Typography
 							component={"p"}
@@ -207,7 +207,7 @@ const Account = () => {
 							autoFocus
 							fullWidth
 							sx={{
-								"minWidth": { xs: "90vw", lg: "700px" },
+								"minWidth": { xs: "90vw", lg: "650px" },
 								"display": "inline-block",
 								"letterSpacing": 0.75,
 								"lineHeight": "25px",

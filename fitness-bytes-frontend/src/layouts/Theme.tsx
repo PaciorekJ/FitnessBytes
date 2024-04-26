@@ -39,6 +39,8 @@ const Theme = ({ children }: Props) => {
 					"body": {
 						backgroundColor: theme.palette.background.default,
 						color: theme.palette.text.primary,
+						maxWidth: "100vw",
+						overflowX: "hidden",
 					},
 				})}
 			/>
