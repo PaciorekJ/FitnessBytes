@@ -3,10 +3,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import useBannerStore from "../hooks/useBannerStore";
 import useIsFriend from "../hooks/useIsFriend";
 import FriendRequestServices from "../services/FriendRequestServices";
-import { FriendStatus } from "../services/FriendServices";
+import FriendServices, { FriendStatus } from "../services/FriendServices";
 import { IUser } from "../services/UserServices";
 
-const AddFriendButton = ({ _id, username }: IUser) => {
+interface addFriendButtonProps extends IUser {
+	actionDelete?: boolean | undefined;
+}
+
+const AddFriendButton = ({
+	_id,
+	username,
+	actionDelete = false,
+}: addFriendButtonProps) => {
 	const { data: isFriend, isLoading: isLoadingIsFriend } = useIsFriend(
 		username || "",
 	);
@@ -32,20 +40,55 @@ const AddFriendButton = ({ _id, username }: IUser) => {
 		}
 	};
 
+	const handleDeleteFriend = async (_id: string, toUsername: string) => {
+		const isDeleted = await FriendServices.delete(_id);
+
+		queryClient.setQueryData(
+			[`isFriend-${username}`, username],
+			() => FriendStatus.None,
+		);
+
+		if (isDeleted) {
+			setBanner(`${toUsername} has been unfriended`);
+		} else {
+			setBanner(
+				`${toUsername} couldn't be unfriended at the moment. Please try again later`,
+				true,
+			);
+		}
+	};
+
+	let buttonOnClick = () => {};
+	let buttonText = "";
+
+	if (isFriend === FriendStatus.None) {
+		buttonOnClick = () => handleAddFriend(_id, username);
+		buttonText = "Add +";
+	} else if (isFriend === FriendStatus.Pending) {
+		buttonText = "Pending...";
+	} else if (isFriend === FriendStatus.Friend && actionDelete) {
+		buttonOnClick = () => handleDeleteFriend(_id, username);
+		buttonText = "Remove";
+	}
+
 	return (
-		!isLoadingIsFriend &&
-		isFriend !== FriendStatus.Friend && (
+		(!isLoadingIsFriend && isFriend !== FriendStatus.Friend && (
 			<Button
 				sx={{ alignSelf: "center" }}
 				variant="contained"
-				onClick={
-					isFriend === FriendStatus.None
-						? () => handleAddFriend(_id, username)
-						: () => {}
-				}>
-				{isFriend === FriendStatus.None ? "Add +" : "Pending..."}
+				onClick={buttonOnClick}>
+				{buttonText}
 			</Button>
-		)
+		)) ||
+		(actionDelete && (
+			<Button
+				sx={{ alignSelf: "center", color: "error" }}
+				variant="text"
+				color="warning"
+				onClick={buttonOnClick}>
+				{buttonText}
+			</Button>
+		))
 	);
 };
 
