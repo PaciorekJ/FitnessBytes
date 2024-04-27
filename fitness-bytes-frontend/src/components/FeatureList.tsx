@@ -24,7 +24,7 @@ const featureList = [
 		Icon: PersonIcon,
 		title: "Customizable Profiles",
 		description:
-			"Tailor your fitness diary with a personal bio and progress photos.",
+			"Craft your unique fitness story with personalized bios, profile photos, and posts on FitnessBytes. Make every detail reflect your progress and individuality.",
 	},
 	{
 		Icon: PostAddIcon,

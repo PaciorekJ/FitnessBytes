@@ -4,7 +4,6 @@ import {
 	Link,
 	List,
 	ListItem,
-	Stack,
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
@@ -36,9 +35,8 @@ const GuestLayout = () => {
 		color: mode === "dark" ? "secondary.light" : "primary.dark",
 		sx: {
 			"textDecoration": "none",
-			"transition": "border-bottom 2s, border-color 2s",
 			"&:hover": {
-				borderBottom: "2px solid",
+				borderBottom: "1px solid",
 				borderColor: "secondary.light",
 			},
 		},
@@ -53,8 +51,6 @@ const GuestLayout = () => {
 					zIndex: "1000",
 					overflow: "hidden",
 					display: "flex",
-					boxSizing: "border-box",
-					flexDirection: "row",
 					position: "absolute",
 					top: 0,
 					left: 0,
@@ -64,48 +60,52 @@ const GuestLayout = () => {
 					<IconButton href="/" onClick={toggleTheme}>
 						<LogoIcon size="3em" />
 					</IconButton>
+					{matches ? (
+						<ListItem
+							sx={{
+								display: "flex",
+								width: "min-content",
+								gap: 2,
+							}}>
+							<ListItem>
+								<Link {...linkProps} href="/#about">
+									{" "}
+									About{" "}
+								</Link>
+							</ListItem>
+							<ListItem>
+								<Link {...linkProps} href="/#features">
+									{" "}
+									Features{" "}
+								</Link>
+							</ListItem>
+							<ListItem>
+								<Link {...linkProps} href="/#faqs">
+									{" "}
+									FAQs{" "}
+								</Link>
+							</ListItem>
+						</ListItem>
+					) : (
+						<ListItem>
+							<Link {...linkProps} href="/">
+								{" "}
+								Home{" "}
+							</Link>
+						</ListItem>
+					)}
 				</ListItem>
-				{matches ? (
-					<>
-						<ListItem>
-							<Link {...linkProps} href="/#about">
-								{" "}
-								About{" "}
-							</Link>
-						</ListItem>
-						<ListItem>
-							<Link {...linkProps} href="/#features">
-								{" "}
-								Features{" "}
-							</Link>
-						</ListItem>
-						<ListItem>
-							<Link {...linkProps} href="/#faqs">
-								{" "}
-								FAQs{" "}
-							</Link>
-						</ListItem>
-					</>
-				) : (
-					<ListItem>
-						<Link {...linkProps} href="/">
-							{" "}
-							Home{" "}
-						</Link>
-					</ListItem>
-				)}
-				<ListItem sx={{ display: "flex", gap: 2 }}>
-					<Stack gap={4} justifyContent={"end"} flexDirection={"row"}>
-						<Button
-							variant="contained"
-							sx={{ textWrap: "nowrap" }}
-							href="/signup">
-							Join Now
-						</Button>
-						<Button variant="contained" color={"secondary"} href="/login">
-							Login
-						</Button>
-					</Stack>
+
+				<ListItem sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
+					<Button
+						variant="contained"
+						sx={{ textWrap: "nowrap" }}
+						href="/signup">
+						Join Now
+					</Button>
+					<Button variant="contained" color={"secondary"} href="/login">
+						Login
+					</Button>
 				</ListItem>
 			</List>
 			<Outlet />
