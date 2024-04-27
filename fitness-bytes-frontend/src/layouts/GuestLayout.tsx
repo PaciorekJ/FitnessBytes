@@ -47,7 +47,7 @@ const GuestLayout = () => {
 			<List
 				sx={{
 					width: "100%",
-					height: "80px",
+					height: "100px",
 					zIndex: "1000",
 					overflow: "hidden",
 					display: "flex",
@@ -61,30 +61,32 @@ const GuestLayout = () => {
 						<LogoIcon size="3em" />
 					</IconButton>
 					{matches ? (
-						<ListItem
-							sx={{
-								display: "flex",
-								width: "min-content",
-								gap: 2,
-							}}>
-							<ListItem>
-								<Link {...linkProps} href="/#about">
-									{" "}
-									About{" "}
-								</Link>
-							</ListItem>
-							<ListItem>
-								<Link {...linkProps} href="/#features">
-									{" "}
-									Features{" "}
-								</Link>
-							</ListItem>
-							<ListItem>
-								<Link {...linkProps} href="/#faqs">
-									{" "}
-									FAQs{" "}
-								</Link>
-							</ListItem>
+						<ListItem>
+							<List
+								sx={{
+									display: "flex",
+									width: "min-content",
+									gap: 2,
+								}}>
+								<ListItem>
+									<Link {...linkProps} href="/#about">
+										{" "}
+										About{" "}
+									</Link>
+								</ListItem>
+								<ListItem>
+									<Link {...linkProps} href="/#features">
+										{" "}
+										Features{" "}
+									</Link>
+								</ListItem>
+								<ListItem>
+									<Link {...linkProps} href="/#faqs">
+										{" "}
+										FAQs{" "}
+									</Link>
+								</ListItem>
+							</List>
 						</ListItem>
 					) : (
 						<ListItem>
