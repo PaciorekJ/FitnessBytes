@@ -1,9 +1,15 @@
 import { Box, Button, Grid, Stack, Typography } from "@mui/material";
-import darkImage from "../assets/Hero - 1 - Dark - fixed.png";
-import lightImage from "../assets/Hero - 1 - Light.png";
+
 import community from "../assets/community-engagement.webp";
 import exclusivity from "../assets/exclusivity-fitness.webp";
+import darkImageLarge from "../assets/hero-dark-1800-1012.webp";
+import darkImageSmall from "../assets/hero-dark-600-337.webp";
+import darkImageMedium from "../assets/hero-dark-900-506.webp";
+import lightImageLarge from "../assets/hero-light-1800-1012.webp";
+import lightImageSmall from "../assets/hero-light-600-337.webp";
+import lightImageMedium from "../assets/hero-light-900-506.webp";
 import professional from "../assets/professional-networking.webp";
+
 import FAQ from "../components/FAQ";
 import FeatureList from "../components/FeatureList";
 import LogoName from "../components/LogoName";
@@ -15,7 +21,12 @@ const Welcome = () => {
 		<Stack>
 			<Box
 				component={"img"}
-				src={mode === "dark" ? darkImage : lightImage}
+				src={mode === "dark" ? darkImageSmall : lightImageSmall}
+				srcSet={
+					mode === "dark"
+						? `${darkImageSmall} 600w, ${darkImageMedium} 900w, ${darkImageLarge} 1800w`
+						: `${lightImageSmall} 600w, ${lightImageMedium} 900w, ${lightImageLarge} 1800w`
+				}
 				alt="Hero Section image for Fitness Bytes"
 			/>
 			<Stack
