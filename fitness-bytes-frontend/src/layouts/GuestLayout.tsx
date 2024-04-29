@@ -15,7 +15,6 @@ import UserServices from "../services/UserServices";
 
 const GuestLayout = () => {
 	const navigator = useNavigate();
-	const toggleTheme = useThemeStore((s) => s.toggleTheme);
 	const mode = useThemeStore((s) => s.mode);
 	const theme = useTheme();
 	const matches = useMediaQuery(theme.breakpoints.up("sm"));
@@ -56,48 +55,46 @@ const GuestLayout = () => {
 					left: 0,
 					marginY: 2,
 				}}>
-				<ListItem>
-					<IconButton href="/" onClick={toggleTheme}>
+				<ListItem sx={{ width: "min-content" }}>
+					<IconButton href="/">
 						<LogoIcon size="3em" />
 					</IconButton>
-					{matches ? (
-						<ListItem>
-							<List
-								sx={{
-									display: "flex",
-									width: "min-content",
-									gap: 2,
-								}}>
-								<ListItem>
-									<Link {...linkProps} href="/#about">
-										{" "}
-										About{" "}
-									</Link>
-								</ListItem>
-								<ListItem>
-									<Link {...linkProps} href="/#features">
-										{" "}
-										Features{" "}
-									</Link>
-								</ListItem>
-								<ListItem>
-									<Link {...linkProps} href="/#faqs">
-										{" "}
-										FAQs{" "}
-									</Link>
-								</ListItem>
-							</List>
-						</ListItem>
-					) : (
-						<ListItem>
-							<Link {...linkProps} href="/">
-								{" "}
-								Home{" "}
-							</Link>
-						</ListItem>
-					)}
 				</ListItem>
-
+				{matches ? (
+					<ListItem>
+						<List
+							sx={{
+								display: "flex",
+								gap: 2,
+							}}>
+							<ListItem>
+								<Link {...linkProps} href="/#about">
+									{" "}
+									About{" "}
+								</Link>
+							</ListItem>
+							<ListItem>
+								<Link {...linkProps} href="/#features">
+									{" "}
+									Features{" "}
+								</Link>
+							</ListItem>
+							<ListItem>
+								<Link {...linkProps} href="/#faqs">
+									{" "}
+									FAQs{" "}
+								</Link>
+							</ListItem>
+						</List>
+					</ListItem>
+				) : (
+					<ListItem>
+						<Link {...linkProps} href="/">
+							{" "}
+							Home{" "}
+						</Link>
+					</ListItem>
+				)}
 				<ListItem sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
 					<Button
 						variant="contained"
