@@ -24,8 +24,8 @@ const LogoName = ({ center = false, sx }: Props) => {
 			<Typography
 				sx={{
 					...generalStyles,
-					"color": theme.palette.primary.main,
-					"text-shadow": `1px 1px 2px ${theme.palette.secondary.main}, 0px -1px 1px ${theme.palette.secondary.main}, 0 0 0em ${theme.palette.secondary.main}`,
+					color: theme.palette.primary.main,
+					textShadow: `1px 1px 2px ${theme.palette.secondary.main}, 0px -1px 1px ${theme.palette.secondary.main}, 0 0 0em ${theme.palette.secondary.main}`,
 				}}
 				variant="h2">
 				Fitness
