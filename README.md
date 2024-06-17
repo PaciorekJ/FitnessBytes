@@ -40,9 +40,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-FitnessBytes is a full stack social media platform dedicated to fitness enthusiasts. This project stems from my personal passion for bodybuilding and fitness, which has been a significant part of my life since I was 13 years old. The goal of FitnessBytes is to create a space where users can connect, share their fitness journeys, and support each other in achieving their fitness goals. The platform is designed to be a comprehensive tool for anyone serious about fitness, offering features such as user management, messaging, and post creation with multimedia support.
+FitnessBytes is a full-stack social media platform dedicated to fitness enthusiasts. This project stems from my passion for bodybuilding and fitness, which has been a significant part of my life since I was 13. FitnessBytes aims to create a space where users can connect, share their fitness journeys, and support each other in achieving their fitness goals. The platform is designed to be a comprehensive tool for anyone serious about fitness, offering features such as user management, messaging, and post creation with multimedia support.
 
-Developing FitnessBytes involved applying extensive technical knowledge and a comprehensive understanding of full stack development. The project utilizes a range of modern technologies to provide a seamless user experience and robust functionality. This endeavor highlights a commitment to both coding and fitness, aiming to create a complex, user-friendly application tailored to the needs of the fitness community.
+Developing FitnessBytes involved applying extensive technical knowledge and a comprehensive understanding of full-stack development. The project utilizes various modern technologies to provide a seamless user experience and robust functionality. This endeavor highlights a commitment to both coding and fitness, aiming to create a complex, user-friendly application tailored to the needs of the fitness community.
 
 <p align="right">
   <a href="#readme-top">
@@ -52,17 +52,20 @@ Developing FitnessBytes involved applying extensive technical knowledge and a co
 
 ### Built With
 
-[![React](https://img.shields.io/badge/react%20-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)][React-url]
+[![Express](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)][express-url]
 [![Material-UI](https://img.shields.io/badge/material--ui-%230081CB.svg?style=for-the-badge&logo=material-ui&logoColor=white)][material-ui-url]
-[![React Query](https://img.shields.io/badge/-React%20Query-FF4154?style=for-the-badge&logo=react%20query&logoColor=white)][React-Query-url]
-[![Socket.IO](https://img.shields.io/badge/socket.io-%23010101.svg?style=for-the-badge&logo=socket.io&logoColor=white)][Socket.IO]
 [![MongoDB](https://img.shields.io/badge/MongoDB-%2347A248.svg?style=for-the-badge&logo=mongodb&logoColor=white)][MongoDB]
+[![Node.js](https://img.shields.io/badge/node.js-%23339933.svg?style=for-the-badge&logo=node.js&logoColor=white)][nodejs-url]
 [![Passport.js](https://img.shields.io/badge/Passport.js-34E27A?style=for-the-badge&logo=passport&logoColor=white)][PassportJs]
+[![React](https://img.shields.io/badge/react%20-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)][React-url]
+[![React Query](https://img.shields.io/badge/-React%20Query-FF4154?style=for-the-badge&logo=react%20query&logoColor=white)][React-Query-url]
 [![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)][react-router-url]
-[![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)][typescript-url]
-[![Zustand](https://img.shields.io/badge/%20zustand-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)][zustland-url]
 [![Render](https://img.shields.io/badge/render-%23000000.svg?style=for-the-badge&logo=render&logoColor=white)][render-url]
+[![Socket.IO](https://img.shields.io/badge/socket.io-%23010101.svg?style=for-the-badge&logo=socket.io&logoColor=white)][Socket.IO]
+[![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)][typescript-url]
 [![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)][vscode-url]
+[![Zustand](https://img.shields.io/badge/%20zustand-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)][zustland-url]
+
 
 <p align="right">
   <a href="#readme-top">
@@ -181,6 +184,8 @@ The project is currently on hiatus. While there are no ongoing development effor
 [PassportJs]: https://www.passportjs.org/
 [react-router-url]: https://reactrouter.com/en/main
 [typescript-url]: https://www.typescriptlang.org/
+[express-url]: https://expressjs.com/
+[nodejs-url]: https://nodejs.org/en
 [zustland-url]: https://www.npmjs.com/package/zustand
 [render-url]: https://render.com/
 [vscode-url]: https://code.visualstudio.com/
