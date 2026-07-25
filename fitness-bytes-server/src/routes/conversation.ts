@@ -146,7 +146,7 @@ conversationRouter.patch('/', authMiddleware, async (req, res) => {
             participantIds: conversation.participantIds, 
             participantUsernames: conversation.participantUsernames,
             title: conversation.title || null,
-        }, {new: true});
+        });
     
         return res.status(200).json({
             message: "",
@@ -180,7 +180,7 @@ conversationRouter.patch('/participants', authMiddleware, async (req, res) => {
         const updatedConversation = await ConversationModel.updateOne({_id: conversation._id}, {
             participantIds: conversation.participantIds, 
             participantUsernames: conversation.participantUsernames
-        }, {new: true});
+        });
     
         return res.status(200).json({
             message: "",
