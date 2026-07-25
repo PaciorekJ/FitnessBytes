@@ -147,15 +147,17 @@ const PostCard = ({
 	};
 
 	const handleShare = async () => {
+		const shareUrl = new URL(`/auth/post/${_id}`, window.location.origin).toString();
+
 		if (!navigator.share) {
-			navigator.clipboard.writeText(`http://localhost:5173/auth/post/${_id}`);
+			navigator.clipboard.writeText(shareUrl);
 			setBanner("URL copied to clipboard");
 		} else {
 			try {
 				await navigator.share({
-					title: `Fresh FitnessBytes from ${postUsername}`, // Title of the thing you want to share.
-					text: content, // Text to accompany the thing you're sharing.
-					url: `http://localhost:5173/auth/post/${_id}`, // URL or resource to share.
+					title: `Fresh FitnessBytes from ${postUsername}`,
+					text: content,
+					url: shareUrl,
 				});
 			} catch (error) {
 				setBanner("Post sharing failed, Please Try again!", true);
