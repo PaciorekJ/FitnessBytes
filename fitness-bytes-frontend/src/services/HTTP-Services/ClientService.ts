@@ -1,6 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim() || "/api/";
+const defaultApiBaseUrl = import.meta.env.DEV
+    ? "http://localhost:5301/"
+    : "/api/";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim() || defaultApiBaseUrl;
 
 const axiosInstance = axios.create({
     baseURL: apiBaseUrl.endsWith("/") ? apiBaseUrl : `${apiBaseUrl}/`,
