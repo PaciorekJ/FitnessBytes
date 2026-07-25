@@ -92,7 +92,7 @@ conversationRouter.delete('/:conversationId', authMiddleware, async (req, res) =
 })
 conversationRouter.post('/', authMiddleware, async (req, res) => {
     const username = (req.user as IUser).username;
-    const id = (req.user as IUser)._id;
+    const id = (req.user as IUser)._id.toString();
     
     try {
         let title = req.body.title || null;
