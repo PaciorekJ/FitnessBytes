@@ -39,7 +39,9 @@ class SocketServices {
         client,
         setBanner,
     }: SocketServiceConfig) => {
-        const socketUrl = import.meta.env.VITE_SOCKET_URL?.trim();
+        const configuredSocketUrl = import.meta.env.VITE_SOCKET_URL?.trim();
+        const socketUrl = configuredSocketUrl || (import.meta.env.DEV ? "http://localhost:5301" : undefined);
+
         this.socket = socketUrl
             ? io(socketUrl, { withCredentials: true })
             : io({ withCredentials: true });
