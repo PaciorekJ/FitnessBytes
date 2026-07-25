@@ -1,0 +1,75 @@
+name: fitnessbytes
+
+services:
+  mongo:
+    image: mongo:7.0
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  server:
+    build:
+      context: ./fitness-bytes-server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5301
+      DB_URL: mongodb://mongo:27017/fitnessbytes
+      SECRETKEY: ${SECRETKEY:-replace-this-before-public-use}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      COOKIE_MAX_AGE: ${COOKIE_MAX_AGE:-86400000}
+      JSON_BODY_LIMIT: ${JSON_BODY_LIMIT:-12mb}
+    expose:
+      - "5301"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5301/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./fitness-bytes-frontend
+      args:
+        VITE_API_BASE_URL: /api/
+        VITE_SOCKET_URL: ""
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    profiles: ["tunnel"]
+    command:
+      - tunnel
+      - --no-autoupdate
+      - run
+      - --token
+      - ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      frontend:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
