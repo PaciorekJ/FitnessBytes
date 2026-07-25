@@ -92,7 +92,8 @@ conversationRouter.delete('/:conversationId', authMiddleware, async (req, res) =
 })
 conversationRouter.post('/', authMiddleware, async (req, res) => {
     const username = (req.user as IUser).username;
-    const id = (req.user as IUser)._id;
+    // Conversation participant IDs are persisted as strings.
+    const id = (req.user as IUser)._id.toString();
     
     try {
         let title = req.body.title || null;
@@ -146,7 +147,7 @@ conversationRouter.patch('/', authMiddleware, async (req, res) => {
             participantIds: conversation.participantIds, 
             participantUsernames: conversation.participantUsernames,
             title: conversation.title || null,
-        }, {new: true});
+        });
     
         return res.status(200).json({
             message: "",
@@ -180,7 +181,7 @@ conversationRouter.patch('/participants', authMiddleware, async (req, res) => {
         const updatedConversation = await ConversationModel.updateOne({_id: conversation._id}, {
             participantIds: conversation.participantIds, 
             participantUsernames: conversation.participantUsernames
-        }, {new: true});
+        });
     
         return res.status(200).json({
             message: "",
