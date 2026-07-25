@@ -1,19 +1,24 @@
 import mongoose from 'mongoose';
 
 class Database {
-    private static uri: string = process.env.DB_URL!;
     static connection: mongoose.Connection | Promise<typeof mongoose>;
 
     static async connect() {
+        const uri = process.env.DB_URL;
+
+        if (!uri) {
+            throw new Error('DB_URL is required');
+        }
+
         try {
-            this.connection = mongoose.connect(this.uri);
+            await mongoose.connect(uri);
+            this.connection = mongoose.connection;
             console.log('Connected to MongoDB with Mongoose');
+            return mongoose.connection.getClient();
         } catch (error) {
             console.error('Error connecting to MongoDB with Mongoose:', error);
-            return undefined;
+            throw error;
         }
-        this.connection = mongoose.connection;
-        return this.connection.getClient();
     }
 
     static async disconnect() {
