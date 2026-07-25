@@ -1,6 +1,7 @@
 import { Express } from 'express';
 import { Server as HttpServer, createServer } from "http";
 import { Server as IOServer } from "socket.io";
+import { getAllowedOrigins } from '../config/origins';
 
 class Socket {
     static server: HttpServer;
@@ -10,7 +11,8 @@ class Socket {
         Socket.server = createServer(app);
         Socket.io = new IOServer(Socket.server, {
             cors: {
-            origin: process.env.FRONTEND_URL,
+                origin: getAllowedOrigins(),
+                credentials: true,
             }
         });
 
@@ -20,15 +22,15 @@ class Socket {
             socket.on("Join Personal Channel", (username: string) => {
                 socket.join("User:" + username);
             })
-            
+
             socket.on("Join Conversation", (id: string) => {
                 socket.join(id);
             })
-        
+
             socket.on('Leave Conversation', (id: string) => {
                 socket.leave(id);
             });
-        
+
             socket.on("Message Sent", ({id, message}: any) => {
                 socket.to(id).emit("Message Recieved", message);
             });
