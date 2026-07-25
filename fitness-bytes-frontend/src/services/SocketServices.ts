@@ -11,8 +11,8 @@ type NotificationCallback = (n: INotification) => void;
 type PostCallback = (p: IPost) => void;
 
 type SocketServiceConfig = {
-    username: string, 
-    client: QueryClient, 
+    username: string,
+    client: QueryClient,
     setBanner: (m :INotification, error?: boolean) => void
 };
 
@@ -39,7 +39,10 @@ class SocketServices {
         client,
         setBanner,
     }: SocketServiceConfig) => {
-        this.socket = io("http://localhost:5301/");
+        const socketUrl = import.meta.env.VITE_SOCKET_URL?.trim();
+        this.socket = socketUrl
+            ? io(socketUrl, { withCredentials: true })
+            : io({ withCredentials: true });
 
         this.socket?.emit("Join Personal Channel", username);
 
@@ -49,33 +52,12 @@ class SocketServices {
         this.client = client;
 
         SocketServices.registerCallback("Notification Recieved", (m) => {
-			// TODO: Swap these for production. Strict Mode results in 2 notifications
-			// But the performance gain from no refetch is worth the impurity
-
-			// this.client.setQueryData<INotification[]>(["notifications"], (old) => {
-			// 	const oldNotifications = old || [];
-			// 	return [...oldNotifications, m as INotification];
-			// });
-
-			// if ((m as INotification).type === NotificationTypes.MessageReceived) {
-			// 	this.client.setQueryData<number>(
-			// 		["NotificationMessageCount"],
-			// 		(old) => (old || 0) + 1,
-			// 	);
-			// }
-			// this.client.setQueryData<number>(
-			// 	["NotificationCount"],
-			// 	(old) => (old || 0) + 1,
-			// );
-
             setBanner(m as INotification);
 
-			this.client.invalidateQueries({queryKey: ["notifications"]});
-			this.client.invalidateQueries({queryKey: ["NotificationMessageCount"]});
-			this.client.invalidateQueries({queryKey: ["NotificationCount"]});
-
-
-		});
+            this.client.invalidateQueries({queryKey: ["notifications"]});
+            this.client.invalidateQueries({queryKey: ["NotificationMessageCount"]});
+            this.client.invalidateQueries({queryKey: ["NotificationCount"]});
+        });
     }
 
     static registerCallback = (key: CallbackNames, fn: CallbackFn) => {
@@ -84,7 +66,6 @@ class SocketServices {
 
     // *** All Emitters ***
     static SendMessage = (message: IMessage) => {
-        
         const SendMessageRequest = {
             id: SocketServices.roomId,
             message
